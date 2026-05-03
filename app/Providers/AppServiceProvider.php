@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\Assessment;
+use App\Models\Course;
+use App\Models\LearningSession;
+use App\Models\Material;
+use App\Models\Topic;
+use App\Models\Certificate;
+use App\Models\User;
+use App\Models\Role;
+use App\Models\Permission;
+use App\Models\StudyProgram;
+use App\Policies\StudyProgramPolicy;
+use App\Policies\PermissionPolicy;
+use App\Policies\RolePolicy;
+use App\Policies\UserPolicy;
+use App\Policies\CertificatePolicy;
+use App\Policies\AssessmentPolicy;
+use App\Policies\AttendancePolicy;
+use App\Policies\CoursePolicy;
+use App\Policies\MaterialPolicy;
+use App\Policies\TopicPolicy;
+
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Gate::policy(Course::class, CoursePolicy::class);
+        Gate::policy(Topic::class, TopicPolicy::class);
+        Gate::policy(Material::class, MaterialPolicy::class);
+        Gate::policy(LearningSession::class, AttendancePolicy::class);
+        Gate::policy(Assessment::class, AssessmentPolicy::class);
+        Gate::policy(Certificate::class, CertificatePolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Role::class, RolePolicy::class);
+        Gate::policy(Permission::class, PermissionPolicy::class);
+        Gate::policy(StudyProgram::class, StudyProgramPolicy::class);
+
+
+        // Gate::before(function ($user, $ability) {
+        //     if ($user->roles()->where('name', 'super_admin')->exists()) {
+        //         return true;
+        //     }
+        // });
+
+        // Admin | Disciple
+        Gate::define('manage_users', fn ($user) => $user->hasPermission('manage_users'));
+        Gate::define('manage_courses', fn ($user) => $user->hasPermission('manage_courses'));
+        Gate::define('manage_topics', fn ($user) => $user->hasPermission('manage_topics'));
+        Gate::define('manage_assessments', fn ($user) => $user->hasPermission('manage_assessments'));
+        Gate::define('manage_certificates', fn ($user) => $user->hasPermission('manage_certificates'));
+        Gate::define('view_reports', fn ($user) => $user->hasPermission('view_reports'));
+
+        // Student
+        Gate::define('take_assessment', fn ($user) => $user->hasPermission('take_assessment'));
+        Gate::define('access_topic', fn ($user) => $user->hasPermission('access_topic'));
+        Gate::define('enroll_course', fn ($user) => $user->hasPermission('enroll_course'));
+    }
+}

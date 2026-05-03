@@ -1,0 +1,38 @@
+<?php
+
+namespace Database\Seeders\Learning;
+
+use App\Models\Course;
+use App\Models\StudyProgram;
+use Illuminate\Database\Seeder;
+
+class CourseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $discipleship = StudyProgram::where('slug', 'discipleship')->firstOrFail();
+        $sermon = StudyProgram::where('slug', 'sermon')->firstOrFail();
+
+        Course::factory()->create([
+            'study_program_id' => $discipleship->id,
+            'title' => 'Foundational Discipleship',
+            'slug' => 'foundational-discipleship',
+            'poster' => 'courses/foundational-discipleship.jpg',
+            'credit' => 3,
+            'description' => 'Core discipleship topics for new members and mentors',
+            'quota' => 50,
+            'status' => 'active',
+        ]);
+
+        Course::factory()->create([
+            'study_program_id' => $sermon->id,
+            'title' => 'Sermon Basics',
+            'slug' => 'sermon-basics',
+            'poster' => 'courses/sermon-basics.jpg',
+            'credit' => 4,
+            'description' => 'Basic structure and delivery of sermons',
+            'quota' => 40,
+            'status' => 'active',
+        ]);
+    }
+}
