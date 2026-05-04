@@ -138,7 +138,7 @@ class MaterialIndex extends Component
 
         return view('livewire.admin.materials.index', [
             'topics' => $topics,
-            'users' => User::orderBy('first_name')->get(),
+            'users' => User::orderBy('name')->get(),
         ])->layout('layouts.admin');
     }
 

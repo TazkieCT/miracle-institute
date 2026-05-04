@@ -199,7 +199,7 @@
             @foreach($featured as $course)
                 <div class="rounded-2xl bg-white border overflow-hidden">
                     <div class="aspect-[16/9] bg-slate-100">
-                        <img src="{{ asset('storage/' . $course->poster) }}" class="w-full h-full object-cover" alt="{{ $course->title }}">
+                        <img src="{{ asset('images/dummyPNG.png') }}" class="w-full h-full object-cover" alt="{{ $course->title }}">
                     </div>
                     <div class="p-5 space-y-3">
                         <div>

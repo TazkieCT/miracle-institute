@@ -44,7 +44,7 @@
 
             <div class="rounded-2xl bg-white border overflow-hidden flex flex-col">
                 <div class="aspect-[16/9] bg-slate-100">
-                    <img src="{{ asset('storage/' . $course->poster) }}"
+                    <img src="{{ asset('images/dummyPNG.png') }}"
                          class="w-full h-full object-cover">
                 </div>
 

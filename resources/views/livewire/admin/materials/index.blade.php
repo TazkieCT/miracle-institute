@@ -61,7 +61,7 @@
                                 @foreach($topic->materials as $row)
                                     <tr class="border-t hover:bg-slate-50">
                                         <td class="p-4 font-medium">{{ $row->name }}</td>
-                                        <td class="p-4">{{ $row->type }}</td>
+                                        <td class="p-4">{{ strtoupper($row->type) }}</td>
                                         <td class="p-4 text-xs text-slate-500 break-all">
                                             {{ $row->path ?: $row->external_url }}
                                         </td>
@@ -80,6 +80,14 @@
                                         </td>
                                     </tr>
                                 @endforeach
+
+                                @if($topic->materials->isEmpty())
+                                    <tr>
+                                        <td colspan="6" class="p-6 text-center text-slate-500">
+                                            No materials.
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -96,18 +104,23 @@
 
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
 
+            <!-- HEADER -->
             <div class="flex justify-between items-center">
                 <h2 class="text-lg font-semibold">
                     {{ $editingId ? 'Edit Material' : 'New Material' }}
                 </h2>
 
-                <button @click="open = false" class="text-slate-500">
+                <button 
+                    @click="open = false; $wire.set('showModal', false)" 
+                    class="text-slate-500">
                     ✕
                 </button>
             </div>
 
+            <!-- FORM -->
             <div class="space-y-3">
 
+                <!-- TOPIC -->
                 <select wire:model="topic_id" class="w-full border rounded-xl px-4 py-2">
                     <option value="">Select topic</option>
                     @foreach($topics as $t)
@@ -115,6 +128,7 @@
                     @endforeach
                 </select>
 
+                <!-- UPLOADER -->
                 <select wire:model="uploader_id" class="w-full border rounded-xl px-4 py-2">
                     <option value="">Select uploader</option>
                     @foreach($users as $user)
@@ -122,33 +136,39 @@
                     @endforeach
                 </select>
 
+                <!-- NAME -->
                 <input wire:model="name"
                        class="w-full border rounded-xl px-4 py-2"
                        placeholder="Material name">
 
+                <!-- TYPE -->
                 <select wire:model="type" class="w-full border rounded-xl px-4 py-2">
                     <option value="">Select type</option>
 
-                    @foreach($this->availableTypes as $type)
-                        <option value="{{ $type }}">{{ strtoupper($type) }}</option>
+                    @foreach($this->availableTypes as $opt)
+                        <option value="{{ $opt }}">{{ strtoupper($opt) }}</option>
                     @endforeach
 
-                    @if($editingId)
-                        <option value="{{ $type }}">{{ strtoupper($type) }} (current)</option>
+                    @if($editingId && !in_array($this->type, $this->availableTypes))
+                        <option value="{{ $this->type }}">
+                            {{ strtoupper($this->type) }} (current)
+                        </option>
                     @endif
                 </select>
 
-                @if($type === 'video')
+                <!-- DYNAMIC INPUT -->
+                @if($this->type === 'video')
                     <input wire:model="external_url"
                         class="w-full border rounded-xl px-4 py-2"
                         placeholder="YouTube / Vimeo URL">
 
-                @elseif(in_array($type, ['pdf','ppt']))
+                @elseif(in_array($this->type, ['pdf','ppt']))
                     <input wire:model="path"
                         class="w-full border rounded-xl px-4 py-2"
                         placeholder="File path (storage)">
                 @endif
 
+                <!-- SETTINGS -->
                 <div class="grid grid-cols-2 gap-3">
                     <select wire:model="visibility" class="border rounded-xl px-4 py-2">
                         <option value="Public">Public</option>
@@ -161,19 +181,27 @@
                     </select>
                 </div>
 
+                <!-- SORT -->
                 <input wire:model="sort_order"
                        type="number"
                        class="w-full border rounded-xl px-4 py-2"
                        placeholder="Sort order">
 
-                @error('type')
-                    <p class="text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <!-- ERRORS -->
+                @error('topic_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                @error('uploader_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                @error('name') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                @error('type') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                @error('external_url') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                @error('path') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+
             </div>
 
+            <!-- ACTION -->
             <div class="flex justify-end gap-2 pt-3">
-                <button @click="open = false"
-                        class="px-4 py-2 border rounded-xl">
+                <button 
+                    @click="open = false; $wire.set('showModal', false)"
+                    class="px-4 py-2 border rounded-xl">
                     Cancel
                 </button>
 

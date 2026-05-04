@@ -35,12 +35,12 @@ class CmsSeeder extends Seeder
 
         ArticleImage::factory()->create([
             'article_id' => $article1->id,
-            'image' => 'articles/welcome-1.jpg',
+            'image' => 'images/dummyPNG.png',
         ]);
 
         ArticleImage::factory()->create([
             'article_id' => $article2->id,
-            'image' => 'articles/dashboard-1.jpg',
+            'image' => 'images/dummyPNG.png',
         ]);
 
         Company::updateOrCreate(
@@ -59,7 +59,6 @@ class CmsSeeder extends Seeder
             ]
         );
 
-        Slider::factory()->count(3)->create();
 
         TutorialVideo::factory()->create([
             'video_link' => 'https://www.youtube.com/watch?v=video-setup-1',
@@ -69,22 +68,6 @@ class CmsSeeder extends Seeder
         TutorialVideo::factory()->create([
             'video_link' => 'https://www.youtube.com/watch?v=video-setup-2',
             'video_name' => 'How to Join a Session',
-        ]);
-
-        UserDocument::factory()->create([
-            'user_id' => $admin->id,
-            'name' => 'Admin Profile Photo',
-            'image' => 'documents/admin-profile.jpg',
-            'type' => 'avatar',
-            'status' => 'active',
-        ]);
-
-        UserDocument::factory()->create([
-            'user_id' => $admin->id,
-            'name' => 'Admin ID Card',
-            'image' => 'documents/admin-id-card.jpg',
-            'type' => 'id_card',
-            'status' => 'active',
         ]);
     }
 }

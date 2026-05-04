@@ -15,8 +15,7 @@ class UserFactory extends Factory
     {
         return [
             'id' => (string) Str::uuid(),
-            'first_name' => $this->faker->firstName(),
-            'last_name' => $this->faker->lastName(),
+            'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => Hash::make('Password123!'),
@@ -31,24 +30,21 @@ class UserFactory extends Factory
     public function student(): static
     {
         return $this->state(fn () => [
-            'first_name' => $this->faker->firstName(),
-            'last_name' => 'Student',
+            'name' => $this->faker->firstName() . 'Student',
         ]);
     }
 
     public function disciples(): static
     {
         return $this->state(fn () => [
-            'first_name' => $this->faker->firstName(),
-            'last_name' => 'Disciple',
+            'name' => $this->faker->firstName() . 'Disciple',
         ]);
     }
 
     public function admin(): static
     {
         return $this->state(fn () => [
-            'first_name' => 'System',
-            'last_name' => 'Admin',
+            'name' => 'System Admin',
         ]);
     }
 }

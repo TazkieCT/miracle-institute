@@ -16,8 +16,8 @@ class UserIndex extends Component
             'rows' => User::with('roles')
                 ->when($this->search, function ($q) {
                     $q->where(function ($inner) {
-                        $inner->where('first_name', 'like', "%{$this->search}%")
-                            ->orWhere('last_name', 'like', "%{$this->search}%")
+                        $inner->where('name', 'like', "%{$this->search}%")
+                            ->orWhere('name', 'like', "%{$this->search}%")
                             ->orWhere('email', 'like', "%{$this->search}%");
                     });
                 })

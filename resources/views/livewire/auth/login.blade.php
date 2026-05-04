@@ -53,11 +53,6 @@
     </form>
 
     <div class="space-y-3">
-        <a href="{{ route('auth.google.redirect') }}"
-           class="block text-center w-full border rounded-lg py-2">
-            Continue with Google
-        </a>
-
         <div class="flex items-center justify-between text-sm">
             <a href="{{ route('password.request') }}" class="underline">Forgot password?</a>
             <a href="{{ route('register') }}" class="underline">Create account</a>

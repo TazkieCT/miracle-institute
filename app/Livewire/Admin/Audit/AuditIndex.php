@@ -32,7 +32,7 @@ class AuditIndex extends Component
 
         return view('livewire.admin.audit.index', [
             'rows' => $rows,
-            'users' => User::orderBy('first_name')->get(),
+            'users' => User::orderBy('name')->get(),
         ])->layout('layouts.admin');
     }
 }

@@ -5,20 +5,12 @@
     </div>
 
     <form wire:submit.prevent="submit" class="space-y-4">
-        <div class="grid grid-cols-2 gap-3">
-            <div>
-                <input type="text" required minlength="2" wire:model.debounce.300ms="first_name"
-                       placeholder="First name" class="w-full border rounded-lg px-4 py-2">
-                @error('first_name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
-            </div>
-
-            <div>
-                <input type="text" required minlength="2" wire:model.debounce.300ms="last_name"
-                       placeholder="Last name" class="w-full border rounded-lg px-4 py-2">
-                @error('last_name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
-            </div>
+        <div>
+            <input type="text" required minlength="2" wire:model.debounce.300ms="name"
+                   placeholder="Name" class="w-full border rounded-lg px-4 py-2">
+            @error('name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
         </div>
-
+        
         <div>
             <input type="email" required autocomplete="email" wire:model.debounce.300ms="email"
                    placeholder="Email" class="w-full border rounded-lg px-4 py-2">

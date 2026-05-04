@@ -21,24 +21,21 @@ class UserSeeder extends Seeder
          */
 
         $admin = User::factory()->create([
-            'first_name' => 'System',
-            'last_name' => 'Admin',
+            'name' => 'Admin',
             'email' => 'admin@example.test',
             'password' => Hash::make('Password123!'),
             'email_verified_at' => now(),
         ]);
 
         $disciples = User::factory()->create([
-            'first_name' => 'Grace',
-            'last_name' => 'Disciple',
+            'name' => 'Grace',
             'email' => 'disciple@example.test',
             'password' => Hash::make('Password123!'),
             'email_verified_at' => now(),
         ]);
 
         $student = User::factory()->create([
-            'first_name' => 'Alex',
-            'last_name' => 'Student',
+            'name' => 'Alex',
             'email' => 'student@example.test',
             'password' => Hash::make('Password123!'),
             'email_verified_at' => now(),

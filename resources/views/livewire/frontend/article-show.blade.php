@@ -15,7 +15,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @foreach($article->images as $image)
                     <div class="rounded-2xl bg-white border overflow-hidden">
-                        <img src="{{ asset('storage/' . $image->image) }}"
+                        <img src="{{ asset('images/dummyPNG.png') }}"
                              class="w-full h-64 object-cover"
                              alt="">
                     </div>

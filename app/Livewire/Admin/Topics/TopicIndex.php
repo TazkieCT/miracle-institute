@@ -103,7 +103,7 @@ class TopicIndex extends Component
             'teachers' => User::whereHas('roles', function ($q) {
                 $q->where('name', 'disciples');
             })
-            ->orderBy('first_name')
+            ->orderBy('name')
             ->get(),
         ])->layout('layouts.admin');
     }

@@ -128,8 +128,8 @@ class DatabaseSeeder extends Seeder
     {
         $users = [
             'admin' => [
-                'first_name' => 'System',
-                'last_name' => 'Admin',
+                'name' => 'System',
+                'name' => 'Admin',
                 'email' => 'admin@example.test',
                 'password' => Hash::make('password'),
                 'phone' => '081111111111',
@@ -138,8 +138,8 @@ class DatabaseSeeder extends Seeder
                 'image' => 'users/admin.jpg',
             ],
             'mentor' => [
-                'first_name' => 'Grace',
-                'last_name' => 'Mentor',
+                'name' => 'Grace',
+                'name' => 'Mentor',
                 'email' => 'mentor@example.test',
                 'password' => Hash::make('password'),
                 'phone' => '081111111112',
@@ -148,8 +148,8 @@ class DatabaseSeeder extends Seeder
                 'image' => 'users/mentor.jpg',
             ],
             'student1' => [
-                'first_name' => 'Alex',
-                'last_name' => 'Johnson',
+                'name' => 'Alex',
+                'name' => 'Johnson',
                 'email' => 'student1@example.test',
                 'password' => Hash::make('password'),
                 'phone' => '081111111113',
@@ -158,8 +158,8 @@ class DatabaseSeeder extends Seeder
                 'image' => 'users/student1.jpg',
             ],
             'student2' => [
-                'first_name' => 'Bella',
-                'last_name' => 'Smith',
+                'name' => 'Bella',
+                'name' => 'Smith',
                 'email' => 'student2@example.test',
                 'password' => Hash::make('password'),
                 'phone' => '081111111114',
@@ -168,8 +168,8 @@ class DatabaseSeeder extends Seeder
                 'image' => 'users/student2.jpg',
             ],
             'student3' => [
-                'first_name' => 'Chris',
-                'last_name' => 'Lee',
+                'name' => 'Chris',
+                'name' => 'Lee',
                 'email' => 'student3@example.test',
                 'password' => Hash::make('password'),
                 'phone' => '081111111115',
@@ -187,8 +187,8 @@ class DatabaseSeeder extends Seeder
 
             $rows[] = [
                 'id' => $ids[$key],
-                'first_name' => $user['first_name'],
-                'last_name' => $user['last_name'],
+                'name' => $user['name'],
+                'name' => $user['name'],
                 'email' => $user['email'],
                 'email_verified_at' => $now->copy()->subDays(30),
                 'password' => $user['password'],

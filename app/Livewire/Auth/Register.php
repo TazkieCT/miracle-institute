@@ -10,23 +10,20 @@ use Livewire\Component;
 
 class Register extends Component
 {
-    public $first_name = '';
-    public $last_name = '';
+    public $name = '';
     public $email = '';
     public $password = '';
     public $password_confirmation = '';
 
     protected $rules = [
-        'first_name' => 'required|string|min:2|max:100',
-        'last_name' => 'required|string|min:2|max:100',
+        'name' => 'required|string|min:2|max:100',
         'email' => 'required|email|unique:users,email',
         'password' => 'required|string|min:8|confirmed',
         'password_confirmation' => 'required|string|min:8',
     ];
 
     protected $messages = [
-        'first_name.required' => 'Nama depan wajib diisi.',
-        'last_name.required' => 'Nama belakang wajib diisi.',
+        'name.required' => 'Nama wajib diisi.',
         'email.unique' => 'Email sudah terdaftar.',
         'password.confirmed' => 'Konfirmasi password tidak cocok.',
     ];
@@ -41,8 +38,7 @@ class Register extends Component
         $this->validate();
 
         $user = User::create([
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
+            'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
             'email_verified_at' => now(),

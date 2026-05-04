@@ -96,7 +96,7 @@
 
             <!-- IMAGE -->
             <div class="bg-slate-100">
-                <img src="{{ asset('storage/' . $course->poster) }}"
+                <img src="{{ asset('images/dummyPNG.png') }}"
                      class="w-full h-full object-cover">
             </div>
         </div>
