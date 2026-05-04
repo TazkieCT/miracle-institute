@@ -92,13 +92,82 @@
                 @auth
                     @livewire('shared.role-switcher')
 
-                    <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
-                        @csrf
-                        <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm">
-                            Logout
-                        </button>
-                    </form>
+                    <details id="profileDropdown" class="relative" data-dropdown>
+                        <summary class="hidden sm:flex items-center gap-2 cursor-pointer px-2 py-1 rounded-xl border bg-white text-sm" aria-haspopup="true" aria-expanded="false">
+                            <svg class="h-6 w-6 text-slate-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11a4 4 0 10-8 0 4 4 0 008 0zm-8 4v1a3 3 0 003 3h4a3 3 0 003-3v-1" />
+                            </svg>
+                            <svg class="h-3 w-3 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </summary>
+
+                        <div class="absolute right-0 mt-2 w-44 rounded-2xl border bg-white shadow-lg p-2">
+                            <a href="{{ url('/profile') }}" class="flex items-center px-4 py-2 rounded-xl text-sm hover:bg-slate-100">
+                                <svg class="h-4 w-4 text-slate-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9A3.75 3.75 0 1012 5.25 3.75 3.75 0 0015.75 9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5a8.25 8.25 0 0115 0" />
+                                </svg>
+                                Profile
+                            </a>
+
+                            <a href="{{ route('learning.dashboard') }}" class="flex items-center px-4 py-2 rounded-xl text-sm hover:bg-slate-100">
+                                <svg class="h-4 w-4 text-slate-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14.25v4.5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.75l8.25 4.5 8.25-4.5-8.25-4.5-8.25 4.5z" />
+                                </svg>
+                                My Learning
+                            </a>
+
+                            <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                                @csrf
+                                <button type="submit" class="flex items-center w-full text-left px-4 py-2 rounded-xl text-sm hover:bg-slate-100">
+                                    <svg class="h-4 w-4 text-slate-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21H13.5a2.25 2.25 0 002.25-2.25V15" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12H3" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 8.25l-3 3 3 3" />
+                                    </svg>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </details>
                 @endauth
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var dropdown = document.getElementById('profileDropdown');
+                            if (!dropdown) return;
+
+                            function closeIfOutside(e) {
+                                if (!dropdown.contains(e.target)) {
+                                    dropdown.removeAttribute('open');
+                                    removeListeners();
+                                }
+                            }
+
+                            function onKey(e) {
+                                if (e.key === 'Escape') {
+                                    dropdown.removeAttribute('open');
+                                    removeListeners();
+                                }
+                            }
+
+                            function removeListeners() {
+                                document.removeEventListener('click', closeIfOutside);
+                                document.removeEventListener('keydown', onKey);
+                            }
+
+                            dropdown.addEventListener('toggle', function () {
+                                if (dropdown.hasAttribute('open')) {
+                                    setTimeout(function () { document.addEventListener('click', closeIfOutside); }, 0);
+                                    document.addEventListener('keydown', onKey);
+                                } else {
+                                    removeListeners();
+                                }
+                            });
+                        });
+                    </script>
 
                 @guest
                     <a href="{{ route('login') }}"
