@@ -9,11 +9,11 @@ class ArticleShow extends Component
 {
     public Article $article;
 
-    public function mount(string $article)
+    public function mount(Article $article)
     {
-        $this->article = Article::with('images')->findOrFail($article);
+        abort_unless($article->status === 'active', 404);
 
-        abort_unless($this->article->status === 'active', 404);
+        $this->article = $article->load('images');
     }
 
     public function render()

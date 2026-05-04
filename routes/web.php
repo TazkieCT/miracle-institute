@@ -49,7 +49,8 @@ Route::get('/courses', CourseCatalog::class)->name('courses.index');
 Route::get('/courses/{slug}', CourseShow::class)->name('courses.show');
 
 Route::get('/articles', ArticleIndex::class)->name('articles.index');
-Route::get('/articles/{article}', ArticleShow::class)->name('articles.show');
+Route::get('/articles/{article}', ArticleShow::class)
+    ->name('articles.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
