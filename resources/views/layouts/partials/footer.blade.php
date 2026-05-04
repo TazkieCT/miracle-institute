@@ -6,10 +6,9 @@
             @php $company = \App\Models\Company::first(); @endphp
 
             <div class="flex items-center gap-3">
-                @if($company?->logo)
-                    <img src="{{ asset('storage/' . $company->logo) }}"
-                         class="h-10 w-10 object-contain">
-                @endif
+                <img src="{{ asset('images/logo.png') }}"
+                     alt="{{ $company?->name ?? config('app.name') }} logo"
+                     class="h-32 w-32 object-contain">
                 <span class="text-white font-semibold text-lg">
                     {{ $company?->name ?? config('app.name') }}
                 </span>

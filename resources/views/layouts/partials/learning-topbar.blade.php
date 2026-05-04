@@ -31,8 +31,9 @@
 
             <!-- LEFT -->
             <div class="flex items-center gap-3 min-w-0">
-                <a href="{{ route('dashboard') }}" class="font-semibold text-xl shrink-0">
-                    {{ config('app.name', 'LMS') }}
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 shrink-0">
+                    <img src="{{ asset('images/logo.png') }}" alt="{{ config('app.name', 'LMS') }} logo" class="h-32 w-32 object-contain">
+                    <span class="sr-only">{{ config('app.name', 'LMS') }}</span>
                 </a>
 
                 <!-- DESKTOP NAV -->

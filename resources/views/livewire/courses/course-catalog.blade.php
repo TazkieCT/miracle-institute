@@ -38,20 +38,25 @@
     </div>
 
     <!-- LIST -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
         @forelse($courses as $course)
             @php $enrolled = in_array($course->id, $enrolledCourseIds, true); @endphp
 
-            <div class="rounded-2xl bg-white border overflow-hidden flex flex-col">
-                <div class="aspect-[16/9] bg-slate-100">
-                    <img src="{{ asset('images/dummyPNG.png') }}"
-                         class="w-full h-full object-cover">
+            <div class="rounded-2xl overflow-hidden flex flex-col group border border-slate-100 bg-white transition p-3">
+                <div class="rounded-md overflow-hidden">
+                    @if(!empty($course->image))
+                        <img src="{{ asset('storage/' . $course->image) }}" alt="{{ $course->title }}" class="w-full h-36 object-cover">
+                    @else
+                        <div class="w-full h-36 flex items-center justify-center bg-slate-200">
+                            <svg width="120" height="68" viewBox="0 0 280 158" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="280" height="158" fill="#e6e9ee"/></svg>
+                        </div>
+                    @endif
                 </div>
 
-                <div class="p-5 flex flex-col gap-3 flex-1">
+                <div class="flex flex-col gap-3 flex-1 mt-3">
                     <div>
-                        <h3 class="font-semibold text-lg">{{ $course->title }}</h3>
-                        <p class="text-sm text-slate-500">{{ $course->studyProgram?->title }}</p>
+                        <p class="text-xs uppercase tracking-wide text-slate-400">{{ $course->studyProgram?->title }}</p>
+                        <h3 class="font-semibold text-sm mt-1 leading-tight">{{ \Illuminate\Support\Str::limit($course->title, 70) }}</h3>
                     </div>
 
                     <div class="text-xs text-slate-500">
@@ -60,7 +65,7 @@
 
                     <div class="mt-auto flex justify-between items-center">
                         <a href="{{ route('courses.show', $course->slug) }}"
-                           class="text-sm underline">
+                           class="inline-flex px-3 py-1 bg-slate-900 text-white rounded-xl text-sm">
                             Open
                         </a>
 
