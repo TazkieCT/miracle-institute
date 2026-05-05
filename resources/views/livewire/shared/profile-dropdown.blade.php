@@ -4,7 +4,7 @@
     @endphp
 
     <button @click="open = !open" 
-            class="hidden sm:flex items-center gap-2 px-2 py-1 rounded-xl border bg-white text-sm hover:bg-slate-50 transition shadow-sm"
+            class="flex items-center gap-2 rounded-xl border bg-white px-2 py-1 text-sm shadow-sm transition hover:bg-slate-50 sm:px-2 sm:py-1"
             aria-haspopup="true">
         <svg class="h-6 w-6 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -23,7 +23,7 @@
          x-transition:leave="transition ease-in duration-75"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         class="absolute right-0 mt-2 w-48 rounded-2xl border bg-white shadow-xl p-2 z-50"
+            class="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] max-w-72 rounded-2xl border bg-white p-2 shadow-xl z-50 sm:w-56 sm:max-w-none"
          style="display: none;">
         
         <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Account</div>
