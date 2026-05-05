@@ -22,8 +22,11 @@ class MentorDashboard extends Component
         $mentoredTopicsQuery = Topic::with('course')
             ->where('teacher_id', $userId);
 
-        $mentoredTopics = $mentoredTopicsQuery->latest()->take(6)->get();
+        $mentoredTopics = $mentoredTopicsQuery->latest()->get();
         $topicIds = $mentoredTopicsQuery->pluck('id');
+        $mentoredTopicsByCourse = $mentoredTopics
+            ->groupBy(fn (Topic $topic) => $topic->course_id ?? $topic->id)
+            ->values();
 
         $studentEnrollmentIds = TopicProgress::whereIn('topic_id', $topicIds)
             ->distinct()
@@ -60,6 +63,7 @@ class MentorDashboard extends Component
 
             // Lists
             'latestTopics' => $mentoredTopics,
+            'mentoredTopicsByCourse' => $mentoredTopicsByCourse,
             'latestMaterials' => Material::with('topic')
                 ->where('uploader_id', $userId)
                 ->latest()

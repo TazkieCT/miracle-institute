@@ -1,4 +1,8 @@
 <div x-data="{ open: false }" class="relative">
+    @php
+        $activeRole = session('active_role');
+    @endphp
+
     <button @click="open = !open" 
             class="hidden sm:flex items-center gap-2 px-2 py-1 rounded-xl border bg-white text-sm hover:bg-slate-50 transition shadow-sm"
             aria-haspopup="true">
@@ -31,11 +35,27 @@
             Profile
         </a>
 
-        <a href="{{ route('learning.dashboard') }}" class="flex items-center px-4 py-2 rounded-xl text-sm text-slate-700 hover:bg-slate-100 transition">
+        @if($activeRole === 'student')
+            <a href="{{ route('learning.dashboard') }}" class="flex items-center px-4 py-2 rounded-xl text-sm text-slate-700 hover:bg-slate-100 transition">
+                <svg class="h-4 w-4 text-slate-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                My Learning
+            </a>
+        @elseif($activeRole === 'disciples')
+            <a href="{{ route('mentor.dashboard') }}" class="flex items-center px-4 py-2 rounded-xl text-sm text-slate-700 hover:bg-slate-100 transition">
+                <svg class="h-4 w-4 text-slate-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Mentor Dashboard
+            </a>
+        @endif
+
+        <a href="{{ route('certificates.index') }}" class="flex items-center px-4 py-2 rounded-xl text-sm text-slate-700 hover:bg-slate-100 transition">
             <svg class="h-4 w-4 text-slate-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75h-9A2.25 2.25 0 005.25 6v12A2.25 2.25 0 007.5 20.25h9A2.25 2.25 0 0018.75 18V6A2.25 2.25 0 0016.5 3.75zM9 9h6m-6 3h6m-6 3h4.5" />
             </svg>
-            My Learning
+            Certificates
         </a>
 
         <hr class="my-2 border-slate-100">

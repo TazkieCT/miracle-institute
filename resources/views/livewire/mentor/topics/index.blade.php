@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="space-y-6 lg:px-36">
     <x-ui.page-header
         title="Mentored Topics"
         subtitle="Kelola topic yang kamu mentor, lalu buka workspace untuk menambah materi."
@@ -12,7 +12,7 @@
                placeholder="Search mentored topic...">
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
         @forelse($topics as $topic)
             <div class="rounded-2xl bg-white border overflow-hidden flex flex-col">
                 <div class="aspect-[16/9] bg-slate-100">
@@ -51,11 +51,6 @@
                         <a href="{{ route('mentor.topics.show', $topic->slug) }}"
                            class="inline-flex px-4 py-2 rounded-xl bg-slate-900 text-white text-sm">
                             Open Workspace
-                        </a>
-
-                        <a href="{{ route('topics.show', $topic->slug) }}"
-                           class="inline-flex px-4 py-2 rounded-xl border text-sm">
-                            Student View
                         </a>
                     </div>
                 </div>
