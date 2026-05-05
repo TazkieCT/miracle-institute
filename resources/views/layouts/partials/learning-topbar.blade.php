@@ -50,44 +50,6 @@
                         Login
                     </a>
                 @endguest
-
-                <!-- MOBILE MENU -->
-                <details class="md:hidden relative">
-                    <summary class="cursor-pointer list-none px-3 py-2 rounded-xl border bg-white text-sm">
-                        Menu
-                    </summary>
-
-                    <div class="absolute right-0 mt-3 w-72 rounded-2xl border bg-white shadow-lg p-2">
-
-                        <!-- GENERAL -->
-                        <div class="px-3 py-2 text-xs uppercase tracking-wide text-slate-400">General</div>
-                        @foreach($generalRoutes as $item)
-                            <a href="{{ route($item['route']) }}"
-                               class="block px-4 py-2 rounded-xl text-sm hover:bg-slate-100">
-                                {{ $item['label'] }}
-                            </a>
-                        @endforeach
-
-                        <!-- AUTH ACTION -->
-                        @auth
-                            <form method="POST" action="{{ route('logout') }}" class="mt-2">
-                                @csrf
-                                <button class="w-full text-left px-4 py-2 rounded-xl text-sm hover:bg-slate-100">
-                                    Logout
-                                </button>
-                            </form>
-                        @endauth
-
-                        @guest
-                            <a href="{{ route('login') }}"
-                               class="block px-4 py-2 rounded-xl text-sm hover:bg-slate-100 mt-2">
-                                Login
-                            </a>
-                        @endguest
-
-                    </div>
-                </details>
-
             </div>
         </div>
     </div>
