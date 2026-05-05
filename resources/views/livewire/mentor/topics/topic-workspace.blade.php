@@ -1,5 +1,5 @@
-<div class="space-y-6">
-    <section class="rounded-3xl bg-white border p-6 sm:p-8 shadow-sm">
+<div @class(['space-y-6', 'lg:px-36'])>
+    <section class="rounded-3xl bg-white border px-6 pt-6 sm:pt-8 sm:px-8 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="space-y-2">
                 <div class="text-xs uppercase tracking-wide text-slate-400">
@@ -14,10 +14,6 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('topics.show', $topic->slug) }}"
-                   class="px-4 py-2 rounded-xl border text-sm">
-                    Student View
-                </a>
                 <a href="{{ route('mentor.topics.index') }}"
                    class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm">
                     Back to Topics
@@ -44,23 +40,25 @@
             </div>
         </div>
 
-        <div class="mt-6 flex flex-wrap gap-2">
-            <button wire:click="setTab('overview')"
-                    class="px-4 py-2 rounded-xl border {{ $tab === 'overview' ? 'bg-slate-900 text-white' : 'bg-white' }}">
+        <div class="mt-6 border-b border-slate-200">
+            <div class="-mb-px flex gap-1 overflow-x-auto">
+            <button type="button" wire:click="setTab('overview')"
+                class="shrink-0 whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 transition {{ $tab === 'overview' ? 'border-slate-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                 Overview
             </button>
-            <button wire:click="setTab('materials')"
-                    class="px-4 py-2 rounded-xl border {{ $tab === 'materials' ? 'bg-slate-900 text-white' : 'bg-white' }}">
+            <button type="button" wire:click="setTab('materials')"
+                class="shrink-0 whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 transition {{ $tab === 'materials' ? 'border-slate-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                 Materials
             </button>
-            <button wire:click="setTab('students')"
-                    class="px-4 py-2 rounded-xl border {{ $tab === 'students' ? 'bg-slate-900 text-white' : 'bg-white' }}">
+            <button type="button" wire:click="setTab('students')"
+                class="shrink-0 whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 transition {{ $tab === 'students' ? 'border-slate-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                 Students
             </button>
-            <button wire:click="setTab('assessment')"
-                    class="px-4 py-2 rounded-xl border {{ $tab === 'assessment' ? 'bg-slate-900 text-white' : 'bg-white' }}">
+            <button type="button" wire:click="setTab('assessment')"
+                class="shrink-0 whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 transition {{ $tab === 'assessment' ? 'border-slate-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                 Assessment
             </button>
+            </div>
         </div>
     </section>
 

@@ -1,21 +1,8 @@
 @php
-    $role = auth()->check() ? session('active_role') : null;
-
     $generalRoutes = [
         ['label' => 'Dashboard', 'route' => 'explore.dashboard'],
         ['label' => 'Courses', 'route' => 'courses.index'],
-        ['label' => 'Certificates', 'route' => 'certificates.index'],
         ['label' => 'Articles', 'route' => 'articles.index'],
-    ];
-
-    $learningRoutes = [
-        ['label' => 'My Learning', 'route' => 'learning.dashboard'],
-        ['label' => 'Assessment', 'route' => 'assessments.index'],
-    ];
-
-    $mentorRoutes = [
-        ['label' => 'Mentor Dashboard', 'route' => 'mentor.dashboard'],
-        ['label' => 'Mentored Topics', 'route' => 'mentor.topics.index'],
     ];
 
     $navClass = function ($routeName) {
@@ -44,44 +31,6 @@
                             {{ $item['label'] }}
                         </a>
                     @endforeach
-
-                    {{-- LEARNING (student only) --}}
-                    @auth
-                        @if($role === 'student')
-                            <details class="relative">
-                                <summary class="cursor-pointer list-none {{ request()->routeIs('learning.dashboard','assessments.index','assessments.take') ? 'text-slate-900 font-semibold' : 'text-slate-600 hover:text-slate-900' }}">
-                                    Learning
-                                </summary>
-
-                                <div class="absolute left-0 mt-3 w-56 rounded-2xl border bg-white shadow-lg p-2">
-                                    @foreach($learningRoutes as $item)
-                                        <a href="{{ route($item['route']) }}"
-                                           class="block px-4 py-2 rounded-xl text-sm hover:bg-slate-100 {{ $navClass($item['route']) }}">
-                                            {{ $item['label'] }}
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </details>
-                        @endif
-
-                        {{-- MENTOR (disciples only) --}}
-                        @if($role === 'disciples')
-                            <details class="relative">
-                                <summary class="cursor-pointer list-none {{ request()->routeIs('mentor.dashboard','mentor.topics.index','mentor.topics.show') ? 'text-slate-900 font-semibold' : 'text-slate-600 hover:text-slate-900' }}">
-                                    Mentor
-                                </summary>
-
-                                <div class="absolute left-0 mt-3 w-64 rounded-2xl border bg-white shadow-lg p-2">
-                                    @foreach($mentorRoutes as $item)
-                                        <a href="{{ route($item['route']) }}"
-                                           class="block px-4 py-2 rounded-xl text-sm hover:bg-slate-100 {{ $navClass($item['route']) }}">
-                                            {{ $item['label'] }}
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </details>
-                        @endif
-                    @endauth
 
                 </div>
             </div>
@@ -118,30 +67,6 @@
                                 {{ $item['label'] }}
                             </a>
                         @endforeach
-
-                        @auth
-                            {{-- LEARNING --}}
-                            @if($role === 'student')
-                                <div class="mt-2 px-3 py-2 text-xs uppercase tracking-wide text-slate-400">Learning</div>
-                                @foreach($learningRoutes as $item)
-                                    <a href="{{ route($item['route']) }}"
-                                       class="block px-4 py-2 rounded-xl text-sm hover:bg-slate-100">
-                                        {{ $item['label'] }}
-                                    </a>
-                                @endforeach
-                            @endif
-
-                            {{-- MENTOR --}}
-                            @if($role === 'disciples')
-                                <div class="mt-2 px-3 py-2 text-xs uppercase tracking-wide text-slate-400">Mentor</div>
-                                @foreach($mentorRoutes as $item)
-                                    <a href="{{ route($item['route']) }}"
-                                       class="block px-4 py-2 rounded-xl text-sm hover:bg-slate-100">
-                                        {{ $item['label'] }}
-                                    </a>
-                                @endforeach
-                            @endif
-                        @endauth
 
                         <!-- AUTH ACTION -->
                         @auth
