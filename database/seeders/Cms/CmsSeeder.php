@@ -19,6 +19,7 @@ class CmsSeeder extends Seeder
 
         $article1 = Article::factory()->create([
             'title' => 'Welcome to the LMS',
+            'image' => 'images/test.png',
             'author' => 'System Admin',
             'content' => '<p>Welcome article for dummy content testing.</p>',
             'status' => 'active',
@@ -27,20 +28,11 @@ class CmsSeeder extends Seeder
 
         $article2 = Article::factory()->create([
             'title' => 'How to Use the Learning Dashboard',
+            'image' => 'images/test.png',
             'author' => 'System Admin',
             'content' => '<p>Step-by-step guide for users.</p>',
             'status' => 'inactive',
             'clicked' => 4,
-        ]);
-
-        ArticleImage::factory()->create([
-            'article_id' => $article1->id,
-            'image' => 'images/dummyPNG.png',
-        ]);
-
-        ArticleImage::factory()->create([
-            'article_id' => $article2->id,
-            'image' => 'images/dummyPNG.png',
         ]);
 
         Company::updateOrCreate(

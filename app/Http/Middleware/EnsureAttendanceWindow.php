@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -13,7 +13,7 @@ class EnsureAttendanceWindow
         $session = $request->route('session');
 
         if (is_string($session)) {
-            $session = LearningSession::findOrFail($session);
+            $session = VideoSession::findOrFail($session);
         }
 
         $now = now();

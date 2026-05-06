@@ -3,7 +3,7 @@
 namespace App\Livewire\Sessions;
 
 use App\Models\Attendance;
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use App\Services\AttendanceService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
@@ -12,7 +12,7 @@ class AttendanceButton extends Component
 {
     use AuthorizesRequests;
 
-    public LearningSession $session;
+    public VideoSession $session;
     public bool $alreadyCheckedIn = false;
     public bool $canCheckIn = false;
     public string $windowMessage = '';
@@ -23,7 +23,7 @@ class AttendanceButton extends Component
 
     public function mount(string $sessionId): void
     {
-        $this->session = LearningSession::with('topic.course')->findOrFail($sessionId);
+        $this->session = VideoSession::with('topic.course')->findOrFail($sessionId);
         $this->authorize('checkIn', $this->session);
 
         $this->refreshStatus();

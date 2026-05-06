@@ -15,7 +15,7 @@ class AssessmentFactory extends Factory
         return [
             'id' => (string) Str::uuid(),
 
-            'topic_id' => null,
+            'course_id' => null,
 
             'title' => $this->faker->sentence(3) . ' Test',
 

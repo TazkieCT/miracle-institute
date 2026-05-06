@@ -5,7 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\Livewire\Concerns\WithTableState;
 use App\Models\Certificate;
 use App\Models\CourseEnrollment;
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use App\Models\TopicProgress;
 use App\Services\ProgressService;
 use Livewire\Component;
@@ -39,7 +39,7 @@ class MyLearning extends Component
 
         $courseIds = CourseEnrollment::where('user_id', $user->id)->pluck('course_id')->all();
 
-        $upcomingSessions = LearningSession::with('topic.course')
+        $upcomingSessions = VideoSession::with('topic.course')
             ->whereHas('topic', fn ($q) => $q->whereIn('course_id', $courseIds))
             ->where('start_at', '>=', now()->subHours(12))
             ->orderBy('start_at')

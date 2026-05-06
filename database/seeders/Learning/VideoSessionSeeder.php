@@ -2,11 +2,11 @@
 
 namespace Database\Seeders\Learning;
 
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use App\Models\Topic;
 use Illuminate\Database\Seeder;
 
-class SessionSeeder extends Seeder
+class VideoSessionSeeder extends Seeder
 {
     public function run(): void
     {
@@ -24,7 +24,7 @@ class SessionSeeder extends Seeder
             $startAt = now()->addDays(($index + 1) * 2)->setTime(19, 0);
             $endAt = $startAt->copy()->addHour();
 
-            LearningSession::factory()->create([
+            VideoSession::factory()->create([
                 'topic_id' => $topic->id,
                 'title' => 'Session for ' . $topic->name,
                 'zoom_link' => 'https://zoom.us/j/1234567890?topic=' . $slug,

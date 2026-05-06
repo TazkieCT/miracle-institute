@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('assessments', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->foreignUuid('topic_id')
-                ->constrained('topics')
+            $table->foreignUuid('course_id')
+                ->constrained('courses')
                 ->cascadeOnDelete();
 
             $table->string('title');
@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index('topic_id');
+            $table->unique('course_id');
         });
     }
 

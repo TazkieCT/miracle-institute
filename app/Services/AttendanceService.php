@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Attendance;
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
@@ -11,7 +11,7 @@ class AttendanceService
 {
     public function checkIn(string $userId, string $sessionId): Attendance
     {
-        $session = LearningSession::with('topic')->findOrFail($sessionId);
+        $session = VideoSession::with('topic')->findOrFail($sessionId);
         $now = Carbon::now();
 
         $windowStart = $session->start_at->copy()->subMinutes(15);

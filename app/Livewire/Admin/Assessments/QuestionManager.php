@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Assessments;
 
 use App\Models\Assessment;
+use App\Models\AssessmentAttempt;
 use App\Models\Question;
 use App\Models\QuestionOption;
 use Illuminate\Support\Str;
@@ -17,12 +18,13 @@ class QuestionManager extends Component
     public ?string $editingId = null;
     public string $question = '';
     public int $correctIndex = 0;
+    public int $sort_order = 0;
 
     public array $options = [];
 
     public function mount(string $assessmentId): void
     {
-        $this->assessment = Assessment::findOrFail($assessmentId);
+        $this->assessment = Assessment::with('course')->findOrFail($assessmentId);
         $this->resetForm();
     }
 
@@ -43,6 +45,7 @@ class QuestionManager extends Component
             'options' => 'required|array|size:4',
             'options.*.option_text' => 'required|string|min:1',
             'correctIndex' => 'required|integer|min:0|max:3',
+            'sort_order' => 'nullable|integer|min:0',
         ];
     }
 
@@ -58,6 +61,7 @@ class QuestionManager extends Component
 
         $this->editingId = $row->id;
         $this->question = $row->question;
+        $this->sort_order = (int) $row->sort_order;
 
         $sorted = $row->options->sortBy('sort_order')->values();
 
@@ -66,8 +70,7 @@ class QuestionManager extends Component
             'option_text' => $opt->option_text,
         ])->toArray();
 
-        $this->correctIndex = $sorted->search(fn ($opt) => $opt->is_correct);
-
+        $this->correctIndex = max(0, (int) $sorted->search(fn ($opt) => $opt->is_correct));
         $this->openModal = true;
     }
 
@@ -75,13 +78,16 @@ class QuestionManager extends Component
     {
         $this->validate();
 
+        $nextSort = Question::where('assessment_id', $this->assessment->id)->max('sort_order');
+        $nextSort = $nextSort ? $nextSort + 1 : 1;
+
         $question = Question::updateOrCreate(
             ['id' => $this->editingId],
             [
                 'assessment_id' => $this->assessment->id,
                 'question_type' => 'mcq',
                 'question' => $this->question,
-                'sort_order' => Question::where('assessment_id', $this->assessment->id)->max('sort_order') + 1,
+                'sort_order' => $this->editingId ? $this->sort_order : $nextSort,
             ]
         );
 
@@ -99,27 +105,35 @@ class QuestionManager extends Component
 
         $this->resetForm();
         $this->openModal = false;
+        session()->flash('success', 'Question berhasil disimpan.');
     }
 
     public function delete(string $id): void
     {
         Question::findOrFail($id)->delete();
+        session()->flash('success', 'Question berhasil dihapus.');
     }
 
     private function resetForm(): void
     {
-        $this->reset(['editingId', 'question', 'correctIndex']);
+        $this->reset(['editingId', 'question', 'correctIndex', 'sort_order']);
         $this->options = $this->defaultOptions();
         $this->correctIndex = 0;
+        $this->sort_order = 0;
     }
 
     public function render()
     {
+        $questions = Question::with('options')
+            ->where('assessment_id', $this->assessment->id)
+            ->orderBy('sort_order')
+            ->orderBy('created_at')
+            ->get();
+
         return view('livewire.admin.assessments.question-manager', [
-            'questions' => Question::with('options')
-                ->where('assessment_id', $this->assessment->id)
-                ->orderBy('sort_order')
-                ->get(),
+            'questions' => $questions,
+            'questionsCount' => $questions->count(),
+            'attemptsCount' => AssessmentAttempt::where('assessment_id', $this->assessment->id)->count(),
         ])->layout('layouts.admin');
     }
 }

@@ -30,14 +30,14 @@ class UserFactory extends Factory
     public function student(): static
     {
         return $this->state(fn () => [
-            'name' => $this->faker->firstName() . 'Student',
+            'name' => $this->faker->firstName() . ' Student', 
         ]);
     }
 
     public function disciples(): static
     {
         return $this->state(fn () => [
-            'name' => $this->faker->firstName() . 'Disciple',
+            'name' => $this->faker->firstName() . ' Disciple',
         ]);
     }
 
@@ -47,4 +47,5 @@ class UserFactory extends Factory
             'name' => 'System Admin',
         ]);
     }
+
 }

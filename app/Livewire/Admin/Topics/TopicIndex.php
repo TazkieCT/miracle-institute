@@ -3,26 +3,44 @@
 namespace App\Livewire\Admin\Topics;
 
 use App\Livewire\Concerns\WithAdminTableState;
+use App\Models\Assessment;
+use App\Models\Certificate;
 use App\Models\Course;
+use App\Models\Material;
 use App\Models\Topic;
 use App\Models\User;
-use Livewire\Component;
+use App\Models\VideoSession;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class TopicIndex extends Component
 {
     use WithAdminTableState;
 
+    public bool $showModal = false;
+
     public ?string $editingId = null;
-    public string $course_id;
-    public string $teacher_id;
-    public string $name;
-    public string $category;
-    public string $description;
-    public string $poster;
+    public string $course_id = '';
+    public string $teacher_id = '';
+    public string $name = '';
+    public string $category = '';
+    public string $description = '';
+    public string $poster = '';
     public string $visibility = 'Public';
     public string $status = 'active';
-    public int $sort_order;
+    public int $sort_order = 0;
+
+    public string $courseFilter = '';
+    public string $teacherFilter = '';
+    public string $statusFilter = '';
+
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'courseFilter' => ['except' => ''],
+        'teacherFilter' => ['except' => ''],
+        'statusFilter' => ['except' => ''],
+        'perPage' => ['except' => 10],
+    ];
 
     protected function rules(): array
     {
@@ -42,6 +60,7 @@ class TopicIndex extends Component
     public function create(): void
     {
         $this->resetForm();
+        $this->showModal = true;
     }
 
     public function edit(string $id): void
@@ -58,15 +77,15 @@ class TopicIndex extends Component
         $this->visibility = $row->visibility;
         $this->status = $row->status;
         $this->sort_order = (int) ($row->sort_order ?? 0);
+
+        $this->showModal = true;
     }
 
     public function save(): void
     {
         $this->validate();
 
-        $course = Course::with('studyProgram')->find($this->course_id);
-        
-        $categoryName = $course->studyProgram->title ?? $this->category;
+        $course = Course::with('studyProgram')->findOrFail($this->course_id);
 
         Topic::updateOrCreate(
             ['id' => $this->editingId],
@@ -74,7 +93,7 @@ class TopicIndex extends Component
                 'course_id' => $this->course_id,
                 'teacher_id' => $this->teacher_id,
                 'name' => $this->name,
-                'category' => $categoryName,
+                'category' => $this->category ?: ($course->studyProgram?->title ?? null),
                 'slug' => Str::slug($this->name),
                 'description' => $this->description,
                 'poster' => $this->poster,
@@ -85,33 +104,71 @@ class TopicIndex extends Component
         );
 
         $this->resetForm();
+        session()->flash('success', 'Topic berhasil disimpan.');
     }
 
     public function delete(string $id): void
     {
         Topic::findOrFail($id)->delete();
+        session()->flash('success', 'Topic berhasil dihapus.');
     }
 
     public function render()
     {
-        return view('livewire.admin.topics.index', [
-            'rows' => Topic::with(['course', 'teacher'])
-                ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
-                ->latest()
-                ->paginate($this->perPage),
-            'courses' => Course::orderBy('title')->get(),
-            'teachers' => User::whereHas('roles', function ($q) {
-                $q->where('name', 'disciples');
+        $rows = Topic::with(['course', 'teacher'])
+            ->withCount([
+                'materials',
+                'videoSessions',
+                'certificates',
+            ])
+            ->with(['course.assessment'])
+            ->when($this->search, function ($q) {
+                $q->where(function ($inner) {
+                    $inner->where('name', 'like', "%{$this->search}%")
+                        ->orWhere('category', 'like', "%{$this->search}%");
+                });
             })
+            ->when($this->courseFilter, fn ($q) => $q->where('course_id', $this->courseFilter))
+            ->when($this->teacherFilter, fn ($q) => $q->where('teacher_id', $this->teacherFilter))
+            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->orderBy('course_id')
+            ->orderBy('sort_order')
             ->orderBy('name')
-            ->get(),
+            ->paginate($this->perPage);
+
+        return view('livewire.admin.topics.index', [
+            'rows' => $rows,
+            'courses' => Course::orderBy('title')->get(),
+            'teachers' => User::whereHas('roles', fn ($q) => $q->where('name', 'disciples'))
+                ->orderBy('name')
+                ->get(),
+            'stats' => [
+                'courses' => Course::count(),
+                'topics' => Topic::count(),
+                'materials' => Material::count(),
+                'sessions' => VideoSession::count(),
+                'certificates' => Certificate::count(),
+            ],
         ])->layout('layouts.admin');
     }
 
     private function resetForm(): void
     {
-        $this->reset(['editingId', 'course_id', 'teacher_id', 'name', 'category', 'description', 'poster', 'visibility', 'status', 'sort_order']);
+        $this->reset([
+            'editingId',
+            'course_id',
+            'teacher_id',
+            'name',
+            'category',
+            'description',
+            'poster',
+            'visibility',
+            'status',
+            'sort_order',
+        ]);
+
         $this->visibility = 'Public';
         $this->status = 'active';
+        $this->sort_order = 0;
     }
 }

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->foreignUuid('session_id')
-                ->constrained('sessions')
+            $table->foreignUuid('video_session_id')
+                ->constrained('video_sessions')
                 ->cascadeOnDelete();
 
             $table->foreignUuid('user_id')
@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['session_id', 'user_id']);
+            $table->unique(['video_session_id', 'user_id']);
         });
     }
 

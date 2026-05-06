@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Article extends Model
 {
@@ -15,8 +16,28 @@ class Article extends Model
 
     protected $guarded = [];
 
-    public function images()
+    protected $casts = [
+        'clicked' => 'integer',
+    ];
+
+    protected $appends = [
+        'image_url',
+    ];
+
+    public function getImageUrlAttribute(): ?string
     {
-        return $this->hasMany(ArticleImage::class);
+        return $this->image
+            ? Storage::disk('public')->url($this->image)
+            : null;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === 'active';
     }
 }

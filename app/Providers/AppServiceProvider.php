@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Models\Assessment;
 use App\Models\Course;
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use App\Models\Material;
 use App\Models\Topic;
 use App\Models\Certificate;
@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Course::class, CoursePolicy::class);
         Gate::policy(Topic::class, TopicPolicy::class);
         Gate::policy(Material::class, MaterialPolicy::class);
-        Gate::policy(LearningSession::class, AttendancePolicy::class);
+        Gate::policy(VideoSession::class, AttendancePolicy::class);
         Gate::policy(Assessment::class, AssessmentPolicy::class);
         Gate::policy(Certificate::class, CertificatePolicy::class);
         Gate::policy(User::class, UserPolicy::class);

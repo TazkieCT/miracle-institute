@@ -3,8 +3,13 @@
 namespace App\Livewire\Admin\Courses;
 
 use App\Livewire\Concerns\WithAdminTableState;
+use App\Models\Assessment;
+use App\Models\Certificate;
 use App\Models\Course;
+use App\Models\Material;
 use App\Models\StudyProgram;
+use App\Models\Topic;
+use App\Models\VideoSession;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -12,15 +17,27 @@ class CourseIndex extends Component
 {
     use WithAdminTableState;
 
+    public bool $showModal = false;
+
     public ?string $editingId = null;
-    public string $study_program_id;
-    public string $title;
-    public string $slug;
-    public string $poster;
-    public int $credit;
-    public int $quota;
-    public string $description;
+    public string $study_program_id = '';
+    public string $title = '';
+    public string $slug = '';
+    public string $poster = '';
+    public int $credit = 0;
+    public int $quota = 0;
+    public string $description = '';
     public string $status = 'active';
+
+    public string $studyProgramFilter = '';
+    public string $statusFilter = '';
+
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'studyProgramFilter' => ['except' => ''],
+        'statusFilter' => ['except' => ''],
+        'perPage' => ['except' => 10],
+    ];
 
     protected function rules(): array
     {
@@ -46,6 +63,7 @@ class CourseIndex extends Component
     public function create(): void
     {
         $this->resetForm();
+        $this->showModal = true;
     }
 
     public function edit(string $id): void
@@ -57,10 +75,12 @@ class CourseIndex extends Component
         $this->title = $row->title;
         $this->slug = $row->slug;
         $this->poster = $row->poster;
-        $this->credit = $row->credit;
-        $this->quota = $row->quota;
+        $this->credit = (int) $row->credit;
+        $this->quota = (int) $row->quota;
         $this->description = $row->description;
         $this->status = $row->status;
+
+        $this->showModal = true;
     }
 
     public function save(): void
@@ -82,27 +102,55 @@ class CourseIndex extends Component
         );
 
         $this->resetForm();
+        session()->flash('success', 'Course berhasil disimpan.');
     }
 
     public function delete(string $id): void
     {
         Course::findOrFail($id)->delete();
+        session()->flash('success', 'Course berhasil dihapus.');
     }
 
     public function render()
     {
+        $rows = Course::with('studyProgram')
+            ->withCount(['topics', 'enrollments', 'certificates'])
+            ->when($this->search, fn ($q) => $q->where('title', 'like', "%{$this->search}%"))
+            ->when($this->studyProgramFilter, fn ($q) => $q->where('study_program_id', $this->studyProgramFilter))
+            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->latest()
+            ->paginate($this->perPage);
+
         return view('livewire.admin.courses.index', [
-            'rows' => Course::with('studyProgram')
-                ->when($this->search, fn ($q) => $q->where('title', 'like', "%{$this->search}%"))
-                ->latest()
-                ->paginate($this->perPage),
+            'rows' => $rows,
             'studyPrograms' => StudyProgram::orderBy('title')->get(),
+            'stats' => [
+                'courses' => Course::count(),
+                'topics' => Topic::count(),
+                'materials' => Material::count(),
+                'sessions' => VideoSession::count(),
+                'assessments' => Assessment::count(),
+                'certificates' => Certificate::count(),
+            ],
         ])->layout('layouts.admin');
     }
 
     private function resetForm(): void
     {
-        $this->reset(['editingId', 'study_program_id', 'title', 'slug', 'poster', 'credit', 'quota', 'description', 'status']);
+        $this->reset([
+            'editingId',
+            'study_program_id',
+            'title',
+            'slug',
+            'poster',
+            'credit',
+            'quota',
+            'description',
+            'status',
+        ]);
+
+        $this->credit = 0;
+        $this->quota = 0;
         $this->status = 'active';
     }
 }

@@ -3,7 +3,7 @@
 namespace Database\Seeders\Learning;
 
 use App\Models\Attendance;
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -29,7 +29,7 @@ class AttendanceSeeder extends Seeder
         $otherUsers = User::whereIn('email', ['student@example.test'])->get();
 
         foreach ($sessionOrder as $index => $topicSlug) {
-            $session = LearningSession::whereHas('topic', fn ($q) => $q->where('slug', $topicSlug))->first();
+            $session = VideoSession::whereHas('topic', fn ($q) => $q->where('slug', $topicSlug))->first();
 
             if (!$session) {
                 continue;
@@ -37,7 +37,7 @@ class AttendanceSeeder extends Seeder
 
             // mentor attendance
             Attendance::updateOrCreate(
-                ['session_id' => $session->id, 'user_id' => $mentor->id],
+                ['video_session_id' => $session->id, 'user_id' => $mentor->id],
                 [
                     'status' => 'present',
                     'check_in_at' => $session->start_at->copy()->addMinutes(5),
@@ -49,7 +49,7 @@ class AttendanceSeeder extends Seeder
                 $status = $patterns[$user->email][$index] ?? 'absent';
 
                 Attendance::updateOrCreate(
-                    ['session_id' => $session->id, 'user_id' => $user->id],
+                    ['video_session_id' => $session->id, 'user_id' => $user->id],
                     [
                         'status' => $status,
                         'check_in_at' => in_array($status, ['present', 'late'], true)

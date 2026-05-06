@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Course;
+use App\Models\CourseEnrollment;
 
 class CourseRepository
 {
@@ -21,7 +22,7 @@ class CourseRepository
 
     public function isUserEnrolled($userId, $courseId)
     {
-        return \App\Models\CourseEnrollment::where([
+        return CourseEnrollment::where([
             'user_id' => $userId,
             'course_id' => $courseId
         ])->exists();

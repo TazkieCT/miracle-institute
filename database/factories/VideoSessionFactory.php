@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\LearningSession;
+use App\Models\VideoSession;
 use App\Models\Topic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class LearningSessionFactory extends Factory
+class VideoSessionFactory extends Factory
 {
-    protected $model = LearningSession::class;
+    protected $model = VideoSession::class;
 
     public function definition(): array
     {

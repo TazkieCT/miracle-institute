@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class LearningSession extends Model
+class VideoSession extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $table = 'sessions';
+    protected $table = 'video_sessions';
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -30,6 +30,6 @@ class LearningSession extends Model
 
     public function attendances()
     {
-        return $this->hasMany(Attendance::class, 'session_id');
+        return $this->hasMany(Attendance::class, 'video_session_id');
     }
 }

@@ -10,16 +10,11 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('sessions', function (Blueprint $table) {
+    {   
+
+        Schema::create('video_sessions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload')->nullable();
-            $table->integer('last_activity')->nullable()->index();
-
+            
             $table->foreignUuid('topic_id')
                 ->constrained('topics')
                 ->cascadeOnDelete();
@@ -33,6 +28,7 @@ return new class extends Migration
             $table->dateTime('reminder_sent_at')->nullable();
 
             $table->string('status')->default('scheduled'); // scheduled, ongoing, completed, cancelled
+
             $table->timestamps();
         });
     }
@@ -42,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('video_sessions');
     }
 };

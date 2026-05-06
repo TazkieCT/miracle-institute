@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
             Learning\StudyProgramSeeder::class,
             Learning\CourseSeeder::class,
             Learning\TopicSeeder::class,
-            Learning\SessionSeeder::class,
+            Learning\VideoSessionSeeder::class,
             Learning\MaterialSeeder::class,
             Learning\EnrollmentSeeder::class,
             Learning\ProgressSeeder::class,

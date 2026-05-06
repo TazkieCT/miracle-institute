@@ -20,66 +20,38 @@ class UserSeeder extends Seeder
          |-------------------------------------------------------------
          */
 
-        $admin = User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.test',
-            'password' => Hash::make('Password123!'),
-            'email_verified_at' => now(),
-        ]);
-
-        $disciples = User::factory()->create([
-            'name' => 'Grace',
-            'email' => 'disciple@example.test',
-            'password' => Hash::make('Password123!'),
-            'email_verified_at' => now(),
-        ]);
-
-        $student = User::factory()->create([
-            'name' => 'Alex',
-            'email' => 'student@example.test',
-            'password' => Hash::make('Password123!'),
-            'email_verified_at' => now(),
-        ]);
-
         $adminRole = Role::where('name', 'admin')->first();
         $studentRole = Role::where('name', 'student')->first();
         $disciplesRole = Role::where('name', 'disciples')->first();
 
-        if ($adminRole) {
-            $admin->roles()->attach($adminRole->id, ['assigned_at' => now()]);
-        }
+        $admin = User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.test',
+        ]);
+        if ($adminRole) $admin->roles()->attach($adminRole->id, ['assigned_at' => now()]);
 
-        if ($studentRole && $disciplesRole) {
-            $disciples->roles()->attach([
-                $studentRole->id => ['assigned_at' => now()],
-                $disciplesRole->id => ['assigned_at' => now()],
-            ]);
-        } elseif ($studentRole) {
-            $disciples->roles()->attach($studentRole->id, ['assigned_at' => now()]);
-        }
+        $grace = User::factory()->create([
+            'name' => 'Grace',
+            'email' => 'disciple@example.test',
+        ]);
+        if ($disciplesRole) $grace->roles()->attach($disciplesRole->id, ['assigned_at' => now()]);
+        if ($studentRole) $grace->roles()->attach($studentRole->id, ['assigned_at' => now()]);
+
+        $alex = User::factory()->create([
+            'name' => 'Alex',
+            'email' => 'student@example.test',
+        ]);
+        if ($studentRole) $alex->roles()->attach($studentRole->id, ['assigned_at' => now()]);
 
         if ($studentRole) {
-            $student->roles()->attach($studentRole->id, ['assigned_at' => now()]);
+            User::factory()->count(8)->student()->create()->each(function ($user) use ($studentRole) {
+                $user->roles()->attach($studentRole->id, ['assigned_at' => now()]);
+            });
         }
 
-        // Additional dummy users for testing lists / pagination
-        User::factory()->count(8)->student()->create()->each(function (User $user) use ($studentRole) {
-            if ($studentRole) {
-                $user->roles()->attach($studentRole->id, ['assigned_at' => now()]);
-            }
-        });
-
-        User::factory()->count(2)->disciples()->create()->each(function (User $user) use ($studentRole, $disciplesRole) {
-            $attach = [];
-
-            if ($studentRole) {
-                $attach[$studentRole->id] = ['assigned_at' => now()];
-            }
-            if ($disciplesRole) {
-                $attach[$disciplesRole->id] = ['assigned_at' => now()];
-            }
-
-            $user->roles()->attach($attach);
+        User::factory()->count(2)->disciples()->create()->each(function ($user) use ($studentRole, $disciplesRole) {
+            if ($studentRole) $user->roles()->attach($studentRole->id, ['assigned_at' => now()]);
+            if ($disciplesRole) $user->roles()->attach($disciplesRole->id, ['assigned_at' => now()]);
         });
     }
 }

@@ -30,26 +30,21 @@ class Topic extends Model
         return $this->hasMany(Material::class);
     }
 
-    public function sessions()
+    public function videoSessions()
     {
-        return $this->hasMany(LearningSession::class, 'topic_id');
+        return $this->hasMany(VideoSession::class, 'topic_id');
     }
 
     public function attendances()
     {
         return $this->hasManyThrough(
             Attendance::class,
-            LearningSession::class,
+            VideoSession::class,
             'topic_id',
             'session_id',
             'id',
             'id'
         );
-    }
-
-    public function assessments()
-    {
-        return $this->hasMany(Assessment::class);
     }
 
     public function topicProgresses()
