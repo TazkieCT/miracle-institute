@@ -11,6 +11,10 @@ class RoleIndex extends Component
 {
     use WithAdminTableState;
 
+    public bool $showModal = false;
+    public bool $showDeleteModal = false;
+    public ?string $deleteId = null;
+
     public ?string $editingId = null;
     public string $name = '';
     public string $label = '';
@@ -30,6 +34,7 @@ class RoleIndex extends Component
     public function create(): void
     {
         $this->resetForm();
+        $this->showModal = true;
     }
 
     public function edit(string $id): void
@@ -41,6 +46,19 @@ class RoleIndex extends Component
         $this->label = $row->label;
         $this->description = $row->description;
         $this->permissionIds = $row->permissions->pluck('id')->toArray();
+
+        $this->showModal = true;
+    }
+
+    public function confirmDelete(string $id): void
+    {
+        $this->deleteId = $id;
+        $this->showDeleteModal = true;
+    }
+
+    private function toast(string $type, string $message): void
+    {
+        $this->dispatch('toast', type: $type, message: $message);
     }
 
     public function save(): void
@@ -59,18 +77,29 @@ class RoleIndex extends Component
         $role->permissions()->sync($this->permissionIds);
 
         $this->resetForm();
+        $this->showModal = false;
+        $this->toast('success', 'Role berhasil disimpan.');
     }
 
-    public function delete(string $id): void
+    public function delete(): void
     {
-        Role::findOrFail($id)->delete();
+        if (! $this->deleteId) {
+            $this->toast('warning', 'Pilih role yang akan dihapus.');
+            return;
+        }
+
+        Role::findOrFail($this->deleteId)->delete();
+
+        $this->deleteId = null;
+        $this->showDeleteModal = false;
+        $this->toast('success', 'Role berhasil dihapus.');
     }
 
     public function render()
     {
         return view('livewire.admin.roles.index', [
             'rows' => Role::with('permissions')->latest()->paginate($this->perPage),
-            'permissions' => Permission::orderBy('name')->get(),
+            'permissions' => Permission::all()->sortBy('name')->values(),
         ])->layout('layouts.admin');
     }
 
