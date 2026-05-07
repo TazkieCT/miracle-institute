@@ -11,6 +11,10 @@ class StudyProgramIndex extends Component
 {
     use WithAdminTableState;
 
+    public bool $showModal = false;
+    public bool $showDeleteModal = false;
+    public ?string $deleteId = null;
+
     public ?string $editingId = null;
     public string $title = '';
     public string $description = '';
@@ -28,6 +32,7 @@ class StudyProgramIndex extends Component
     public function create(): void
     {
         $this->resetForm();
+        $this->showModal = true;
     }
 
     public function edit(string $id): void
@@ -38,6 +43,19 @@ class StudyProgramIndex extends Component
         $this->title = $row->title;
         $this->description = $row->description;
         $this->status = $row->status;
+
+        $this->showModal = true;
+    }
+
+    public function confirmDelete(string $id): void
+    {
+        $this->deleteId = $id;
+        $this->showDeleteModal = true;
+    }
+
+    private function toast(string $type, string $message): void
+    {
+        $this->dispatch('toast', type: $type, message: $message);
     }
 
     public function save(): void
@@ -55,11 +73,22 @@ class StudyProgramIndex extends Component
         );
 
         $this->resetForm();
+        $this->showModal = false;
+        $this->toast('success', 'Study program berhasil disimpan.');
     }
 
-    public function delete(string $id): void
+    public function delete(): void
     {
-        StudyProgram::findOrFail($id)->delete();
+        if (! $this->deleteId) {
+            $this->toast('warning', 'Pilih study program yang akan dihapus.');
+            return;
+        }
+
+        StudyProgram::findOrFail($this->deleteId)->delete();
+
+        $this->deleteId = null;
+        $this->showDeleteModal = false;
+        $this->toast('success', 'Study program berhasil dihapus.');
     }
 
     public function render()

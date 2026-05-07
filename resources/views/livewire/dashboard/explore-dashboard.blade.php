@@ -22,17 +22,18 @@
 
                     <div class="relative z-10 h-full flex items-center px-10">
                         <div class="max-w-xl space-y-4">
-                            <h1 class="text-4xl font-bold">
-                                Expand Your Knowledge Without Limits
+                            <h1 class="text-4xl font-bold leading-tight">
+                                Walking in Miracles, Growing as Disciples
                             </h1>
-                            <p class="text-slate-300">
-                                Explore curated courses, structured topics, and professional learning paths.
+
+                            <p class="text-slate-300 text-base leading-relaxed">
+                                Temukan perjalanan iman yang membawa Anda semakin dekat dengan Yesus melalui pemuridan, pembelajaran Alkitab, dan komunitas yang membangun kehidupan rohani.
                             </p>
 
                             <div class="flex gap-3">
                                 <a href="{{ route('courses.index') }}"
                                 class="px-5 py-3 bg-white text-black rounded-xl text-sm">
-                                    Browse Courses
+                                    Explore Journey
                                 </a>
                                 
                                 @guest
@@ -57,16 +58,16 @@
 
                         <div class="space-y-2">
                             <div class="text-xs uppercase tracking-wide text-white/70">
-                                Welcome back
+                                Welcome back to your spiritual journey
                             </div>
 
                             <h1 class="text-3xl sm:text-4xl xl:text-5xl font-bold leading-tight">
                                 {{ auth()->user()->name ?? 'Learner' }},
-                                continue your progress
+                                keep growing in faith
                             </h1>
 
                             <p class="text-slate-300 max-w-xl">
-                                Resume your learning path, track your progress, and unlock new achievements.
+                                Lanjutkan perjalanan pemuridan Anda, pelajari kebenaran Firman Tuhan, dan alami pertumbuhan rohani yang nyata setiap hari.
                             </p>
                         </div>
 
@@ -94,12 +95,12 @@
                         <div class="flex flex-wrap gap-3 pt-2">
                             <a href="{{ route('courses.index') }}"
                             class="px-5 py-3 bg-white text-black rounded-xl text-sm font-medium">
-                                Browse Courses
+                                Explore Classes
                             </a>
 
                             <a href="{{ route('learning.dashboard') }}"
                             class="px-5 py-3 border border-white/20 rounded-xl text-sm">
-                                My Learning
+                                My Journey
                             </a>
                         </div>
                     </div>
@@ -121,7 +122,7 @@
                         <div class="absolute bottom-6 left-6 right-6 text-white">
                             <div class="text-sm text-white/70">Featured Program</div>
                             <div class="text-lg font-semibold">
-                                Build Professional Skills with Structured Learning Paths
+                                Grow deeper in Christ through transformative biblical learning
                             </div>
                         </div>
                     </div>
@@ -135,8 +136,8 @@
     @if(!$isGuest && !$isMentor && count($continueCourses))
         <section class="space-y-4">
             <div>
-                <h2 class="text-xl font-semibold">Continue Learning</h2>
-                <p class="text-sm text-slate-500">Resume your last activity.</p>
+                <h2 class="text-xl font-semibold">Continue Your Journey</h2>
+                <p class="text-sm text-slate-500">Continue where you left off in your discipleship journey.</p>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -190,11 +191,10 @@
             <div class="flex flex-col gap-10 xl:flex-row xl:items-center">
                 <div class="space-y-3" style="flex-basis:30%">
                     <h3 class="text-2xl font-bold leading-tight text-slate-900">
-                        Learn essential <em class="italic text-slate-500">career and life</em> skills
+                        Grow in <em class="italic text-slate-500">faith and discover God’s</em> for your life
                     </h3>
                     <p class="text-sm leading-6 text-slate-500">
-                        Browse study programs in a carousel that fills the container when there are three or fewer cards,
-                        and becomes horizontally scrollable when the list grows.
+                        Explore discipleship programs, biblical teachings, and spiritual growth paths designed to strengthen your relationship with God.
                     </p>
                 </div>
 
@@ -254,8 +254,8 @@
 
     <section class="space-y-4">
         <div>
-            <h2 class="text-xl font-semibold">Highlights</h2>
-            <p class="text-sm text-slate-500">Featured courses curated for discovery.</p>
+            <h2 class="text-xl font-semibold">Featured Teachings</h2>
+            <p class="text-sm text-slate-500">Discover impactful teachings and discipleship classes prepared to strengthen your faith journey.</p>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -299,11 +299,11 @@
         </div>
     </section>
 
-    <section class="rounded-3xl overflow-hidden bg-slate-900 text-white p-16">
+    <section class="rounded-3xl overflow-hidden bg-slate-900 text-white py-8 px-16">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
             <div class="lg:col-span-1">
-                <h2 class="text-xl sm:text-2xl font-semibold">Reimagine your career in the AI era</h2>
-                <p class="mt-1 text-xs text-slate-300 max-w-xl">Future-proof your skills with curated learning paths and expert-led courses tailored for growing careers.</p>
+                <h2 class="text-xl sm:text-2xl font-semibold">Experience God’s Presence Through Authentic Discipleship</h2>
+                <p class="mt-1 text-xs text-slate-300 max-w-xl">Miracle Institute hadir untuk membantu setiap orang bertumbuh dalam iman, mengenal Yesus lebih dalam, dan hidup dalam kuasa serta kasih Tuhan setiap hari.</p>
 
                 <div class="mt-3 grid grid-cols-2 gap-2">
                     <div class="flex items-start gap-2">
@@ -312,7 +312,7 @@
                         </div>
                         <div class="text-xs">
                             <div class="font-semibold">Learn</div>
-                            <div class="text-slate-300">AI and practical skills</div>
+                            <div class="text-slate-300">Biblical truths and spiritual principles</div>
                         </div>
                     </div>
 
@@ -321,8 +321,8 @@
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z" stroke="#fbbf24" stroke-width="1"/></svg>
                         </div>
                         <div class="text-xs">
-                            <div class="font-semibold">Prep</div>
-                            <div class="text-slate-300">Certification-ready tracks</div>
+                            <div class="font-semibold">Disciple</div>
+                            <div class="text-slate-300">Grow deeper in biblical truth</div>
                         </div>
                     </div>
 
@@ -331,8 +331,8 @@
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" rx="2" stroke="#60a5fa" stroke-width="1"/></svg>
                         </div>
                         <div class="text-xs">
-                            <div class="font-semibold">Practice</div>
-                            <div class="text-slate-300">Hands-on projects & coaching</div>
+                            <div class="font-semibold">Community</div>
+                            <div class="text-slate-300">Walk together in faith</div>
                         </div>
                     </div>
 
@@ -341,14 +341,14 @@
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#34d399" stroke-width="1"/></svg>
                         </div>
                         <div class="text-xs">
-                            <div class="font-semibold">Advance</div>
-                            <div class="text-slate-300">Grow your career</div>
+                            <div class="font-semibold">Impact</div>
+                            <div class="text-slate-300">Become a light for others</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-3 flex items-center gap-3">
-                    <a href="{{ route('courses.index') }}" class="inline-flex px-3 py-1 bg-white text-slate-900 rounded-xl text-sm font-semibold">Learn more</a>
+                    <a href="{{ route('courses.index') }}" class="inline-flex px-3 py-1 bg-white text-slate-900 rounded-xl text-sm font-semibold">Start Your Journey</a>
                 </div>
             </div>
 
