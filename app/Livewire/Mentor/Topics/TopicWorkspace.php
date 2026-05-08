@@ -34,8 +34,8 @@ class TopicWorkspace extends Component
         $this->topic = Topic::with([
             'course',
             'materials.uploader',
-            'sessions',
-            'assessments.questions',
+            'videoSessions',
+            'course.assessment.questions',
         ])->where('slug', $slug)->firstOrFail();
 
         abort_unless(
@@ -166,7 +166,7 @@ class TopicWorkspace extends Component
                 ];
             });
 
-        $assessment = $this->topic->assessments->first();
+        $assessment = $this->topic->course->assessment;
 
         return view('livewire.mentor.topics.topic-workspace', [
             'materials' => $materials,

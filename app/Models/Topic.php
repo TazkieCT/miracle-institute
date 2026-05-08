@@ -29,6 +29,10 @@ class Topic extends Model
     {
         return $this->hasMany(Material::class);
     }
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class);
+    }
 
     public function videoSessions()
     {

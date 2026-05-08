@@ -53,7 +53,7 @@ class MentorDashboard extends Component
             'mentorTopicsCount' => $topicIds->count(),
             'mentorMaterialsCount' => Material::where('uploader_id', $userId)->count(),
             'mentorStudentsCount' => $studentEnrollmentIds->count(),
-            'mentorAssessmentsCount' => Assessment::whereHas('topic', fn ($q) => $q->where('teacher_id', $userId))->count(),
+            'mentorAssessmentsCount' => Assessment::whereHas('course.topics', fn ($q) => $q->where('teacher_id', $userId))->distinct()->count(),
 
             // Student Metrics (Conditional)
             'hasStudentRole' => $hasStudentRole,
