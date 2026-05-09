@@ -28,8 +28,8 @@ class TopicPlayer extends Component
         $this->topic = Topic::with([
             'course',
             'materials',
-            'sessions',
-            'assessments.questions.options',
+            'videoSessions',
+            'course.assessment.questions.options',
         ])->where('slug', $slug)->firstOrFail();
 
         $this->authorize('access', $this->topic);
@@ -42,7 +42,7 @@ class TopicPlayer extends Component
             ->latest()
             ->first();
 
-        $assessment = $this->topic->assessments->first();
+        $assessment = $this->topic->course->assessment->first();
 
         if ($assessment) {
             $estimatedMinutes = $assessment->time_limit_minutes
@@ -64,7 +64,7 @@ class TopicPlayer extends Component
             ];
         }
 
-        $this->activeAssessment = $this->topic->assessments->first();
+        $this->activeAssessment = $this->topic->course->assessment->first();
     }
 
     public function setTab(string $tab): void
@@ -107,7 +107,7 @@ class TopicPlayer extends Component
             );
         }
 
-        $activeAssessment = $this->topic->assessments->first();
+        $activeAssessment = $this->topic->course->assessment->first();
 
         $topicStatus = null;
         $enrollment = auth()->user()

@@ -26,7 +26,7 @@ class CourseShow extends Component
     {
         $this->course = Course::with([
             'studyProgram',
-            'topics' => fn ($q) => $q->withCount(['materials', 'sessions']),
+            'topics' => fn ($q) => $q->withCount(['materials', 'videoSessions']),
         ])->where('slug', $slug)->firstOrFail();
 
         if (!auth()->check()) {
@@ -61,8 +61,8 @@ class CourseShow extends Component
 
         $this->course->load([
             'topics.materials',
-            'topics.sessions',
-            'topics.assessments',
+            'topics.videoSessions',
+            'assessment',
         ]);
 
         $this->courseCertificate = Certificate::where('user_id', $user->id)

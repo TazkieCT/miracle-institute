@@ -112,7 +112,6 @@
                 @php
                     $status = $topicStatusMap[$topic->id] ?? 'not_started';
                     $percent = $status === 'completed' ? 100 : ($status === 'in_progress' ? 50 : 0);
-                    $certificate = $topicCertificates[$topic->id] ?? null;
                 @endphp
 
                 <div class="border p-5 rounded-2xl bg-white space-y-4">
@@ -146,13 +145,6 @@
                                class="px-4 py-2 border rounded-xl text-sm">
                                 Manage
                             </a>
-                        @else
-                            @if($certificate)
-                                <a href="{{ route('certificates.download', $certificate['id']) }}"
-                                   class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-sm">
-                                    Certificate
-                                </a>
-                            @endif
                         @endif
                     </div>
                 </div>
