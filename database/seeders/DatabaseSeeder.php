@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
 
             $programs = $this->seedStudyPrograms($now);
             $courses = $this->seedCourses($programs, $asset, $now);
+            $this->seedCourseCollaborators($courses, $users, $now);
             $topics = $this->seedTopics($courses, $asset, $now);
             $materials = $this->seedMaterials($topics, $asset, $now);
             $assessments = $this->seedAssessments($courses, $now);
@@ -761,5 +762,134 @@ class DatabaseSeeder extends Seeder
         if ($firstSession) $rows[] = ['id' => $this->uuid(), 'user_id' => $users['byEmail']['disciple@example.test']['id'], 'action' => 'session.reminder.sent', 'payload' => json_encode(['video_session_id' => $firstSession['id'], 'status' => 'delivered'], JSON_UNESCAPED_UNICODE), 'created_at' => $now->copy()->subDays(5), 'updated_at' => $now];
 
         DB::table('activity_logs')->insert($rows);
+    }
+
+
+    private function seedCourseCollaborators(array $courses, array $users, $now): void
+    {
+        $courseUsers = [];
+        $coursePermissions = [];
+
+        $permissionMap = [
+            'manage_topics',
+            'manage_materials',
+            'manage_sessions',
+            'manage_assessments',
+            'manage_attendance',
+            'manage_students',
+            'publish_topics',
+            'view_reports',
+            'manage_certificates',
+        ];
+
+        $ownerPermissions = $permissionMap;
+
+        $collaboratorPermissions = [
+            'manage_topics',
+            'manage_materials',
+            'manage_sessions',
+            'manage_assessments',
+            'view_reports',
+        ];
+
+        $limitedCollaboratorPermissions = [
+            'manage_materials',
+            'manage_sessions',
+        ];
+
+        $relations = [
+            [
+                'course' => 'discipleship-foundations',
+                'user' => 'maya.sari@edunusa.test',
+                'role_type' => 'owner',
+                'permissions' => $ownerPermissions,
+                'invited_by' => null,
+            ],
+            [
+                'course' => 'discipleship-foundations',
+                'user' => 'citra.lestari@edunusa.test',
+                'role_type' => 'collaborator',
+                'permissions' => $collaboratorPermissions,
+                'invited_by' => 'maya.sari@edunusa.test',
+            ],
+
+            [
+                'course' => 'discipleship-growth-track',
+                'user' => 'fajar.hidayat@edunusa.test',
+                'role_type' => 'owner',
+                'permissions' => $ownerPermissions,
+                'invited_by' => null,
+            ],
+            [
+                'course' => 'discipleship-growth-track',
+                'user' => 'disciple@example.test',
+                'role_type' => 'collaborator',
+                'permissions' => $limitedCollaboratorPermissions,
+                'invited_by' => 'fajar.hidayat@edunusa.test',
+            ],
+
+            [
+                'course' => 'sermon-foundations',
+                'user' => 'bagas.wiratama@edunusa.test',
+                'role_type' => 'owner',
+                'permissions' => $ownerPermissions,
+                'invited_by' => null,
+            ],
+            [
+                'course' => 'sermon-foundations',
+                'user' => 'nadia.prameswari@edunusa.test',
+                'role_type' => 'collaborator',
+                'permissions' => [
+                    'manage_topics',
+                    'publish_topics',
+                    'manage_assessments',
+                    'view_reports',
+                ],
+                'invited_by' => 'bagas.wiratama@edunusa.test',
+            ],
+
+            [
+                'course' => 'sermon-outreach-lab',
+                'user' => 'nadia.prameswari@edunusa.test',
+                'role_type' => 'owner',
+                'permissions' => $ownerPermissions,
+                'invited_by' => null,
+            ],
+        ];
+
+        foreach ($relations as $relation) {
+            $courseUserId = $this->uuid();
+
+            $invitedBy = $relation['invited_by']
+                ? $users['byEmail'][$relation['invited_by']]['id']
+                : null;
+
+            $courseUsers[] = [
+                'id' => $courseUserId,
+                'course_id' => $courses[$relation['course']]['id'],
+                'user_id' => $users['byEmail'][$relation['user']]['id'],
+                'role_type' => $relation['role_type'],
+                'status' => 'active',
+                'invited_by' => $invitedBy,
+                'joined_at' => $now->copy()->subDays(rand(5, 60)),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+
+            foreach ($relation['permissions'] as $permission) {
+                $coursePermissions[] = [
+                    'id' => $this->uuid(),
+                    'course_user_id' => $courseUserId,
+                    'permission' => $permission,
+                    'granted_by' => $invitedBy,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
+
+        DB::table('course_user')->insert($courseUsers);
+
+        DB::table('course_user_permissions')->insert($coursePermissions);
     }
 }

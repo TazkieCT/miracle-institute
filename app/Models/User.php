@@ -111,4 +111,9 @@ class User extends Authenticatable implements MustVerifyEmail
             })
             ->exists();
     }
-}
+
+    public function collaboratedCourses()
+    {
+        return $this->hasMany(CourseUser::class);
+    }
+    }

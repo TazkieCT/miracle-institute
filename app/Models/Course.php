@@ -39,4 +39,9 @@ class Course extends Model
     {
         return $this->hasOne(Assessment::class);
     }
+
+    public function collaborators()
+    {
+        return $this->hasMany(CourseUser::class);
+    }
 }
