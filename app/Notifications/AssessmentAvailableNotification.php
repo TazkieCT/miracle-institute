@@ -18,7 +18,7 @@ class AssessmentAvailableNotification extends Notification implements ShouldQueu
 
     public function via($notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail($notifiable): MailMessage

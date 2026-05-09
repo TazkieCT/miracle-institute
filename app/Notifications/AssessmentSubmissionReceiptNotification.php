@@ -18,7 +18,7 @@ class AssessmentSubmissionReceiptNotification extends Notification implements Sh
 
     public function via($notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail($notifiable): MailMessage

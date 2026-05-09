@@ -11,8 +11,6 @@ class SendEnrollmentConfirmationEmail implements ShouldQueue
 {
     public function handle(EnrollmentConfirmed $event): void
     {
-        dd($event);
-
         $enrollment = CourseEnrollment::with([
             'user',
             'course'
