@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Topics;
 
-use App\Models\Certificate;
+use App\Models\Attendance;
+use App\Models\VideoSession;
 use App\Models\Topic;
 use App\Models\TopicProgress;
 use App\Services\ProgressService;
@@ -15,67 +16,95 @@ class TopicPlayer extends Component
     use AuthorizesRequests;
 
     public Topic $topic;
+
     public string $activeTab = 'materials';
     public ?string $activeMaterialId = null;
+    public ?string $topicStatus = null;
+    public bool $topicCompleted = false;
 
-    public ?Certificate $topicCertificate = null;
-    public ?array $assessmentMeta = null;
+    
 
-    public ?\App\Models\Assessment $activeAssessment = null;
 
-    public function mount(string $slug)
+    public function mount(string $slug): void
     {
-        $this->topic = Topic::with([
-            'course',
-            'materials',
-            'videoSessions',
-            'course.assessment.questions.options',
-        ])->where('slug', $slug)->firstOrFail();
+        $this->topic = Topic::query()
+            ->with([
+                'course',
+                'materials' => fn ($q) => $q->orderBy('sort_order'),
+                'videoSessions' => fn ($q) => $q->orderBy('start_at'),
+            ])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $this->authorize('access', $this->topic);
 
         $this->activeMaterialId = $this->topic->materials->first()?->id;
 
-        $this->topicCertificate = Certificate::where('user_id', auth()->id())
-            ->where('type', 'topic')
-            ->where('topic_id', $this->topic->id)
-            ->latest()
+        $this->hydrateTopicCompletion();
+    }
+
+    private function hydrateTopicCompletion(): void
+    {
+        $enrollment = auth()->user()
+            ?->courseEnrollments()
+            ->where('course_id', $this->topic->course_id)
             ->first();
 
-        $assessment = $this->topic->course->assessment->first();
-
-        if ($assessment) {
-            $estimatedMinutes = $assessment->time_limit_minutes
-                ?: max(5, ($assessment->questions->count() ?: 0) * 2);
-
-            $this->assessmentMeta = [
-                'title' => $assessment->title,
-                'passing_grade' => $assessment->passing_grade,
-                'time_limit_minutes' => $assessment->time_limit_minutes,
-                'estimated_minutes' => $estimatedMinutes,
-                'question_count' => $assessment->questions->count(),
-                'start_date' => $assessment->created_at?->format('d M Y'),
-                'instructions' => [
-                    'Baca setiap soal dengan teliti sebelum menjawab.',
-                    'Gunakan waktu secara efisien karena timer berjalan otomatis.',
-                    'Jawaban isian harus sesuai ejaan yang benar.',
-                    'Klik Submit hanya setelah kamu yakin.',
-                ],
-            ];
+        if (! $enrollment) {
+            $this->topicCompleted = false;
+            return;
         }
 
-        $this->activeAssessment = $this->topic->course->assessment->first();
+        $this->topicCompleted = TopicProgress::query()
+            ->where('course_enrollment_id', $enrollment->id)
+            ->where('topic_id', $this->topic->id)
+            ->where('status', 'completed')
+            ->exists();
     }
 
     public function setTab(string $tab): void
     {
-        $this->activeTab = $tab;
+        $this->activeTab = in_array($tab, ['materials', 'sessions'], true)
+            ? $tab
+            : 'materials';
     }
 
     public function selectMaterial(string $materialId): void
     {
         $this->activeMaterialId = $materialId;
         $this->activeTab = 'materials';
+    }
+
+    public function completeTopic(): void
+    {
+        abort_unless(auth()->check(), 403);
+
+        $enrollment = auth()->user()
+            ?->courseEnrollments()
+            ->where('course_id', $this->topic->course_id)
+            ->first();
+
+        abort_unless($enrollment, 403);
+
+        if ($this->topicCompleted) {
+            session()->flash('success', 'Topik sudah selesai.');
+            return;
+        }
+
+        $progress = TopicProgress::firstOrNew([
+            'course_enrollment_id' => $enrollment->id,
+            'topic_id' => $this->topic->id,
+        ]);
+
+        $progress->status = 'completed';
+        $progress->started_at ??= now();
+        $progress->completed_at = now();
+        $progress->save();
+
+        $this->topicStatus = 'completed';
+        $this->topicCompleted = true;
+
+        session()->flash('success', 'Topik berhasil ditandai sebagai selesai.');
     }
 
     public function markViewed(ProgressService $progressService): void
@@ -85,15 +114,22 @@ class TopicPlayer extends Component
         }
 
         $progressService->markMaterialViewed(auth()->id(), $this->activeMaterialId);
+
+        $this->dispatch('$refresh');
         session()->flash('success', 'Material marked as viewed.');
     }
 
-    public function getActiveAttemptProperty()
+    public function syncTopicCompletion(ProgressService $progressService): void
     {
-        return \App\Models\AssessmentAttempt::where('assessment_id', $this->activeAssessment?->id)
-            ->where('user_id', auth()->id())
-            ->whereNull('submitted_at')
-            ->first();
+        abort_unless(auth()->check(), 403);
+
+        $progressService->recalculateTopicCompletion(
+            auth()->id(),
+            $this->topic->id
+        );
+
+        $this->dispatch('$refresh');
+        session()->flash('success', 'Topic progress diperbarui.');
     }
 
     public function render()
@@ -103,28 +139,64 @@ class TopicPlayer extends Component
         $materialUrl = null;
         if ($activeMaterial) {
             $materialUrl = $activeMaterial->external_url ?: (
-                $activeMaterial->path ? Storage::disk('public')->url($activeMaterial->path) : null
+                $activeMaterial->path
+                    ? Storage::disk('public')->url($activeMaterial->path)
+                    : null
             );
         }
 
-        $activeAssessment = $this->topic->course->assessment->first();
-
         $topicStatus = null;
+        $topicCompleted = false;
+        $sessionAttendances = collect();
+
         $enrollment = auth()->user()
-            ->courseEnrollments()
+            ?->courseEnrollments()
             ->where('course_id', $this->topic->course_id)
             ->first();
 
         if ($enrollment) {
-            $topicStatus = TopicProgress::where('course_enrollment_id', $enrollment->id)
+            $progress = TopicProgress::where('course_enrollment_id', $enrollment->id)
                 ->where('topic_id', $this->topic->id)
-                ->value('status');
+                ->first();
+
+            $topicStatus = $progress?->status;
+            $topicCompleted = $topicStatus === 'completed';
+
+            if (auth()->check()) {
+                $sessionAttendances = Attendance::query()
+                    ->where('user_id', auth()->id())
+                    ->whereIn('video_session_id', $this->topic->videoSessions->pluck('id'))
+                    ->get()
+                    ->keyBy('video_session_id');
+            }
         }
+
+        $this->topicStatus = $topicStatus;
+        $this->topicCompleted = $topicCompleted;
+
+        $attendanceStats = [
+            'present' => $sessionAttendances->where('status', 'present')->count(),
+            'late' => $sessionAttendances->where('status', 'late')->count(),
+            'absent' => $sessionAttendances->where('status', 'absent')->count(),
+            'checked_in' => $sessionAttendances->whereIn('status', ['present', 'late'])->count(),
+        ];
+
+        $hasSessionEnded = VideoSession::query()
+            ->where('topic_id', $this->topic->id)
+            ->where('end_at', '<=', now()) 
+            ->exists();
+
 
         return view('livewire.topics.topic-player', [
             'activeMaterial' => $activeMaterial,
             'materialUrl' => $materialUrl,
             'topicStatus' => $topicStatus,
+            'topicCompleted' => $topicCompleted,
+            'sessionAttendances' => $sessionAttendances,
+            'attendanceStats' => $attendanceStats,
+            'hasSessionEnded' => $hasSessionEnded,
+            'hasMaterials' => $this->topic->materials->isNotEmpty(),
+            'hasSessions' => $this->topic->videoSessions->isNotEmpty(),
         ])->layout('layouts.learning');
     }
 }

@@ -4,71 +4,208 @@ namespace App\Livewire\Sessions;
 
 use App\Models\Attendance;
 use App\Models\VideoSession;
-use App\Services\AttendanceService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Services\AttendanceAutomationService;
+use Carbon\Carbon;
 use Livewire\Component;
 
 class AttendanceButton extends Component
 {
-    use AuthorizesRequests;
+    public string $sessionId;
 
     public VideoSession $session;
-    public bool $alreadyCheckedIn = false;
-    public bool $canCheckIn = false;
-    public string $windowMessage = '';
 
-    protected $listeners = [
-        'attendanceRecorded' => 'refreshStatus',
-    ];
+    public ?Attendance $attendance = null;
+
+    public bool $canJoin = false;
+    public bool $canClockOut = false;
+    public string $stateLabel = 'Not checked in';
+
+    public ?Carbon $clockInDeadline = null;
+    public ?Carbon $clockOutDeadline = null;
 
     public function mount(string $sessionId): void
     {
-        $this->session = VideoSession::with('topic.course')->findOrFail($sessionId);
-        $this->authorize('checkIn', $this->session);
+        $this->sessionId = $sessionId;
 
-        $this->refreshStatus();
+        $this->session = VideoSession::query()
+            ->with(['topic.course'])
+            ->findOrFail($this->sessionId);
+
+        $this->refreshAttendance();
     }
 
-    public function refreshStatus(): void
+    public function refreshAttendance(): void
     {
+        $this->session->loadMissing('topic.course');
+
+        if (! $this->session->start_at || ! $this->session->end_at) {
+            $this->attendance = null;
+            $this->canJoin = false;
+            $this->canClockOut = false;
+            $this->stateLabel = 'Schedule incomplete';
+            $this->clockInDeadline = null;
+            $this->clockOutDeadline = null;
+            return;
+        }
+
+        $this->clockInDeadline = $this->resolveClockInDeadline();
+        $this->clockOutDeadline = $this->resolveClockOutDeadline();
+
+        $this->attendance = auth()->check()
+            ? Attendance::query()
+                ->where('video_session_id', $this->session->id)
+                ->where('user_id', auth()->id())
+                ->first()
+            : null;
+
+        $this->syncState();
+    }
+
+    public function joinSession(AttendanceAutomationService $automationService)
+    {
+        abort_unless(auth()->check(), 403);
+
+        if (! $this->scheduleReady()) {
+            session()->flash('error', 'Jadwal sesi belum lengkap.');
+            return null;
+        }
+
+        try {
+            $attendance = $automationService->recordSessionAccess(
+                $this->session,
+                auth()->user(),
+                request()->ip()
+            );
+
+            $this->attendance = $attendance->fresh();
+            $this->syncState();
+
+            session()->flash('success', 'Presensi masuk tersimpan.');
+        } catch (\Throwable $e) {
+            session()->flash('error', $e->getMessage());
+            $this->refreshAttendance();
+            return null;
+        }
+
+        return redirect()->away($this->session->zoom_link);
+    }
+
+    public function clockOut(): void
+    {
+        abort_unless(auth()->check(), 403);
+
+        if (! $this->attendance) {
+            session()->flash('error', 'Belum ada data presensi masuk.');
+            return;
+        }
+
+        if ($this->attendance->clock_out_at) {
+            session()->flash('info', 'Anda sudah clock-out untuk sesi ini.');
+            $this->refreshAttendance();
+            return;
+        }
+
         $now = now();
-        $windowStart = $this->session->start_at->copy()->subMinutes(15);
-        $windowEnd = $this->session->end_at->copy();
 
-        $this->alreadyCheckedIn = Attendance::where('session_id', $this->session->id)
-            ->where('user_id', auth()->id())
-            ->exists();
-
-        if ($now->lt($windowStart)) {
-            $this->canCheckIn = false;
-            $this->windowMessage = 'Absensi belum dibuka.';
+        if (! $this->canClockOut($now)) {
+            session()->flash('error', 'Clock-out hanya tersedia sampai 15 menit sebelum sesi berakhir.');
             return;
         }
 
-        if ($now->gt($windowEnd)) {
-            $this->canCheckIn = false;
-            $this->windowMessage = 'Absensi sudah ditutup.';
-            return;
-        }
+        $this->attendance->forceFill([
+            'clock_out_at' => $now,
+        ])->save();
 
-        $this->canCheckIn = true;
-        $this->windowMessage = $now->gt($this->session->start_at)
-            ? 'Anda masih bisa check-in, status akan tercatat late bila lewat jam mulai.'
-            : 'Absensi aktif.';
+        $this->attendance->refresh();
+        $this->syncState();
+
+        session()->flash('success', 'Clock-out tersimpan.');
     }
 
-    public function checkIn(AttendanceService $attendanceService): void
+    public function syncState(): void
     {
-        $this->authorize('checkIn', $this->session);
+        if (! $this->scheduleReady()) {
+            $this->canJoin = false;
+            $this->canClockOut = false;
+            $this->stateLabel = 'Schedule incomplete';
+            return;
+        }
 
-        $attendanceService->checkIn(auth()->id(), $this->session->id);
+        if (! $this->attendance) {
+            $this->canJoin = $this->canClockIn(now());
+            $this->canClockOut = false;
 
-        $this->emit('attendanceRecorded');
-        session()->flash('success', 'Absensi berhasil disimpan.');
+            $this->stateLabel = match (true) {
+                now()->lt($this->session->start_at) => 'Waiting for session',
+                $this->canJoin => 'Ready to join',
+                default => 'Clock-in closed',
+            };
+
+            return;
+        }
+
+        $this->canJoin = false;
+        $this->canClockOut = ! $this->attendance->clock_out_at && $this->canClockOut(now());
+
+        $this->stateLabel = $this->attendance->clock_out_at
+            ? 'Completed'
+            : match ($this->attendance->status) {
+                'present' => 'Present',
+                'late' => 'Late',
+                'absent' => 'Absent',
+                default => 'Checked in',
+            };
+    }
+
+    private function scheduleReady(): bool
+    {
+        return (bool) ($this->session->start_at && $this->session->end_at);
+    }
+
+    private function resolveClockInDeadline(): ?Carbon
+    {
+        if (! $this->scheduleReady()) {
+            return null;
+        }
+
+        $startWindow = $this->session->start_at->copy()->addMinutes(45);
+        $endWindow = $this->session->end_at->copy()->subMinutes(15);
+
+        return $startWindow->lt($endWindow) ? $startWindow : $endWindow;
+    }
+
+    private function resolveClockOutDeadline(): ?Carbon
+    {
+        if (! $this->scheduleReady()) {
+            return null;
+        }
+
+        return $this->session->end_at->copy()->subMinutes(15);
+    }
+
+    private function canClockIn(Carbon $moment): bool
+    {
+        if (! $this->clockInDeadline) {
+            return false;
+        }
+
+        return $moment->betweenIncluded($this->session->start_at, $this->clockInDeadline);
+    }
+
+    private function canClockOut(Carbon $moment): bool
+    {
+        if (! $this->clockOutDeadline) {
+            return false;
+        }
+
+        return $moment->betweenIncluded($this->session->start_at, $this->clockOutDeadline);
     }
 
     public function render()
     {
-        return view('livewire.sessions.attendance-button');
+        return view('livewire.sessions.attendance-button', [
+            'clockInDeadline' => $this->clockInDeadline,
+            'clockOutDeadline' => $this->clockOutDeadline,
+        ]);
     }
 }

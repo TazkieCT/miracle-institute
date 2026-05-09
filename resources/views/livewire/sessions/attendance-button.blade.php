@@ -1,31 +1,75 @@
-<div wire:poll.5s="refreshStatus" class="space-y-4">
-    <div class="rounded-2xl bg-white border p-5 space-y-2">
-        <h3 class="font-semibold">{{ $session->title }}</h3>
-        <p class="text-sm text-gray-500">
+<div class="rounded-2xl border p-4 space-y-4 bg-white"
+     wire:poll.visible.10s="refreshAttendance">
+    <div class="space-y-1">
+        <div class="font-semibold">{{ $session->title }}</div>
+        <div class="text-sm text-slate-500">
             {{ $session->topic?->course?->title }} · {{ $session->topic?->name }}
-        </p>
-        <p class="text-sm">{{ $windowMessage }}</p>
+        </div>
+        <div class="text-xs text-slate-500">
+            {{ $session->start_at?->format('d M Y, H:i') ?? '-' }} - {{ $session->end_at?->format('H:i') ?? '-' }}
+        </div>
     </div>
 
-    @if ($errors->has('attendance'))
-        <div class="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">
-            {{ $errors->first('attendance') }}
+    <div class="flex items-center justify-between gap-3">
+        <div class="text-sm">
+            Status: <span class="font-medium">{{ $stateLabel }}</span>
+        </div>
+
+        @if($attendance)
+            <span class="text-xs px-2 py-1 rounded-full bg-slate-100">
+                {{ strtoupper($attendance->status) }}
+            </span>
+        @endif
+    </div>
+
+    @if($clockInDeadline)
+        <div class="text-xs text-slate-500">
+            Clock-in deadline: {{ $clockInDeadline->format('d M Y, H:i') }}
+        </div>
+    @else
+        <div class="text-xs text-amber-600">
+            Session schedule belum lengkap.
         </div>
     @endif
 
-    @if($alreadyCheckedIn)
-        <div class="rounded-lg bg-green-50 text-green-700 px-4 py-3 text-sm">
-            Anda sudah check-in.
+    @if($attendance)
+        <div class="space-y-1 text-sm">
+            <div>Check in: {{ $attendance->check_in_at?->format('d M Y, H:i') ?? '-' }}</div>
+            <div>Check out: {{ $attendance->clock_out_at?->format('d M Y, H:i') ?? '-' }}</div>
         </div>
-    @else
-        @can('checkIn', $session)
-            <button type="button"
-                    wire:click="checkIn"
+    @endif
+
+    <div class="flex flex-wrap gap-2">
+        @if(! $attendance)
+            <button wire:click="joinSession"
                     wire:loading.attr="disabled"
-                    @disabled(!$canCheckIn)
-                    class="px-4 py-2 rounded-lg bg-black text-white text-sm disabled:opacity-50">
-                Check In
+                    @disabled(! $canJoin)
+                    class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                Join Session
             </button>
-        @endcan
+        @elseif(! $attendance->clock_out_at)
+            <button wire:click="clockOut"
+                    wire:loading.attr="disabled"
+                    @disabled(! $canClockOut)
+                    class="px-4 py-2 rounded-xl border text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                Clock Out
+            </button>
+        @else
+            <div class="text-sm text-emerald-700">
+                Attendance completed.
+            </div>
+        @endif
+    </div>
+
+    @if(session()->has('error'))
+        <div class="text-sm text-rose-600">{{ session('error') }}</div>
+    @endif
+
+    @if(session()->has('info'))
+        <div class="text-sm text-slate-600">{{ session('info') }}</div>
+    @endif
+
+    @if(session()->has('success'))
+        <div class="text-sm text-emerald-600">{{ session('success') }}</div>
     @endif
 </div>
