@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleAuthController;
-use App\Http\Controllers\CertificateClaimController;
-use App\Http\Controllers\CertificateDownloadController;
+use App\Http\Controllers\CertificateController;
 use App\Livewire\Admin\Assessments\AssessmentIndex as AdminAssessmentIndex;
 use App\Livewire\Admin\Assessments\QuestionManager;
 use App\Livewire\Admin\Attendances\AttendanceIndex;
@@ -109,6 +108,12 @@ Route::middleware(['auth', 'verified', 'set.active.role'])->group(function () {
         return redirect()->route('explore.dashboard');
     })->name('dashboard');
 
+    Route::get('/courses/{course}/claim-certificate', [CertificateController::class, 'claimCourse'])
+        ->name('certificates.course.claim');
+
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])
+        ->name('certificates.download');
+
     Route::prefix('mentor')
         ->name('mentor.')
         ->middleware(['role:disciples'])
@@ -144,15 +149,6 @@ Route::middleware(['auth', 'verified', 'set.active.role'])->group(function () {
 
         Route::get('/certificates', CertificatePanel::class)
             ->name('certificates.index');
-
-        Route::get('/certificates/{certificate}/download', CertificateDownloadController::class)
-            ->name('certificates.download');
-
-        Route::get('/certificates/course/{course}/claim', [CertificateClaimController::class, 'course'])
-            ->name('certificates.course.claim');
-
-        Route::get('/certificates/topic/{topic}/claim', [CertificateClaimController::class, 'topic'])
-            ->name('certificates.topic.claim');
     });
 
     Route::prefix('admin')
