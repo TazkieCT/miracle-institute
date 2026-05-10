@@ -6,9 +6,9 @@ use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Certificate;
 use App\Models\Course;
-use App\Models\CourseEnrollment;
 use App\Models\Topic;
 use App\Models\TopicProgress;
+use App\Models\TopicUser;
 use App\Services\CourseService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
@@ -25,6 +25,7 @@ class CourseShow extends Component
     public bool $isGuest = true;
 
     public ?Certificate $courseCertificate = null;
+
     public array $topicStatusMap = [];
 
     public ?Assessment $assessment = null;
@@ -36,10 +37,15 @@ class CourseShow extends Component
     public string $topicSort = 'sort_asc';
     public string $topicStatusFilter = 'all';
 
-    public Collection $guestPreviewTopics;
+    public string $activeTopicTab = 'general';
+
+    public Collection $mentoredTopics;
+    public bool $hasMentoredTopics = false;
 
     public function mount(string $slug): void
     {
+        $this->mentoredTopics = collect();
+
         $this->course = Course::query()
             ->with([
                 'studyProgram',
@@ -66,47 +72,91 @@ class CourseShow extends Component
 
         $this->buildAssessmentMeta();
 
-        $this->isGuest = !auth()->check();
+        $this->isGuest = ! auth()->check();
 
-        if ($this->isGuest) {
-            $this->enrolled = false;
-            $this->topicStatusMap = [];
+        if (! $this->isGuest) {
+            $user = auth()->user();
 
+            $enrollment = $user->courseEnrollments()
+                ->where('course_id', $this->course->id)
+                ->first();
+
+            $this->enrolled = (bool) $enrollment;
+
+            if ($this->enrolled) {
+                $this->courseCertificate = Certificate::query()
+                    ->where('user_id', $user->id)
+                    ->where('type', 'course')
+                    ->where('course_id', $this->course->id)
+                    ->latest()
+                    ->first();
+
+                $this->topicStatusMap = TopicProgress::query()
+                    ->where('course_enrollment_id', $enrollment->id)
+                    ->pluck('status', 'topic_id')
+                    ->toArray();
+            }
+        }
+
+        $this->hydrateMentoredTopics();
+    }
+
+    public function setTopicTab(string $tab): void
+    {
+        if (! in_array($tab, ['general', 'mentored'], true)) {
             return;
         }
 
-        $user = auth()->user();
+        $this->activeTopicTab = $tab;
+    }
 
-        $enrollment = $user->courseEnrollments()
-            ->where('course_id', $this->course->id)
-            ->first();
+    public function hydrateMentoredTopics(): void
+    {
+        $this->mentoredTopics = collect();
+        $this->hasMentoredTopics = false;
 
-        $this->enrolled = (bool) $enrollment;
-
-        if (!$this->enrolled) {
-            $this->topicStatusMap = [];
-
+        if (! auth()->check() || session('active_role') !== 'disciples') {
             return;
         }
 
-        $this->courseCertificate = Certificate::query()
-            ->where('user_id', $user->id)
-            ->where('type', 'course')
-            ->where('course_id', $this->course->id)
-            ->latest()
-            ->first();
+        $userId = auth()->id();
 
-        $this->syncTopicCompletion($enrollment->id);
+        $ownedTopics = $this->course->topics
+            ->filter(fn (Topic $topic) => (string) $topic->teacher_id === (string) $userId)
+            ->map(function (Topic $topic) {
+                $topic->setAttribute('mentor_role', 'owner');
 
-        $this->topicStatusMap = TopicProgress::query()
-            ->where('course_enrollment_id', $enrollment->id)
-            ->pluck('status', 'topic_id')
-            ->toArray();
+                return $topic;
+            });
+
+        $collaboratorTopicIds = TopicUser::query()
+            ->whereIn('topic_id', $this->course->topics->pluck('id')->all())
+            ->where('user_id', $userId)
+            ->where('status', 'active')
+            ->where('role_type', 'collaborator')
+            ->pluck('topic_id')
+            ->all();
+
+        $collaboratingTopics = $this->course->topics
+            ->filter(fn (Topic $topic) => in_array($topic->id, $collaboratorTopicIds, true) && (string) $topic->teacher_id !== (string) $userId)
+            ->map(function (Topic $topic) {
+                $topic->setAttribute('mentor_role', 'collaborator');
+
+                return $topic;
+            });
+
+        $this->mentoredTopics = $ownedTopics
+            ->concat($collaboratingTopics)
+            ->unique('id')
+            ->sortBy(fn (Topic $topic) => [$topic->sort_order, $topic->name])
+            ->values();
+
+        $this->hasMentoredTopics = $this->mentoredTopics->isNotEmpty();
     }
 
     private function buildAssessmentMeta(): void
     {
-        if (!$this->assessment) {
+        if (! $this->assessment) {
             $this->assessmentMeta = null;
 
             return;
@@ -121,7 +171,6 @@ class CourseShow extends Component
             'time_limit_minutes' => $this->assessment->time_limit_minutes,
             'estimated_minutes' => $estimatedMinutes,
             'question_count' => $questionCount,
-            'start_date' => $this->assessment->created_at?->format('d M Y'),
             'status' => $this->assessment->status,
             'instructions' => [
                 'Baca setiap soal dengan teliti sebelum menjawab.',
@@ -164,52 +213,12 @@ class CourseShow extends Component
         return 'cancelled';
     }
 
-    private function deriveTopicProgressStatus(Topic $topic): string
-    {
-        if ($this->topicHasCompletedSessions($topic)) {
-            return 'completed';
-        }
-
-        if ($topic->videoSessions->isNotEmpty()) {
-            return 'in_progress';
-        }
-
-        return 'not_started';
-    }
-
-    private function syncTopicCompletion(string $enrollmentId): void
-    {
-        $topics = $this->course->topics;
-
-        foreach ($topics as $topic) {
-            $status = $this->deriveTopicProgressStatus($topic);
-
-            TopicProgress::updateOrCreate(
-                [
-                    'course_enrollment_id' => $enrollmentId,
-                    'topic_id' => $topic->id,
-                ],
-                [
-                    'status' => $status,
-                    'started_at' => in_array($status, ['in_progress', 'completed'], true) ? now() : null,
-                    'completed_at' => $status === 'completed' ? now() : null,
-                ]
-            );
-
-            $this->topicStatusMap[$topic->id] = $status;
-        }
-    }
-
     public function getFilteredTopicsProperty()
     {
         $topics = $this->course->topics->map(function (Topic $topic) {
             $status = $this->isGuest
                 ? 'available'
                 : ($this->topicStatusMap[$topic->id] ?? 'not_started');
-
-            if (!$this->isGuest && $this->topicHasCompletedSessions($topic)) {
-                $status = 'completed';
-            }
 
             $percent = match ($status) {
                 'completed' => 100,
@@ -236,7 +245,7 @@ class CourseShow extends Component
             });
         }
 
-        if (!$this->isGuest && $this->topicStatusFilter !== 'all') {
+        if (! $this->isGuest && $this->topicStatusFilter !== 'all') {
             $topics = $topics->filter(fn ($topic) => $topic->progress_status === $this->topicStatusFilter);
         }
 
@@ -268,12 +277,14 @@ class CourseShow extends Component
 
     public function getNotStartedTopicsCountProperty(): int
     {
-        return $this->course->topics->count() - $this->completedTopicsCount - $this->inProgressTopicsCount;
+        return $this->course->topics->count()
+            - $this->completedTopicsCount
+            - $this->inProgressTopicsCount;
     }
 
     public function getAssessmentUnlockedProperty(): bool
     {
-        if (!$this->assessment || !$this->enrolled) {
+        if (! $this->assessment || ! $this->enrolled) {
             return false;
         }
 
@@ -288,7 +299,7 @@ class CourseShow extends Component
 
     public function getActiveAttemptProperty()
     {
-        if (!auth()->check() || !$this->assessment) {
+        if (! auth()->check() || ! $this->assessment) {
             return null;
         }
 
@@ -301,7 +312,7 @@ class CourseShow extends Component
 
     public function getHasPassedAssessmentProperty(): bool
     {
-        if (!auth()->check() || !$this->assessment) {
+        if (! auth()->check() || ! $this->assessment) {
             return false;
         }
 
@@ -362,25 +373,25 @@ class CourseShow extends Component
             && $hasTopics
             && $allTopicsCompleted
             && $assessmentOk
-            && !$this->courseCertificate;
+            && ! $this->courseCertificate;
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $reasons[] = 'Silakan login untuk memeriksa sertifikat.';
         }
 
-        if (auth()->check() && !$this->enrolled) {
+        if (auth()->check() && ! $this->enrolled) {
             $reasons[] = 'Sertifikat hanya tersedia untuk peserta yang sudah enroll.';
         }
 
-        if (!$hasTopics) {
+        if (! $hasTopics) {
             $reasons[] = 'Course ini belum memiliki topic.';
         }
 
-        if ($hasTopics && !$allTopicsCompleted) {
+        if ($hasTopics && ! $allTopicsCompleted) {
             $reasons[] = 'Selesaikan seluruh topic untuk membuka sertifikat.';
         }
 
-        if ($this->assessment && !$assessmentOk) {
+        if ($this->assessment && ! $assessmentOk) {
             $reasons[] = 'Lulus assessment course terlebih dahulu.';
         }
 
@@ -398,7 +409,7 @@ class CourseShow extends Component
 
     public function openAssessmentModal(): void
     {
-        if (!$this->assessment) {
+        if (! $this->assessment) {
             return;
         }
 
@@ -419,7 +430,7 @@ class CourseShow extends Component
 
     public function enroll(CourseService $courseService)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 
@@ -434,8 +445,6 @@ class CourseShow extends Component
                 ->first();
 
             if ($enrollment) {
-                $this->syncTopicCompletion($enrollment->id);
-
                 $this->topicStatusMap = TopicProgress::query()
                     ->where('course_enrollment_id', $enrollment->id)
                     ->pluck('status', 'topic_id')
@@ -450,11 +459,20 @@ class CourseShow extends Component
 
     public function render()
     {
+        $activeTab = $this->activeTopicTab;
+
+        if ($activeTab === 'mentored' && (! auth()->check() || session('active_role') !== 'disciples')) {
+            $activeTab = 'general';
+        }
+
         return view('livewire.courses.course-show', [
             'filteredTopics' => $this->filteredTopics,
             'assessment' => $this->assessment,
             'assessmentMeta' => $this->assessmentMeta,
             'certificateEligibility' => $this->certificateEligibility,
+            'mentoredTopics' => $this->mentoredTopics,
+            'hasMentoredTopics' => $this->hasMentoredTopics,
+            'activeTab' => $activeTab,
         ])->layout('layouts.learning');
     }
 }
