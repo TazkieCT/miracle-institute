@@ -5,8 +5,7 @@
 @endphp
 
 <div class="space-y-6 px-4 sm:px-5 lg:px-20 xl:px-28">
-    <section class="overflow-hidden rounded-3xl bg-slate-900 text-white scale-[0.90] origin-top">
-
+    <section class="overflow-hidden rounded-3xl bg-slate-900 text-white origin-top">
         @if($isGuest || $isMentor)
             <div x-data="slider()" x-init="init()" class="relative">
                 <div class="relative h-[340px] sm:h-[380px] overflow-hidden">
@@ -134,14 +133,30 @@
                     @php
                         $progress = (int) ($item->progress_percentage ?? $item->progress ?? 50);
                         $progress = max(0, min(100, $progress));
+
+                        $courseImage = $item->course->poster ?? null;
+                        $courseImageSrc = null;
+                        if ($courseImage) {
+                            if (\Illuminate\Support\Str::startsWith($courseImage, ['http://', 'https://'])) {
+                                $courseImageSrc = $courseImage;
+                            } else {
+                                // Try with images/thumbnail/ prefix if not already there
+                                if (\Illuminate\Support\Str::startsWith($courseImage, 'images/')) {
+                                    $courseImageSrc = asset($courseImage);
+                                } else {
+                                    // Assume it's just a filename, prefix with images/thumbnail/
+                                    $courseImageSrc = asset('images/thumbnail/' . $courseImage);
+                                }
+                            }
+                        }
                     @endphp
 
                     <a href="{{ route('courses.show', $item->course->slug) }}"
                        class="group overflow-hidden rounded-2xl transition hover:bg-slate-100">
                         <div class="p-2.5">
                             <div class="overflow-hidden rounded-lg thumb">
-                                @if(!empty($item->course->image))
-                                    <img src="{{ asset('storage/' . $item->course->image) }}"
+                                @if($courseImageSrc)
+                                    <img src="{{ $courseImageSrc }}"
                                          alt="{{ $item->course->title }}"
                                          class="h-32 w-full object-cover sm:h-36">
                                 @else
@@ -263,14 +278,31 @@
 
         <div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
             @foreach($featured as $course)
+                @php
+                    $courseImage = $course->poster ?? null;
+                    $courseImageSrc = null;
+                    if ($courseImage) {
+                        if (\Illuminate\Support\Str::startsWith($courseImage, ['http://', 'https://'])) {
+                            $courseImageSrc = $courseImage;
+                        } else {
+                            // Try with images/thumbnail/ prefix if not already there
+                            if (\Illuminate\Support\Str::startsWith($courseImage, 'images/')) {
+                                $courseImageSrc = asset($courseImage);
+                            } else {
+                                // Assume it's just a filename, prefix with images/thumbnail/
+                                $courseImageSrc = asset('images/thumbnail/' . $courseImage);
+                            }
+                        }
+                    }
+                @endphp
                 <div class="cursor-pointer overflow-hidden rounded-2xl transition hover:bg-slate-100"
                      role="link" tabindex="0"
                      onclick="window.location='{{ route('courses.show', $course->slug) }}'"
                      onkeydown="if(event.key==='Enter'){ window.location='{{ route('courses.show', $course->slug) }}' }">
                     <div class="p-2.5">
                         <div class="overflow-hidden rounded-lg thumb">
-                            @if(!empty($course->image))
-                                <img src="{{ asset('storage/' . $course->image) }}"
+                            @if($courseImageSrc)
+                                <img src="{{ $courseImageSrc }}"
                                      alt="{{ $course->title }}"
                                      class="h-32 w-full object-cover sm:h-36">
                             @else
@@ -319,54 +351,54 @@
         </div>
     </section>
 
-    <section class="overflow-hidden rounded-3xl bg-slate-900 px-6 py-6 text-white sm:px-8 lg:px-10">
+    <section class="overflow-hidden rounded-3xl bg-slate-900 px-12 py-6 text-white sm:px-8 lg:px-10">
         <div class="grid grid-cols-1 items-center gap-6 lg:grid-cols-2">
             <div>
                 <h2 class="text-xl sm:text-2xl font-semibold leading-tight">
                     Experience God’s Presence Through Authentic Discipleship
                 </h2>
-                <p class="mt-2 max-w-xl text-xs sm:text-sm leading-6 text-slate-300">
+                <p class="mt-2 max-w-xl text-sm sm:text-base leading-relaxed text-slate-300">
                     Miracle Institute hadir untuk membantu setiap orang bertumbuh dalam iman, mengenal Yesus lebih dalam, dan hidup dalam kuasa serta kasih Tuhan setiap hari.
                 </p>
 
-                <div class="mt-4 grid grid-cols-2 gap-2.5">
-                    <div class="flex items-start gap-2">
-                        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800/60">
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800/60">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#a78bfa" stroke-width="1"/></svg>
                         </div>
-                        <div class="text-xs">
+                        <div class="text-sm">
                             <div class="font-semibold">Learn</div>
-                            <div class="text-slate-300">Biblical truths and spiritual principles</div>
+                            <div class="mt-0.5 text-slate-300">Biblical truths and spiritual principles</div>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-2">
-                        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800/60">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800/60">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z" stroke="#fbbf24" stroke-width="1"/></svg>
                         </div>
-                        <div class="text-xs">
+                        <div class="text-sm">
                             <div class="font-semibold">Disciple</div>
-                            <div class="text-slate-300">Grow deeper in biblical truth</div>
+                            <div class="mt-0.5 text-slate-300">Grow deeper in biblical truth</div>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-2">
-                        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800/60">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800/60">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" rx="2" stroke="#60a5fa" stroke-width="1"/></svg>
                         </div>
-                        <div class="text-xs">
+                        <div class="text-sm">
                             <div class="font-semibold">Community</div>
-                            <div class="text-slate-300">Walk together in faith</div>
+                            <div class="mt-0.5 text-slate-300">Walk together in faith</div>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-2">
-                        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800/60">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800/60">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#34d399" stroke-width="1"/></svg>
                         </div>
-                        <div class="text-xs">
+                        <div class="text-sm">
                             <div class="font-semibold">Impact</div>
-                            <div class="text-slate-300">Become a light for others</div>
+                            <div class="mt-0.5 text-slate-300">Become a light for others</div>
                         </div>
                     </div>
                 </div>

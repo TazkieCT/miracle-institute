@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
         DB::table('companies')->insert([
             [
                 'id' => $this->uuid(),
-                'name' => 'PT Edukasi Digital Nusantara',
+                'name' => 'Miracle Institute',
                 'description' => 'Platform pembelajaran organisasi pemuridan untuk content delivery, session scheduling, assessment, dan certification.',
                 'address' => 'Jl. Jenderal Sudirman No. 88, Jakarta Selatan, DKI Jakarta',
                 'vision' => 'Menjadi ekosistem pembelajaran digital yang relevan, modern, dan terukur untuk pelayanan dan pembinaan.',

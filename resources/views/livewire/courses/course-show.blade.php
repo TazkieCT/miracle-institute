@@ -122,11 +122,25 @@
                     @endguest
                 </div>
         
+                @php
+                    $poster = $course->poster ?? $course->image ?? null;
+                    $posterSrc = null;
+                    if ($poster) {
+                        if (\Illuminate\Support\Str::startsWith($poster, ['http://', 'https://'])) {
+                            $posterSrc = $poster;
+                        } elseif (file_exists(public_path($poster))) {
+                            $posterSrc = asset($poster);
+                        } elseif (file_exists(public_path('storage/' . $poster))) {
+                            $posterSrc = asset('storage/' . $poster);
+                        }
+                    }
+                @endphp
+
                 <div class="relative min-h-[220px] sm:min-h-[280px] bg-slate-100">
-                    <img src="{{ $course->poster }}"
-                         alt="{{ $course->title }}"
-                         class="h-full w-full object-cover">
-        
+                    <img src="{{ $posterSrc ?? asset('images/thumbnail/thumbnail_candle.png') }}"
+                        alt="{{ $course->title }}"
+                        class="h-full w-full object-cover">
+
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent"></div>
                 </div>
             </div>

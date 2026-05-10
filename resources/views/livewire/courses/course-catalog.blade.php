@@ -4,7 +4,7 @@
     $isMentor = session('active_role') === 'disciples';
 @endphp
 
-<div class="space-y-6 lg:px-20 2xl:px-28 scale-[0.90] origin-top">
+<div class="space-y-6 lg:px-20 2xl:px-28 origin-top">
 
     {{-- HEADER --}}
     <section class="rounded-[2rem] border border-slate-200 bg-white overflow-hidden">
@@ -14,10 +14,6 @@
             <div class="space-y-5">
 
                 <div class="space-y-3">
-
-                    <div class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-                        {{ $isMentor ? 'Discipleship Mentor Workspace' : 'Discipleship Learning Catalog' }}
-                    </div>
 
                     <h1 class="max-w-3xl text-3xl xl:text-4xl font-black tracking-tight text-slate-950 leading-tight">
                         {{ $isMentor
@@ -56,16 +52,6 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3">
-                        <div class="text-[11px] uppercase tracking-wide text-slate-400">
-                            Learning Mode
-                        </div>
-
-                        <div class="mt-1 text-xl font-bold text-slate-900">
-                            {{ $isMentor ? 'Mentoring' : 'Student Learning' }}
-                        </div>
-                    </div>
-
                 </div>
 
             </div>
@@ -74,10 +60,6 @@
             <div class="rounded-[2rem] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 text-white flex flex-col justify-between">
 
                 <div>
-                    <div class="text-[11px] uppercase tracking-[0.22em] text-slate-400">
-                        Discipleship Focus
-                    </div>
-
                     <h2 class="mt-3 text-2xl font-bold leading-tight">
                         Learning centered on spiritual growth, mentoring, and consistency.
                     </h2>
@@ -168,35 +150,39 @@
                 $enrolled = in_array($course->id, $enrolledCourseIds, true);
             @endphp
 
-            <article class="group flex h-full flex-col overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <article class="group overflow-hidden rounded-2xl transition hover:bg-slate-100 border border-slate-200 bg-white flex h-full flex-col">
 
-                {{-- IMAGE --}}
-                <div class="relative aspect-[16/9] overflow-hidden bg-slate-100">
+                {{-- IMAGE (dashboard card style) --}}
+                <div class="p-2.5">
+                    <div class="relative overflow-hidden rounded-lg thumb">
+                        @php
+                            $poster = $course->poster ?? null;
+                        @endphp
 
-                    @if(!empty($course->image))
-                        <img src="{{ asset('storage/' . $course->image) }}"
-                            alt="{{ $course->title }}"
-                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
-                    @else
-                        <div class="flex h-full w-full items-center justify-center bg-slate-200">
-                            <svg width="100"
-                                height="56"
-                                viewBox="0 0 280 158"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="280" height="158" fill="#e6e9ee"/>
-                            </svg>
+                        @if(!empty($poster))
+                            <img src="{{ $poster }}"
+                                 alt="{{ $course->title }}"
+                                 class="h-32 w-full object-cover sm:h-36 transition duration-500 group-hover:scale-105">
+                        @elseif(!empty($course->image))
+                            <img src="{{ asset('storage/' . $course->image) }}"
+                                 alt="{{ $course->title }}"
+                                 class="h-32 w-full object-cover sm:h-36 transition duration-500 group-hover:scale-105">
+                        @else
+                            <div class="flex h-32 w-full items-center justify-center bg-slate-200 sm:h-36">
+                                <svg width="100" height="56" viewBox="0 0 280 158" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="280" height="158" fill="#e6e9ee"/>
+                                </svg>
+                            </div>
+                        @endif
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent"></div>
+
+                        <div class="absolute left-3 top-3">
+                            <span class="inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur">
+                                {{ $course->studyProgram?->title }}
+                            </span>
                         </div>
-                    @endif
-
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent"></div>
-
-                    <div class="absolute left-3 top-3">
-                        <span class="inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur">
-                            {{ $course->studyProgram?->title }}
-                        </span>
                     </div>
-
                 </div>
 
                 {{-- BODY --}}

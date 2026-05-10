@@ -9,7 +9,7 @@
 <x-articles.editorial-styles />
 
 <div class="min-h-screen bg-slate-50">
-    <div class="scale-[0.90] origin-top">
+    <div class="origin-top">
         <section class="w-full border-b border-slate-200 bg-white">
             <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
                 <a href="{{ route('articles.index') }}"
