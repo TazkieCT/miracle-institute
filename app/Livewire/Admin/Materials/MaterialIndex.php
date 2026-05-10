@@ -14,16 +14,16 @@ class MaterialIndex extends Component
 {
     use WithAdminTableState;
 
+    public bool $showModal = false;
     public array $openTopics = [];
 
     public ?string $editingId = null;
-    public string $topic_id = '';
-    public string $uploader_id = '';
+    public ?string $topic_id = null;
     public string $name = '';
     public string $visibility = 'Public';
     public string $path = '';
     public string $external_url = '';
-    public string $type = 'pdf';
+    public ?string $type = null;
     public string $status = 'active';
     public int $sort_order = 0;
 
@@ -33,6 +33,8 @@ class MaterialIndex extends Component
     public string $typeFilter = '';
     public string $visibilityFilter = '';
     public string $statusFilter = '';
+
+    protected $listeners = ['materialDeleted' => '$refresh'];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -47,13 +49,12 @@ class MaterialIndex extends Component
     {
         return [
             'topic_id' => 'required|exists:topics,id',
-            'uploader_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
-            'path' => 'nullable|string|max:255',
-            'external_url' => 'nullable|url|max:255',
-            'type' => 'required|string|max:50',
-            'visibility' => 'required|string|max:50',
-            'status' => 'required|string|max:50',
+            'type' => 'required|in:pdf,ppt,video',
+            'path' => 'required_if:type,pdf,ppt|nullable|string|max:255',
+            'external_url' => 'required_if:type,video|nullable|url|max:255',
+            'visibility' => 'required|in:Public,Private',
+            'status' => 'required|in:active,inactive',
             'sort_order' => 'nullable|integer|min:0',
         ];
     }
@@ -66,6 +67,28 @@ class MaterialIndex extends Component
     public function updatedTopicFilter(): void
     {
         $this->resetPage();
+    }
+
+    public function updatedTopicId(): void
+    {
+        if ($this->type && !in_array($this->type, $this->availableTypes, true)) {
+            $this->type = $this->availableTypes[0] ?? null;
+        }
+
+        if ($this->type === 'video') {
+            $this->path = '';
+        } elseif (in_array($this->type, ['pdf', 'ppt'], true)) {
+            $this->external_url = '';
+        }
+    }
+
+    public function updatedType(): void
+    {
+        if ($this->type === 'video') {
+            $this->path = '';
+        } elseif (in_array($this->type, ['pdf', 'ppt'], true)) {
+            $this->external_url = '';
+        }
     }
 
     public function toggleTopic(string $id): void
@@ -84,14 +107,17 @@ class MaterialIndex extends Component
 
         if ($topicId) {
             $this->topic_id = $topicId;
+
             if (!in_array($topicId, $this->openTopics, true)) {
                 $this->openTopics[] = $topicId;
             }
+
+            if ($this->availableTypes) {
+                $this->type = $this->availableTypes[0];
+            }
         }
 
-        if (auth()->check()) {
-            $this->uploader_id = auth()->id();
-        }
+        $this->showModal = true;
     }
 
     public function edit(string $id): void
@@ -100,7 +126,6 @@ class MaterialIndex extends Component
 
         $this->editingId = $row->id;
         $this->topic_id = $row->topic_id;
-        $this->uploader_id = $row->uploader_id;
         $this->name = $row->name;
         $this->path = $row->path ?? '';
         $this->external_url = $row->external_url ?? '';
@@ -112,20 +137,32 @@ class MaterialIndex extends Component
         if (!in_array($row->topic_id, $this->openTopics, true)) {
             $this->openTopics[] = $row->topic_id;
         }
+
+        $this->showModal = true;
     }
 
     public function save(): void
     {
         $this->validate();
-        $this->validateMaterialType();
 
-        $count = Material::where('topic_id', $this->topic_id)
+        $currentCount = Material::where('topic_id', $this->topic_id)
             ->when($this->editingId, fn ($q) => $q->where('id', '!=', $this->editingId))
             ->count();
 
-        if (!$this->editingId && $count >= 3) {
+        if (!$this->editingId && $currentCount >= 3) {
             throw ValidationException::withMessages([
-                'topic_id' => 'Setiap topic hanya boleh memiliki 3 material.',
+                'topic_id' => 'Setiap topic hanya boleh memiliki maksimal 3 material.',
+            ]);
+        }
+
+        $duplicateCheck = Material::where('topic_id', $this->topic_id)
+            ->where('type', $this->type)
+            ->when($this->editingId, fn ($q) => $q->where('id', '!=', $this->editingId))
+            ->exists();
+
+        if ($duplicateCheck) {
+            throw ValidationException::withMessages([
+                'type' => 'Tipe material "' . strtoupper($this->type) . '" sudah ada di topic ini.',
             ]);
         }
 
@@ -133,10 +170,10 @@ class MaterialIndex extends Component
             ['id' => $this->editingId],
             [
                 'topic_id' => $this->topic_id,
-                'uploader_id' => $this->uploader_id,
+                'uploader_id' => auth()->id(),
                 'name' => $this->name,
-                'path' => $this->path,
-                'external_url' => $this->external_url,
+                'path' => $this->type === 'video' ? null : $this->path,
+                'external_url' => $this->type === 'video' ? $this->external_url : null,
                 'type' => $this->type,
                 'visibility' => $this->visibility,
                 'status' => $this->status,
@@ -145,10 +182,7 @@ class MaterialIndex extends Component
         );
 
         $this->resetForm();
-
-        if ($this->topic_id && !in_array($this->topic_id, $this->openTopics, true)) {
-            $this->openTopics[] = $this->topic_id;
-        }
+        $this->dispatch('materialDeleted');
 
         session()->flash('success', 'Material berhasil disimpan.');
     }
@@ -157,34 +191,34 @@ class MaterialIndex extends Component
     {
         Material::findOrFail($id)->delete();
         session()->flash('success', 'Material berhasil dihapus.');
+
+        $this->resetForm();
+        $this->dispatch('materialDeleted');
     }
 
     public function render()
     {
         $topics = Topic::with([
             'course',
-            'materials' => function ($q) {
-                $q->when($this->typeFilter, fn ($q) => $q->where('type', $this->typeFilter))
-                    ->when($this->visibilityFilter, fn ($q) => $q->where('visibility', $this->visibilityFilter))
-                    ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
-                    ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
-                    ->orderBy('sort_order')
-                    ->orderBy('name');
-            },
+            'materials' => fn ($q) => $q
+                ->when($this->typeFilter, fn ($q) => $q->where('type', $this->typeFilter))
+                ->when($this->visibilityFilter, fn ($q) => $q->where('visibility', $this->visibilityFilter))
+                ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+                ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
+                ->orderBy('sort_order')
+                ->orderBy('name'),
         ])
-        ->when($this->courseFilter, fn ($q) => $q->where('course_id', $this->courseFilter))
-        ->when($this->topicFilter, fn ($q) => $q->where('id', $this->topicFilter))
-        ->when($this->search, function ($q) {
-            $q->where(function ($inner) {
+            ->when($this->courseFilter, fn ($q) => $q->where('course_id', $this->courseFilter))
+            ->when($this->topicFilter, fn ($q) => $q->where('id', $this->topicFilter))
+            ->when($this->search, fn ($q) => $q->where(fn ($inner) =>
                 $inner->where('name', 'like', "%{$this->search}%")
                     ->orWhereHas('course', fn ($cq) => $cq->where('title', 'like', "%{$this->search}%"))
-                    ->orWhereHas('materials', fn ($mq) => $mq->where('name', 'like', "%{$this->search}%"));
-            });
-        })
-        ->orderBy('course_id')
-        ->orderBy('sort_order')
-        ->orderBy('name')
-        ->get();
+                    ->orWhereHas('materials', fn ($mq) => $mq->where('name', 'like', "%{$this->search}%"))
+            ))
+            ->orderBy('course_id')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
 
         return view('livewire.admin.materials.index', [
             'topics' => $topics,
@@ -193,34 +227,33 @@ class MaterialIndex extends Component
         ])->layout('layouts.admin');
     }
 
-    private function validateMaterialType(): void
-    {
-        if (!$this->topic_id || !$this->type) {
-            return;
-        }
-
-        $exists = Material::where('topic_id', $this->topic_id)
-            ->where('type', $this->type)
-            ->when($this->editingId, fn ($q) => $q->where('id', '!=', $this->editingId))
-            ->exists();
-
-        if ($exists) {
-            throw ValidationException::withMessages([
-                'type' => 'Tipe material ini sudah ada di topic ini.',
-            ]);
-        }
-    }
-
     public function getAvailableTypesProperty(): array
     {
-        $all = ['pdf', 'ppt', 'video'];
+        if (!$this->topic_id) {
+            return ['pdf', 'ppt', 'video'];
+        }
 
-        $used = Material::where('topic_id', $this->topic_id)
+        $usedTypes = Material::where('topic_id', $this->topic_id)
             ->when($this->editingId, fn ($q) => $q->where('id', '!=', $this->editingId))
+            ->distinct()
             ->pluck('type')
             ->toArray();
 
-        return array_values(array_diff($all, $used));
+        $available = array_values(array_diff(['pdf', 'ppt', 'video'], $usedTypes));
+
+        if ($this->editingId && $this->type && !in_array($this->type, $available, true)) {
+            $available[] = $this->type;
+        }
+
+        return $available;
+    }
+
+    public function getIsTopicFullProperty(): array
+    {
+        return Topic::withCount('materials')
+            ->get()
+            ->mapWithKeys(fn ($topic) => [$topic->id => $topic->materials_count >= 3])
+            ->all();
     }
 
     private function resetForm(): void
@@ -228,7 +261,6 @@ class MaterialIndex extends Component
         $this->reset([
             'editingId',
             'topic_id',
-            'uploader_id',
             'name',
             'path',
             'external_url',
@@ -239,8 +271,9 @@ class MaterialIndex extends Component
         ]);
 
         $this->visibility = 'Public';
-        $this->type = 'pdf';
         $this->status = 'active';
         $this->sort_order = 0;
+        $this->type = null;
+        $this->showModal = false;
     }
 }
