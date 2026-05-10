@@ -76,7 +76,6 @@ class MentorDashboard extends Component
             'mentorTopicsCount' => $topics->count(),
             'mentorMaterialsCount' => $mentorMaterialsCount,
             'mentorStudentsCount' => $mentorStudentsCount,
-            'mentorAssessmentsCount' => $mentorAssessmentsCount,
             'latestTopics' => $latestTopics,
             'topicsByCourse' => $topicsByCourse,
             'latestMaterials' => $latestMaterials,

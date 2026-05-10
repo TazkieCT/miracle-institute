@@ -4,7 +4,7 @@
         subtitle="Ringkasan singkat untuk mengelola topic, material, dan progres pembelajaran."
     />
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-3">
         <div class="rounded-2xl border bg-white p-5">
             <div class="text-xs uppercase tracking-wide text-slate-500">Topics</div>
             <div class="mt-2 text-3xl font-bold text-slate-900">{{ $mentorTopicsCount }}</div>
@@ -21,12 +21,6 @@
             <div class="text-xs uppercase tracking-wide text-slate-500">Students</div>
             <div class="mt-2 text-3xl font-bold text-slate-900">{{ $mentorStudentsCount }}</div>
             <div class="mt-1 text-sm text-slate-500">Siswa yang terhubung</div>
-        </div>
-
-        <div class="rounded-2xl border bg-white p-5">
-            <div class="text-xs uppercase tracking-wide text-slate-500">Assessments</div>
-            <div class="mt-2 text-3xl font-bold text-slate-900">{{ $mentorAssessmentsCount }}</div>
-            <div class="mt-1 text-sm text-slate-500">Assessment pada course</div>
         </div>
     </div>
 

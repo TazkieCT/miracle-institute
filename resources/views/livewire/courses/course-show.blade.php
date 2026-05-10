@@ -4,7 +4,7 @@
     $canTrack = auth()->check() && $enrolled;
 @endphp
 
-<div class="space-y-6 lg:px-36">
+<div>
 
     @if(session('success'))
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-700">
@@ -18,7 +18,7 @@
         </div>
     @endif
     
-    <div class="space-y-6 sm:space-y-8">
+    <div class="space-y-6 lg:px-36">
 
         {{-- HERO --}}
         <section class="overflow-hidden rounded-2xl border bg-white shadow-sm">

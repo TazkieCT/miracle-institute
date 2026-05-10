@@ -1,6 +1,7 @@
 @php
     use Carbon\Carbon;
-    $isMentor = session('active_role') === 'disciples';
+
+    $isStudent = auth()->check() && session('active_role') === 'student';
 @endphp
 
 <div class="space-y-6 lg:px-36 pb-10">
@@ -16,27 +17,28 @@
                     <p class="text-slate-600 max-w-3xl leading-7">{{ $topic->description }}</p>
                 </div>
 
-                @if(session('active_role') === 'disciples' && auth()->user()?->can('manage_topics'))
-                    <a href="{{ route('mentor.materials.index', $topic->slug) }}"
-                       class="inline-flex px-4 py-2 rounded-xl border text-sm">
+                @if($canOpenMentorWorkspace)
+                    <a href="{{ route('mentor.topics.show', $topic->slug) }}"
+                       class="inline-flex px-4 py-2 rounded-xl border text-sm hover:bg-slate-50 transition">
                         Open Mentor Workspace
                     </a>
                 @endif
             </div>
 
             <div class="flex flex-col gap-2 items-start lg:items-end shrink-0">
-
-                @if($topicCompleted)
+                @if($isMentor)
+                    <span class="px-3 py-1 rounded-full text-xs bg-slate-50 text-slate-600 border border-slate-200">
+                        MENTOR REVIEW MODE
+                    </span>
+                @elseif($topicCompleted)
                     <span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
                         TOPIC COMPLETED
                     </span>
                 @else
-                    <span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="px-3 py-1 rounded-full text-xs bg-slate-50 text-slate-600 border border-slate-200">
                         {{ strtoupper($topicStatus ?? 'not_started') }}
                     </span>
                 @endif
-                
-
             </div>
         </div>
 
@@ -47,67 +49,77 @@
             </div>
 
             <div class="rounded-2xl border bg-slate-50 p-4">
-                <div class="text-xs text-slate-500">Sessions</div>
-                <div class="text-2xl font-bold mt-1">{{ $topic->videoSessions->count() }}</div>
-            </div>
-
-            <div class="rounded-2xl border bg-slate-50 p-4">
                 <div class="text-xs text-slate-500">Attendance Records</div>
                 <div class="text-2xl font-bold mt-1">{{ $attendanceStats['checked_in'] }}</div>
             </div>
 
             <div class="rounded-2xl border bg-slate-50 p-4">
+                <div class="text-xs text-slate-500">Sessions</div>
+                <div class="text-2xl font-bold mt-1">
+                    {{ $topic->videoSessions->count() > 0 ? strtoupper($topic->videoSessions->first()->status) : 'NOT AVAILABLE' }}
+                </div>
+            </div>
+
+            <div class="rounded-2xl border bg-slate-50 p-4">
                 <div class="text-xs text-slate-500">Progress</div>
                 <div class="text-2xl font-bold mt-1">
-                    {{ strtoupper($topicStatus ?? 'not_started') }}
+                    @if($isMentor)
+                        REVIEW
+                    @else
+                        {{ strtoupper($topicStatus ?? 'not_started') }}
+                    @endif
                 </div>
             </div>
         </div>
 
         <div class="flex flex-wrap gap-2 justify-between items-center">
-            <div>
-                <button wire:click="setTab('materials')" class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'materials' ? 'bg-slate-900 text-white' : 'bg-white' }}">Materials</button>
-                <button wire:click="setTab('sessions')" class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'sessions' ? 'bg-slate-900 text-white' : 'bg-white' }}">Sessions</button>
+            <div class="flex flex-wrap gap-2">
+                <button wire:click="setTab('materials')"
+                        class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'materials' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white hover:bg-slate-50' }}">
+                    Materials
+                </button>
+                <button wire:click="setTab('sessions')"
+                        class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'sessions' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white hover:bg-slate-50' }}">
+                    Sessions
+                </button>
             </div>
 
-            @if (!$topicCompleted)
-                @if($activeMaterial)
-                    @php
-                        $isLocked = !$hasSessionEnded; 
-                    @endphp
+            @if($canStudentInteract && !$topicCompleted && $activeMaterial && $isStudent)
+                @php
+                    $isLocked = ! $hasSessionEnded;
+                @endphp
 
-                    <button wire:click="{{ $isLocked ? '' : 'markViewed' }}"
-                            {{ $isLocked ? 'disabled' : '' }}
-                            class="group relative px-6 py-2 rounded-xl font-semibold border transition-all duration-300 flex items-center gap-2
-                            {{ $isLocked 
-                                ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed opacity-80' 
-                                : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:shadow-emerald-200/50 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0' 
-                            }}">
-                        
-                        @if($isLocked)
-                            <svg xmlns="http://w3.org" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>Attend session to complete</span>
-                        @else
-                            <svg xmlns="http://w3.org" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Mark topic as completed</span>
-                        @endif
+                <button wire:click="{{ $isLocked ? '' : 'markViewed' }}"
+                        {{ $isLocked ? 'disabled' : '' }}
+                        class="group relative px-6 py-2 rounded-xl font-semibold border transition-all duration-300 flex items-center gap-2
+                        {{ $isLocked
+                            ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed opacity-80'
+                            : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:shadow-emerald-200/50 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0'
+                        }}">
+                    @if($isLocked)
+                        <svg xmlns="http://www.w3.org" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Attend session to complete</span>
+                    @else
+                        <svg xmlns="http://www.w3.org" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Selesaikan Unit</span>
+                    @endif
 
-                        @if($isLocked)
-                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 transition-all rounded bg-gray-800 p-2 text-xs text-white group-hover:scale-100 whitespace-nowrap">
-                                Tombol akan aktif setelah sesi berakhir
-                            </span>
-                        @endif
-                    </button>
-                @endif
+                    @if($isLocked)
+                        <span class="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 transition-all rounded bg-gray-800 p-2 text-xs text-white group-hover:scale-100 whitespace-nowrap">
+                            Tombol akan aktif setelah sesi berakhir
+                        </span>
+                    @endif
+                </button>
+            @elseif($isMentor)
+                <span class="px-4 py-2 rounded-xl border bg-slate-50 text-xs text-slate-500">
+                    Read-only review
+                </span>
             @endif
         </div>
-
-
-
     </section>
 
     @if($activeTab === 'materials')
@@ -278,7 +290,7 @@
                         </div>
                     </div>
 
-                     @livewire('sessions.attendance-button', ['sessionId' => $session->id], key('attendance-'.$session->id))
+                    @livewire('sessions.attendance-button', ['sessionId' => $session->id], key('attendance-'.$session->id))
                 </div>
             @empty
                 <div class="rounded-2xl border border-dashed bg-slate-50 p-6">

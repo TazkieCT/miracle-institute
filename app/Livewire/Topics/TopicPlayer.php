@@ -3,9 +3,10 @@
 namespace App\Livewire\Topics;
 
 use App\Models\Attendance;
-use App\Models\VideoSession;
 use App\Models\Topic;
 use App\Models\TopicProgress;
+use App\Models\TopicUser;
+use App\Models\VideoSession;
 use App\Services\ProgressService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
@@ -22,8 +23,9 @@ class TopicPlayer extends Component
     public ?string $topicStatus = null;
     public bool $topicCompleted = false;
 
-    
-
+    public bool $isMentor = false;
+    public bool $canOpenMentorWorkspace = false;
+    public bool $canStudentInteract = false;
 
     public function mount(string $slug): void
     {
@@ -38,9 +40,36 @@ class TopicPlayer extends Component
 
         $this->authorize('access', $this->topic);
 
+        $user = auth()->user();
+
+        $this->isMentor = $user
+            ? $user->hasRole('disciples')
+            : false;
+
+        $this->canOpenMentorWorkspace = $this->isMentor && $this->canOpenMentorWorkspaceForTopic();
+        $this->canStudentInteract = auth()->check() && ! $this->canOpenMentorWorkspace;
+
         $this->activeMaterialId = $this->topic->materials->first()?->id;
 
         $this->hydrateTopicCompletion();
+    }
+
+    private function canOpenMentorWorkspaceForTopic(): bool
+    {
+        if (! auth()->check()) {
+            return false;
+        }
+
+        if ((string) $this->topic->teacher_id === (string) auth()->id()) {
+            return true;
+        }
+
+        return TopicUser::query()
+            ->where('topic_id', $this->topic->id)
+            ->where('user_id', auth()->id())
+            ->where('role_type', 'collaborator')
+            ->where('status', 'active')
+            ->exists();
     }
 
     private function hydrateTopicCompletion(): void
@@ -50,16 +79,20 @@ class TopicPlayer extends Component
             ->where('course_id', $this->topic->course_id)
             ->first();
 
-        if (!$enrollment) {
+        if (! $enrollment) {
             $this->topicCompleted = false;
+            $this->topicStatus = null;
+
             return;
         }
 
-        $this->topicCompleted = TopicProgress::query()
+        $progress = TopicProgress::query()
             ->where('course_enrollment_id', $enrollment->id)
             ->where('topic_id', $this->topic->id)
-            ->where('status', 'completed')
-            ->exists();
+            ->first();
+
+        $this->topicStatus = $progress?->status;
+        $this->topicCompleted = $this->topicStatus === 'completed';
     }
 
     public function setTab(string $tab): void
@@ -77,7 +110,7 @@ class TopicPlayer extends Component
 
     public function completeTopic(): void
     {
-        abort_unless(auth()->check(), 403);
+        abort_unless($this->canStudentInteract, 403);
 
         $enrollment = auth()->user()
             ?->courseEnrollments()
@@ -88,6 +121,7 @@ class TopicPlayer extends Component
 
         if ($this->topicCompleted) {
             session()->flash('success', 'Topik sudah selesai.');
+
             return;
         }
 
@@ -109,26 +143,33 @@ class TopicPlayer extends Component
 
     public function markViewed(ProgressService $progressService): void
     {
-        if (!$this->activeMaterialId) {
+        abort_unless($this->canStudentInteract, 403);
+
+        if (! $this->activeMaterialId) {
             return;
         }
 
         $progressService->markMaterialViewed(auth()->id(), $this->activeMaterialId);
+        $progressService->recalculateTopicCompletion(auth()->id(), $this->topic->id);
 
+        $this->hydrateTopicCompletion();
         $this->dispatch('$refresh');
+
         session()->flash('success', 'Material marked as viewed.');
     }
 
     public function syncTopicCompletion(ProgressService $progressService): void
     {
-        abort_unless(auth()->check(), 403);
+        abort_unless($this->canStudentInteract, 403);
 
         $progressService->recalculateTopicCompletion(
             auth()->id(),
             $this->topic->id
         );
 
+        $this->hydrateTopicCompletion();
         $this->dispatch('$refresh');
+
         session()->flash('success', 'Topic progress diperbarui.');
     }
 
@@ -162,13 +203,11 @@ class TopicPlayer extends Component
             $topicStatus = $progress?->status;
             $topicCompleted = $topicStatus === 'completed';
 
-            if (auth()->check()) {
-                $sessionAttendances = Attendance::query()
-                    ->where('user_id', auth()->id())
-                    ->whereIn('video_session_id', $this->topic->videoSessions->pluck('id'))
-                    ->get()
-                    ->keyBy('video_session_id');
-            }
+            $sessionAttendances = Attendance::query()
+                ->where('user_id', auth()->id())
+                ->whereIn('video_session_id', $this->topic->videoSessions->pluck('id'))
+                ->get()
+                ->keyBy('video_session_id');
         }
 
         $this->topicStatus = $topicStatus;
@@ -183,9 +222,8 @@ class TopicPlayer extends Component
 
         $hasSessionEnded = VideoSession::query()
             ->where('topic_id', $this->topic->id)
-            ->where('end_at', '<=', now()) 
+            ->where('end_at', '<=', now())
             ->exists();
-
 
         return view('livewire.topics.topic-player', [
             'activeMaterial' => $activeMaterial,
@@ -197,6 +235,9 @@ class TopicPlayer extends Component
             'hasSessionEnded' => $hasSessionEnded,
             'hasMaterials' => $this->topic->materials->isNotEmpty(),
             'hasSessions' => $this->topic->videoSessions->isNotEmpty(),
+            'canOpenMentorWorkspace' => $this->canOpenMentorWorkspace,
+            'canStudentInteract' => $this->canStudentInteract,
+            'isMentor' => $this->isMentor,
         ])->layout('layouts.learning');
     }
 }
