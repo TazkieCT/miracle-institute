@@ -23,9 +23,7 @@ class TopicIndex extends Component
     public string $course_id = '';
     public string $teacher_id = '';
     public string $name = '';
-    public string $category = '';
     public string $description = '';
-    public string $poster = '';
     public string $visibility = 'Public';
     public string $status = 'active';
     public int $sort_order = 0;
@@ -48,9 +46,7 @@ class TopicIndex extends Component
             'course_id' => 'required|exists:courses,id',
             'teacher_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
-            'category' => 'nullable|string|max:255',
             'description' => 'required|string',
-            'poster' => 'nullable|string|max:255',
             'visibility' => 'required|string|max:50',
             'status' => 'required|string|max:50',
             'sort_order' => 'nullable|integer|min:0',
@@ -71,9 +67,7 @@ class TopicIndex extends Component
         $this->course_id = $row->course_id;
         $this->teacher_id = $row->teacher_id;
         $this->name = $row->name;
-        $this->category = $row->category ?? '';
         $this->description = $row->description;
-        $this->poster = $row->poster;
         $this->visibility = $row->visibility;
         $this->status = $row->status;
         $this->sort_order = (int) ($row->sort_order ?? 0);
@@ -93,10 +87,9 @@ class TopicIndex extends Component
                 'course_id' => $this->course_id,
                 'teacher_id' => $this->teacher_id,
                 'name' => $this->name,
-                'category' => $this->category ?: ($course->studyProgram?->title ?? null),
+                'category' => strtolower($course->studyProgram->title),
                 'slug' => Str::slug($this->name),
                 'description' => $this->description,
-                'poster' => $this->poster,
                 'visibility' => $this->visibility,
                 'status' => $this->status,
                 'sort_order' => $this->sort_order,
@@ -104,6 +97,8 @@ class TopicIndex extends Component
         );
 
         $this->resetForm();
+        $this->showModal = false;
+        
         session()->flash('success', 'Topic berhasil disimpan.');
     }
 
@@ -159,9 +154,7 @@ class TopicIndex extends Component
             'course_id',
             'teacher_id',
             'name',
-            'category',
             'description',
-            'poster',
             'visibility',
             'status',
             'sort_order',
