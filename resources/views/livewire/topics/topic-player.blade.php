@@ -123,7 +123,7 @@
     </section>
 
     @if($activeTab === 'materials')
-        <section class="space-y-4">
+        <section class="space-y-4" x-data="{ openMaterialCompleteModal: false }">
             <div class="rounded-2xl bg-white border p-5 space-y-4">
                 <div class="flex items-end justify-between gap-4">
                     <div>
@@ -158,7 +158,7 @@
                     <div class="rounded-2xl border border-dashed bg-slate-50 p-6">
                         <div class="font-semibold text-slate-900">Materi sedang dipersiapkan</div>
                         <p class="text-sm text-slate-600 mt-1 leading-6">
-                            Mentor belum mengunggah materi untuk topik ini. Tab ini tetap aktif agar mahasiswa bisa memantau pembaruan kapan saja.
+                            Mentor belum mengunggah materi untuk topik ini.
                         </p>
                     </div>
                 @endforelse
@@ -170,6 +170,22 @@
                         <h2 class="text-xl font-semibold">{{ $activeMaterial?->name ?? 'Select a material' }}</h2>
                         <p class="text-sm text-slate-500">Type: {{ $activeMaterial?->type ?? '-' }}</p>
                     </div>
+
+                    @if($isStudent && $activeMaterial)
+                        @if($activeMaterialProgress?->status === 'completed')
+                            <span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                MATERIAL COMPLETED
+                            </span>
+                        @else
+                            <button
+                                type="button"
+                                x-on:click="openMaterialCompleteModal = true"
+                                class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm transition hover:bg-slate-700"
+                            >
+                                Mark Complete
+                            </button>
+                        @endif
+                    @endif
                 </div>
 
                 @if($activeMaterial && $materialUrl)
@@ -195,10 +211,141 @@
                     <div class="rounded-2xl border border-dashed bg-slate-50 p-6">
                         <div class="font-semibold text-slate-900">Belum ada materi tersedia</div>
                         <p class="text-sm text-slate-600 mt-1 leading-6">
-                            Mentor belum menyiapkan materi untuk topik ini. Silakan kembali nanti atau cek tab Sessions untuk informasi jadwal belajar.
+                            Mentor belum menyiapkan materi untuk topik ini.
                         </p>
                     </div>
                 @endif
+            </div>
+
+            <div
+                x-cloak
+                x-show="openMaterialCompleteModal"
+                x-transition.opacity
+                x-on:keydown.escape.window="openMaterialCompleteModal = false"
+                x-on:material-complete-done.window="openMaterialCompleteModal = false"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
+                x-on:click.self="openMaterialCompleteModal = false"
+            >
+                <div class="w-full max-w-2xl rounded-3xl bg-white shadow-2xl max-h-[92vh] overflow-y-auto">
+                    <div class="flex items-start justify-between gap-4 border-b px-5 py-4 sm:px-6 sm:py-5">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">Mark Complete</h3>
+                            <p class="mt-1 text-sm text-slate-500">
+                                Tandai material ini selesai. Topic akan selesai otomatis jika semua syarat terpenuhi.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            x-on:click="openMaterialCompleteModal = false"
+                            class="rounded-xl border px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
+                        >
+                            Close
+                        </button>
+                    </div>
+
+                    <div class="px-5 py-5 sm:px-6 sm:py-6 space-y-4">
+                        <div class="grid gap-3 sm:grid-cols-2 text-sm">
+                            <div class="rounded-xl border bg-slate-50 p-4">
+                                <div class="text-xs text-slate-500">Material</div>
+                                <div class="mt-1 font-semibold text-slate-900">{{ $activeMaterial?->name ?? '-' }}</div>
+                            </div>
+
+                            <div class="rounded-xl border bg-slate-50 p-4">
+                                <div class="text-xs text-slate-500">Current Status</div>
+                                <div class="mt-1 font-semibold text-slate-900">
+                                    {{ $activeMaterialProgress?->status ? strtoupper($activeMaterialProgress->status) : 'NOT STARTED' }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
+                            <div class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                Completion Check
+                            </div>
+
+                            <div class="space-y-2 text-sm">
+                                <div class="flex items-center justify-between gap-3">
+                                    <span>All materials completed</span>
+                                    <span class="rounded-full px-2 py-1 text-xs border
+                                        {{ data_get($completionSnapshot, 'all_materials_completed') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' }}">
+                                        {{ data_get($completionSnapshot, 'all_materials_completed') ? 'YES' : 'NO' }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3">
+                                    <span>Attendance complete</span>
+                                    <span class="rounded-full px-2 py-1 text-xs border
+                                        {{ data_get($completionSnapshot, 'all_sessions_attended') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200' }}">
+                                        {{ data_get($completionSnapshot, 'all_sessions_attended') ? 'YES' : 'NO' }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3">
+                                    <span>Topic can be completed now</span>
+                                    <span class="rounded-full px-2 py-1 text-xs border
+                                        {{ data_get($completionSnapshot, 'can_complete') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-700 border-slate-200' }}">
+                                        {{ data_get($completionSnapshot, 'can_complete') ? 'READY' : 'PENDING' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if(! empty(data_get($completionSnapshot, 'incomplete_materials')))
+                            <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+                                <div class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                    Remaining Materials
+                                </div>
+                                <div class="mt-2 text-sm text-slate-700">
+                                    {{ implode(', ', data_get($completionSnapshot, 'incomplete_materials', [])) }}
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(! empty(data_get($completionSnapshot, 'missing_sessions')))
+                            <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+                                <div class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                    Missing Session Attendance
+                                </div>
+                                <div class="mt-2 text-sm text-slate-700">
+                                    {{ implode(', ', data_get($completionSnapshot, 'missing_sessions', [])) }}
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(! empty(data_get($completionSnapshot, 'reasons')))
+                            <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                                <div class="text-xs font-medium uppercase tracking-wide text-amber-700">
+                                    Validation Note
+                                </div>
+                                <ul class="mt-2 list-disc pl-5 text-sm text-amber-800 space-y-1">
+                                    @foreach(data_get($completionSnapshot, 'reasons', []) as $reason)
+                                        <li>{{ $reason }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <div class="flex items-center justify-end gap-3 border-t pt-4">
+                            <button
+                                type="button"
+                                x-on:click="openMaterialCompleteModal = false"
+                                class="rounded-xl border px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="button"
+                                wire:click="confirmMaterialCompletion"
+                                wire:loading.attr="disabled"
+                                class="rounded-xl px-4 py-2 text-sm font-medium text-white bg-slate-900 hover:bg-slate-700 disabled:opacity-50"
+                            >
+                                Mark Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     @endif

@@ -6,8 +6,9 @@ use App\Models\Attendance;
 use App\Models\Topic;
 use App\Models\TopicProgress;
 use App\Models\TopicUser;
-use App\Models\VideoSession;
+use App\Models\MaterialProgress;
 use App\Services\ProgressService;
+use App\Models\VideoSession;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Cache;
@@ -29,6 +30,29 @@ class TopicPlayer extends Component
     public bool $isMentor = false;
     public bool $canOpenMentorWorkspace = false;
     public bool $canStudentInteract = false;
+
+    public function confirmMaterialCompletion(ProgressService $progressService): void
+    {
+        abort_unless($this->canStudentInteract, 403);
+
+        if (! $this->activeMaterialId) {
+            session()->flash('error', 'Tidak ada material aktif.');
+            return;
+        }
+
+        $result = $progressService->markMaterialCompleted(auth()->id(), $this->activeMaterialId);
+
+        $this->hydrateTopicCompletion();
+
+        $this->dispatch('material-complete-done');
+
+        session()->flash(
+            'success',
+            $result['snapshot']['can_complete']
+                ? 'Material selesai. Topik juga dinyatakan completed.'
+                : 'Material selesai. Topik akan completed setelah semua materi dan attendance terpenuhi.'
+        );
+    }
 
     public function mount(string $slug): void
     {
@@ -305,6 +329,7 @@ class TopicPlayer extends Component
 
     public function render()
     {
+        
         $activeMaterial = $this->topic->materials->firstWhere('id', $this->activeMaterialId);
 
         $materialUrl = null;
@@ -355,7 +380,47 @@ class TopicPlayer extends Component
             ->where('end_at', '<=', now())
             ->exists();
 
+                $activeMaterialProgress = null;
+        $completionSnapshot = [
+            'total_materials' => 0,
+            'completed_materials' => 0,
+            'incomplete_materials' => [],
+            'all_materials_completed' => false,
+            'total_sessions' => 0,
+            'attended_sessions' => 0,
+            'missing_sessions' => [],
+            'all_sessions_attended' => false,
+            'can_complete' => false,
+            'reasons' => [],
+        ];
+
+        $canMarkComplete = false;
+
+        if (auth()->check() && $this->canStudentInteract && $activeMaterial) {
+            $enrolled = auth()->user()
+                ?->courseEnrollments()
+                ->where('course_id', $this->topic->course_id)
+                ->exists();
+
+            if ($enrolled) {
+                $activeMaterialProgress = MaterialProgress::query()
+                    ->where('user_id', auth()->id())
+                    ->where('material_id', $activeMaterial->id)
+                    ->first();
+
+                $completionSnapshot = app(ProgressService::class)
+                    ->topicCompletionSnapshot(auth()->id(), $this->topic->id);
+
+                $canMarkComplete = ! ($activeMaterialProgress?->status === 'completed');
+            }
+        }
+
+
+
         return view('livewire.topics.topic-player', [
+            'activeMaterialProgress' => $activeMaterialProgress,
+            'completionSnapshot' => $completionSnapshot,
+            'canMarkComplete' => $canMarkComplete,
             'activeMaterial' => $activeMaterial,
             'materialUrl' => $materialUrl,
             'topicStatus' => $topicStatus,

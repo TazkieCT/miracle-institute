@@ -2,107 +2,213 @@
 
 namespace App\Services;
 
-use App\Events\TopicCompleted;
-use App\Models\Certificate;
+use App\Models\Attendance;
 use App\Models\CourseEnrollment;
 use App\Models\Material;
 use App\Models\MaterialProgress;
 use App\Models\Topic;
 use App\Models\TopicProgress;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ProgressService
 {
     public function markMaterialViewed(string $userId, string $materialId): MaterialProgress
     {
-        $material = Material::with('topic')->findOrFail($materialId);
+        $material = Material::query()
+            ->with(['topic'])
+            ->findOrFail($materialId);
 
-        $progress = MaterialProgress::updateOrCreate(
-            [
+        $this->requireEnrollment($userId, $material->topic->course_id);
+
+        return DB::transaction(function () use ($userId, $material) {
+            $progress = MaterialProgress::query()->firstOrNew([
                 'user_id' => $userId,
-                'material_id' => $materialId,
-            ],
-            [
-                'status' => 'completed',
-                'completed_at' => now(),
-            ]
-        );
+                'material_id' => $material->id,
+            ]);
 
-        $this->checkTopicCompletion($userId, $material->topic_id, $material->topic->course_id);
+            $progress->status = 'in_progress';
+            $progress->started_at ??= now();
+            $progress->save();
 
-        return $progress;
+            return $progress;
+        });
     }
 
-    protected function checkTopicCompletion(string $userId, string $topicId, string $courseId): void
+    public function markMaterialCompleted(string $userId, string $materialId): array
     {
-        $topic = Topic::with('materials')->findOrFail($topicId);
+        $material = Material::query()
+            ->with(['topic.materials', 'topic.videoSessions'])
+            ->findOrFail($materialId);
 
-        $totalMaterials = $topic->materials->count();
-        if ($totalMaterials === 0) {
-            return;
-        }
+        $enrollment = $this->requireEnrollment($userId, $material->topic->course_id);
 
-        $completedMaterials = MaterialProgress::query()
-            ->where('user_id', $userId)
-            ->whereIn('material_id', $topic->materials->pluck('id'))
-            ->where('status', 'completed')
-            ->count();
+        return DB::transaction(function () use ($userId, $material, $enrollment) {
+            $materialProgress = MaterialProgress::query()->firstOrNew([
+                'user_id' => $userId,
+                'material_id' => $material->id,
+            ]);
 
-        if ($completedMaterials >= $totalMaterials) {
-            $enrollment = CourseEnrollment::where('user_id', $userId)
-                ->where('course_id', $courseId)
-                ->firstOrFail();
+            $materialProgress->status = 'completed';
+            $materialProgress->started_at ??= now();
+            $materialProgress->completed_at = now();
+            $materialProgress->save();
 
-            $this->markTopicCompleted($userId, $topicId, $courseId, $enrollment->id);
-        }
-    }
+            $snapshot = $this->topicCompletionSnapshot($userId, $material->topic_id);
 
-    public function markTopicCompleted(string $userId, string $topicId, string $courseId, string $enrollmentId): TopicProgress
-    {
-        $existingStatus = TopicProgress::where('course_enrollment_id', $enrollmentId)
-            ->where('topic_id', $topicId)
-            ->value('status');
+            $topicProgress = TopicProgress::query()->firstOrNew([
+                'course_enrollment_id' => $enrollment->id,
+                'topic_id' => $material->topic_id,
+            ]);
 
-        $progress = TopicProgress::updateOrCreate(
-            [
-                'course_enrollment_id' => $enrollmentId,
-                'topic_id' => $topicId,
-            ],
-            [
-                'status' => 'completed',
-                'completed_at' => now(),
-            ]
-        );
+            $topicProgress->status = $snapshot['can_complete'] ? 'completed' : 'in_progress';
+            $topicProgress->started_at ??= now();
 
-        if ($existingStatus !== 'completed') {
-            event(new TopicCompleted(
-                $userId,
-                $topicId,
-                $courseId,
-                $enrollmentId,
-                $progress->id
-            ));
-        }
+            if ($snapshot['can_complete']) {
+                $topicProgress->completed_at = now();
+            } else {
+                $topicProgress->completed_at = null;
+            }
 
-        return $progress;
-    }
+            $topicProgress->save();
 
-    public function getUserSummary(?User $user): array
-    {
-        if (!$user) {
             return [
-                'courses_enrolled' => 0,
-                'topics_completed' => 0,
-                'certificates' => 0,
+                'material_progress' => $materialProgress,
+                'topic_progress' => $topicProgress,
+                'snapshot' => $snapshot,
             ];
+        });
+    }
+
+    public function topicCompletionSnapshot(string $userId, string $topicId): array
+    {
+        $topic = Topic::query()
+            ->with([
+                'materials:id,topic_id,name,sort_order',
+                'videoSessions:id,topic_id,title,start_at,end_at,status',
+            ])
+            ->findOrFail($topicId);
+
+        $this->requireEnrollment($userId, $topic->course_id);
+
+        $materialIds = $topic->materials->pluck('id')->all();
+
+        $materialProgresses = MaterialProgress::query()
+            ->where('user_id', $userId)
+            ->whereIn('material_id', $materialIds)
+            ->get()
+            ->keyBy('material_id');
+
+        $completedMaterials = $topic->materials->filter(function ($material) use ($materialProgresses) {
+            return ($materialProgresses[$material->id]->status ?? null) === 'completed';
+        });
+
+        $incompleteMaterials = $topic->materials->filter(function ($material) use ($materialProgresses) {
+            return ($materialProgresses[$material->id]->status ?? null) !== 'completed';
+        });
+
+        $qualifyingSessions = $topic->videoSessions->filter(function ($session) {
+            return $session->status !== 'cancelled';
+        });
+
+        $sessionIds = $qualifyingSessions->pluck('id')->all();
+
+        $attendedSessionIds = Attendance::query()
+            ->where('user_id', $userId)
+            ->whereIn('video_session_id', $sessionIds)
+            ->whereIn('status', ['present', 'late'])
+            ->pluck('video_session_id')
+            ->all();
+
+        $missingSessions = $qualifyingSessions->filter(function ($session) use ($attendedSessionIds) {
+            return ! in_array($session->id, $attendedSessionIds, true);
+        });
+
+        $allMaterialsCompleted = $topic->materials->isEmpty()
+            ? true
+            : $completedMaterials->count() === $topic->materials->count();
+
+        $allSessionsAttended = $qualifyingSessions->isEmpty()
+            ? true
+            : count($attendedSessionIds) === $qualifyingSessions->count();
+
+        $reasons = [];
+
+        if (! $allMaterialsCompleted) {
+            $reasons[] = 'Semua materi harus selesai terlebih dahulu.';
+        }
+
+        if (! $allSessionsAttended) {
+            $reasons[] = 'Attendance sesi video belum lengkap.';
+        }
+
+        if ($topic->videoSessions->whereIn('status', ['scheduled', 'ongoing'])->isNotEmpty()) {
+            $reasons[] = 'Masih ada sesi yang belum selesai.';
         }
 
         return [
-            'courses_enrolled' => CourseEnrollment::where('user_id', $user->id)->count(),
-            'topics_completed' => TopicProgress::whereHas('courseEnrollment', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })->where('status', 'completed')->count(),
-            'certificates' => Certificate::where('user_id', $user->id)->count(),
+            'total_materials' => $topic->materials->count(),
+            'completed_materials' => $completedMaterials->count(),
+            'incomplete_materials' => $incompleteMaterials->pluck('name')->values()->all(),
+            'all_materials_completed' => $allMaterialsCompleted,
+            'total_sessions' => $qualifyingSessions->count(),
+            'attended_sessions' => count($attendedSessionIds),
+            'missing_sessions' => $missingSessions->pluck('title')->values()->all(),
+            'all_sessions_attended' => $allSessionsAttended,
+            'can_complete' => $allMaterialsCompleted && $allSessionsAttended && $topic->videoSessions->whereIn('status', ['scheduled', 'ongoing'])->isEmpty(),
+            'reasons' => $reasons,
         ];
+    }
+
+    public function syncTopicCompletion(string $userId, string $topicId): TopicProgress
+    {
+        $snapshot = $this->topicCompletionSnapshot($userId, $topicId);
+
+        $topic = Topic::query()
+            ->findOrFail($topicId);
+
+        $enrollment = $this->requireEnrollment($userId, $topic->course_id);
+
+        return DB::transaction(function () use ($snapshot, $enrollment, $topicId) {
+            $topicProgress = TopicProgress::query()->firstOrNew([
+                'course_enrollment_id' => $enrollment->id,
+                'topic_id' => $topicId,
+            ]);
+
+            if ($snapshot['can_complete']) {
+                $topicProgress->status = 'completed';
+                $topicProgress->started_at ??= now();
+                $topicProgress->completed_at = now();
+            } else {
+                $topicProgress->status = 'in_progress';
+                $topicProgress->started_at ??= now();
+                $topicProgress->completed_at = null;
+            }
+
+            $topicProgress->save();
+
+            return $topicProgress;
+        });
+    }
+
+    public function recalculateTopicCompletion(string $userId, string $topicId): TopicProgress
+    {
+        return $this->syncTopicCompletion($userId, $topicId);
+    }
+
+    private function requireEnrollment(string $userId, string $courseId): CourseEnrollment
+    {
+        $enrollment = CourseEnrollment::query()
+            ->where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->first();
+
+        if (! $enrollment) {
+            throw ValidationException::withMessages([
+                'course' => 'User belum terdaftar pada course ini.',
+            ]);
+        }
+
+        return $enrollment;
     }
 }
