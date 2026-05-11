@@ -1,4 +1,4 @@
-<footer class="bg-slate-900 text-slate-300 mt-16">
+<footer class="bg-[#004777] text-slate-300 mt-16">
     <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
         <!-- BRAND -->
@@ -6,9 +6,6 @@
             @php $company = \App\Models\Company::first(); @endphp
 
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/logo.png') }}"
-                     alt="{{ $company?->name ?? config('app.name') }} logo"
-                     class="h-32 w-32 object-contain">
                 <span class="text-white font-semibold text-lg">
                     {{ $company?->name ?? config('app.name') }}
                 </span>
@@ -120,7 +117,7 @@
     <!-- BOTTOM -->
     <div class="border-t border-white/10">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-center items-center text-xs text-slate-500">
-            <span>© {{ date('Y') }} {{ $company?->name ?? config('app.name') }}. All rights reserved.</span>
+            <span>© {{ date('Y') }} RIG Edutech - BINUS University. All rights reserved.</span>
         </div>
     </div>
 

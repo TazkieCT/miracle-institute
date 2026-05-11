@@ -29,6 +29,10 @@ class Topic extends Model
     {
         return $this->hasMany(Material::class);
     }
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class);
+    }
 
     public function videoSessions()
     {
@@ -60,5 +64,15 @@ class Topic extends Model
     public function certificates()
     {
         return $this->hasMany(Certificate::class);
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function collaborators()
+    {
+        return $this->hasMany(\App\Models\TopicUser::class, 'topic_id');
     }
 }

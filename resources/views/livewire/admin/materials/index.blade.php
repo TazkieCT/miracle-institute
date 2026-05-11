@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal') }" class="space-y-6">
+<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
     <x-ui.page-header
         title="Materials"
         subtitle="Halaman utama materi. Detail material berada di bawah topic yang relevan."
@@ -62,9 +62,21 @@
                                     <button wire:click="toggleTopic('{{ $topic->id }}')" class="px-3 py-1 border rounded-lg text-sm">
                                         {{ in_array($topic->id, $openTopics) ? 'Hide' : 'Show' }}
                                     </button>
-                                    <button wire:click="create('{{ $topic->id }}')" class="px-3 py-1 bg-slate-900 text-white rounded-lg text-sm">
-                                        + Add
-                                    </button>
+
+                                    @if(($this->isTopicFull[$topic->id] ?? false))
+                                        <button
+                                            class="px-3 py-1 bg-slate-300 text-slate-500 rounded-lg text-sm cursor-not-allowed flex items-center gap-1"
+                                            title="Topic sudah memiliki 3 material. Hapus salah satu untuk menambah baru."
+                                            disabled
+                                        >
+                                            <span>+ Add</span>
+                                            <span class="text-xs bg-red-100 text-red-700 px-1 py-0.5 rounded-full">FULL</span>
+                                        </button>
+                                    @else
+                                        <button wire:click="create('{{ $topic->id }}')" class="px-3 py-1 bg-slate-900 text-white rounded-lg text-sm hover:bg-slate-800 transition-colors">
+                                            + Add
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
 
@@ -123,72 +135,70 @@
         @endforelse
     </div>
 
-    <div x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-semibold">{{ $editingId ? 'Edit Material' : 'New Material' }}</h2>
-                <button @click="open = false; $wire.set('showModal', false)" class="text-slate-500">✕</button>
-            </div>
-
-            <div class="space-y-3">
-                <select wire:model="topic_id" class="w-full border rounded-xl px-4 py-2">
-                    <option value="">Select topic</option>
-                    @foreach($topics as $t)
-                        <option value="{{ $t->id }}">{{ $t->course?->title }} · {{ $t->name }}</option>
-                    @endforeach
-                </select>
-
-                <select wire:model="uploader_id" class="w-full border rounded-xl px-4 py-2">
-                    <option value="">Select uploader</option>
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->full_name }}</option>
-                    @endforeach
-                </select>
-
-                <input wire:model="name" class="w-full border rounded-xl px-4 py-2" placeholder="Material name">
-
-                <select wire:model="type" class="w-full border rounded-xl px-4 py-2">
-                    <option value="">Select type</option>
-                    @foreach($this->availableTypes as $opt)
-                        <option value="{{ $opt }}">{{ strtoupper($opt) }}</option>
-                    @endforeach
-                    @if($editingId && !in_array($this->type, $this->availableTypes))
-                        <option value="{{ $this->type }}">{{ strtoupper($this->type) }} (current)</option>
-                    @endif
-                </select>
-
-                @if($this->type === 'video')
-                    <input wire:model="external_url" class="w-full border rounded-xl px-4 py-2" placeholder="YouTube / Vimeo URL">
-                @elseif(in_array($this->type, ['pdf', 'ppt']))
-                    <input wire:model="path" class="w-full border rounded-xl px-4 py-2" placeholder="File path (storage)">
-                @endif
-
-                <div class="grid grid-cols-2 gap-3">
-                    <select wire:model="visibility" class="border rounded-xl px-4 py-2">
-                        <option value="Public">Public</option>
-                        <option value="Private">Private</option>
-                    </select>
-
-                    <select wire:model="status" class="border rounded-xl px-4 py-2">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
+    <template x-teleport="body">
+        <div x-show="open"
+             x-cloak
+             x-transition
+             @click.self="open = false; $wire.set('showModal', false)"
+             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-semibold">{{ $editingId ? 'Edit Material' : 'New Material' }}</h2>
+                    <button @click="open = false; $wire.set('showModal', false)" class="text-slate-500">✕</button>
                 </div>
 
-                <input wire:model="sort_order" type="number" class="w-full border rounded-xl px-4 py-2" placeholder="Sort order">
+                <div class="space-y-3">
+                    <select wire:model.live="topic_id" class="w-full border rounded-xl px-4 py-2">
+                        <option value="">Select topic</option>
+                        @foreach($topics as $t)
+                            <option value="{{ $t->id }}">{{ $t->course?->title }} · {{ $t->name }}</option>
+                        @endforeach
+                    </select>
 
-                @error('topic_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('uploader_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('name') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('type') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('external_url') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('path') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-            </div>
+                    <input wire:model.live="name" class="w-full border rounded-xl px-4 py-2" placeholder="Material name">
 
-            <div class="flex justify-end gap-2 pt-3">
-                <button @click="open = false; $wire.set('showModal', false)" class="px-4 py-2 border rounded-xl">Cancel</button>
-                <button wire:click="save" class="px-4 py-2 bg-slate-900 text-white rounded-xl">Save</button>
+                    <select wire:model.live="type" wire:key="material-type-{{ $topic_id ?? 'new' }}-{{ $editingId ?? 'create' }}" class="w-full border rounded-xl px-4 py-2">
+                        <option value="">Select type</option>
+                        @foreach($this->availableTypes as $opt)
+                            <option value="{{ $opt }}">{{ strtoupper($opt) }}</option>
+                        @endforeach
+                        @if($editingId && $type && !in_array($type, $this->availableTypes))
+                            <option value="{{ $type }}">{{ strtoupper($type) }} (current)</option>
+                        @endif
+                    </select>
+
+                    @if($type === 'video')
+                        <input wire:model.live="external_url" class="w-full border rounded-xl px-4 py-2" placeholder="YouTube / Vimeo URL">
+                    @elseif(in_array($type, ['pdf', 'ppt'], true))
+                        <input wire:model.live="path" class="w-full border rounded-xl px-4 py-2" placeholder="File path (storage)">
+                    @endif
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <select wire:model.live="visibility" class="border rounded-xl px-4 py-2">
+                            <option value="Public">Public</option>
+                            <option value="Private">Private</option>
+                        </select>
+
+                        <select wire:model.live="status" class="border rounded-xl px-4 py-2">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <input wire:model.live="sort_order" type="number" class="w-full border rounded-xl px-4 py-2" placeholder="Sort order">
+
+                    @error('topic_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('name') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('type') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('external_url') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('path') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3">
+                    <button @click="open = false; $wire.set('showModal', false)" class="px-4 py-2 border rounded-xl">Cancel</button>
+                    <button wire:click="save" class="px-4 py-2 bg-slate-900 text-white rounded-xl">Save</button>
+                </div>
             </div>
         </div>
-    </div>
+    </template>
 </div>

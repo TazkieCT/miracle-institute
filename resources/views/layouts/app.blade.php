@@ -10,7 +10,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-slate-50 text-[#004777]">
     <div class="min-h-screen flex">
         @include('layouts.partials.sidebar')
 

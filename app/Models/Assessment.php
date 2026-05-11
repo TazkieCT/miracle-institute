@@ -20,11 +20,6 @@ class Assessment extends Model
         return $this->belongsTo(Course::class);
     }
 
-    public function topic()
-    {
-        return $this->belongsTo(Topic::class);
-    }
-
     public function questions()
     {
         return $this->hasMany(Question::class);
@@ -34,4 +29,5 @@ class Assessment extends Model
     {
         return $this->hasMany(AssessmentAttempt::class);
     }
+
 }

@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'assessment.access' => \App\Http\Middleware\EnsureAssessmentAccess::class,
             'attendance.window' => \App\Http\Middleware\EnsureAttendanceWindow::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'role.redirect' => \App\Http\Middleware\RedirectIfRoleMismatch::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

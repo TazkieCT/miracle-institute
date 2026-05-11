@@ -2,89 +2,374 @@
 
 namespace App\Services;
 
-use App\Events\TopicCompleted;
+use App\Models\Assessment;
+use App\Models\AssessmentAttempt;
+use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\CourseEnrollment;
 use App\Models\Material;
+use App\Models\User;
 use App\Models\MaterialProgress;
 use App\Models\Topic;
 use App\Models\TopicProgress;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ProgressService
 {
     public function markMaterialViewed(string $userId, string $materialId): MaterialProgress
     {
-        $material = Material::with('topic')->findOrFail($materialId);
+        $material = Material::query()
+            ->with(['topic'])
+            ->findOrFail($materialId);
 
-        $progress = MaterialProgress::updateOrCreate(
-            [
+        $this->requireEnrollment($userId, $material->topic->course_id);
+
+        return DB::transaction(function () use ($userId, $material) {
+            $progress = MaterialProgress::query()->firstOrNew([
                 'user_id' => $userId,
-                'material_id' => $materialId,
-            ],
-            [
-                'status' => 'completed',
-                'completed_at' => now(),
-            ]
-        );
+                'material_id' => $material->id,
+            ]);
 
-        $this->checkTopicCompletion($userId, $material->topic_id, $material->topic->course_id);
+            $progress->status = 'in_progress';
+            $progress->started_at ??= now();
+            $progress->save();
 
-        return $progress;
+            return $progress;
+        });
     }
 
-    protected function checkTopicCompletion(string $userId, string $topicId, string $courseId): void
+    public function markMaterialCompleted(string $userId, string $materialId): array
     {
-        $topic = Topic::with('materials')->findOrFail($topicId);
+        $material = Material::query()
+            ->with(['topic.materials', 'topic.videoSessions'])
+            ->findOrFail($materialId);
 
-        $totalMaterials = $topic->materials->count();
-        if ($totalMaterials === 0) {
-            return;
-        }
+        $enrollment = $this->requireEnrollment($userId, $material->topic->course_id);
 
-        $completedMaterials = MaterialProgress::query()
+        return DB::transaction(function () use ($userId, $material, $enrollment) {
+            $materialProgress = MaterialProgress::query()->firstOrNew([
+                'user_id' => $userId,
+                'material_id' => $material->id,
+            ]);
+
+            $materialProgress->status = 'completed';
+            $materialProgress->started_at ??= now();
+            $materialProgress->completed_at = now();
+            $materialProgress->save();
+
+            $snapshot = $this->topicCompletionSnapshot($userId, $material->topic_id);
+
+            $topicProgress = TopicProgress::query()->firstOrNew([
+                'course_enrollment_id' => $enrollment->id,
+                'topic_id' => $material->topic_id,
+            ]);
+
+            $topicProgress->status = $snapshot['can_complete'] ? 'completed' : 'in_progress';
+            $topicProgress->started_at ??= now();
+
+            if ($snapshot['can_complete']) {
+                $topicProgress->completed_at = now();
+            } else {
+                $topicProgress->completed_at = null;
+            }
+
+            $topicProgress->save();
+
+            $this->syncCertificateState($userId, $material->topic->course_id);
+
+            return [
+                'material_progress' => $materialProgress,
+                'topic_progress' => $topicProgress,
+                'snapshot' => $snapshot,
+            ];
+        });
+    }
+
+    public function topicCompletionSnapshot(string $userId, string $topicId): array
+    {
+        $topic = Topic::query()
+            ->with([
+                'materials:id,topic_id,name,sort_order',
+                'videoSessions:id,topic_id,title,start_at,end_at,status',
+            ])
+            ->findOrFail($topicId);
+
+        $this->requireEnrollment($userId, $topic->course_id);
+
+        $this->syncEndedSessionAbsences($userId, $topic);
+
+        $materialIds = $topic->materials->pluck('id')->all();
+
+        $materialProgresses = MaterialProgress::query()
             ->where('user_id', $userId)
-            ->whereIn('material_id', $topic->materials->pluck('id'))
-            ->where('status', 'completed')
-            ->count();
+            ->whereIn('material_id', $materialIds)
+            ->get()
+            ->keyBy('material_id');
 
-        if ($completedMaterials >= $totalMaterials) {
-            $enrollment = CourseEnrollment::where('user_id', $userId)
-                ->where('course_id', $courseId)
-                ->firstOrFail();
+        $completedMaterials = $topic->materials->filter(function ($material) use ($materialProgresses) {
+            return ($materialProgresses[$material->id]->status ?? null) === 'completed';
+        });
 
-            $this->markTopicCompleted($userId, $topicId, $courseId, $enrollment->id);
+        $incompleteMaterials = $topic->materials->filter(function ($material) use ($materialProgresses) {
+            return ($materialProgresses[$material->id]->status ?? null) !== 'completed';
+        });
+
+        $qualifyingSessions = $topic->videoSessions->filter(function ($session) {
+            return $session->status !== 'cancelled';
+        });
+
+        $sessionIds = $qualifyingSessions->pluck('id')->all();
+
+        $attendances = Attendance::query()
+            ->where('user_id', $userId)
+            ->whereIn('video_session_id', $sessionIds)
+            ->get()
+            ->keyBy('video_session_id');
+
+        $satisfiedSessionIds = [];
+
+        foreach ($qualifyingSessions as $session) {
+            $attendance = $attendances->get($session->id);
+            $sessionEnded = $this->sessionHasEnded($session);
+
+            $isSatisfied = false;
+
+            if ($attendance && in_array($attendance->status, ['present', 'late'], true)) {
+                $isSatisfied = true;
+            } elseif ($sessionEnded && $attendance && $attendance->status === 'absent') {
+                $isSatisfied = true;
+            } elseif ($sessionEnded && ! $attendance) {
+                $isSatisfied = true;
+            }
+
+            if ($isSatisfied) {
+                $satisfiedSessionIds[] = $session->id;
+            }
+        }
+
+        $missingSessions = $qualifyingSessions
+            ->reject(fn ($session) => in_array($session->id, $satisfiedSessionIds, true))
+            ->pluck('title')
+            ->values()
+            ->all();
+
+        $allMaterialsCompleted = $topic->materials->isEmpty()
+            ? true
+            : $completedMaterials->count() === $topic->materials->count();
+
+        $allSessionsRequirementMet = $qualifyingSessions->isEmpty()
+            ? true
+            : count($satisfiedSessionIds) === $qualifyingSessions->count();
+
+        $allSessionsClosed = $qualifyingSessions->isEmpty()
+            ? true
+            : $qualifyingSessions->every(fn ($session) => $this->sessionHasEnded($session));
+
+        $reasons = [];
+
+        if (! $allMaterialsCompleted) {
+            $reasons[] = 'Semua materi harus selesai terlebih dahulu.';
+        }
+
+        if (! $allSessionsClosed) {
+            $reasons[] = 'Masih ada sesi video yang belum berakhir.';
+        }
+
+        if (! $allSessionsRequirementMet) {
+            $reasons[] = 'Masih ada syarat sesi yang belum terpenuhi.';
+        }
+
+        return [
+            'total_materials' => $topic->materials->count(),
+            'completed_materials' => $completedMaterials->count(),
+            'incomplete_materials' => $incompleteMaterials->pluck('name')->values()->all(),
+            'all_materials_completed' => $allMaterialsCompleted,
+            'total_sessions' => $qualifyingSessions->count(),
+            'attended_sessions' => count($satisfiedSessionIds),
+            'missing_sessions' => $missingSessions,
+            'all_sessions_attended' => $allSessionsRequirementMet,
+            'all_sessions_closed' => $allSessionsClosed,
+            'can_complete' => $allMaterialsCompleted && $allSessionsRequirementMet && $allSessionsClosed,
+            'reasons' => $reasons,
+        ];
+    }
+
+    public function syncTopicCompletion(string $userId, string $topicId): TopicProgress
+    {
+        $snapshot = $this->topicCompletionSnapshot($userId, $topicId);
+
+        $topic = Topic::query()
+            ->findOrFail($topicId);
+
+        $enrollment = $this->requireEnrollment($userId, $topic->course_id);
+
+        return DB::transaction(function () use (
+            $snapshot,
+            $enrollment,
+            $topicId,
+            $topic,
+            $userId
+        ) {
+            $topicProgress = TopicProgress::query()->firstOrNew([
+                'course_enrollment_id' => $enrollment->id,
+                'topic_id' => $topicId,
+            ]);
+
+            if ($snapshot['can_complete']) {
+                $topicProgress->status = 'completed';
+                $topicProgress->started_at ??= now();
+                $topicProgress->completed_at = now();
+            } else {
+                $topicProgress->status = 'in_progress';
+                $topicProgress->started_at ??= now();
+                $topicProgress->completed_at = null;
+            }
+
+            $topicProgress->save();
+
+            $this->syncCertificateState($userId, $topic->course_id);
+
+            return $topicProgress;
+        });
+    }
+
+    public function recalculateTopicCompletion(string $userId, string $topicId): TopicProgress
+    {
+        return $this->syncTopicCompletion($userId, $topicId);
+    }
+
+    public function syncCertificateState(string $userId, string $courseId): ?Certificate
+    {
+        $assessment = Assessment::query()
+            ->where('course_id', $courseId)
+            ->first();
+
+        if (! $assessment) {
+            return null;
+        }
+
+        $enrollment = CourseEnrollment::query()
+            ->where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->first();
+
+        if (! $enrollment) {
+            return null;
+        }
+
+        $topicIds = Topic::query()
+            ->where('course_id', $courseId)
+            ->pluck('id')
+            ->all();
+
+        $allTopicsCompleted = empty($topicIds)
+            ? true
+            : TopicProgress::query()
+                ->where('course_enrollment_id', $enrollment->id)
+                ->whereIn('topic_id', $topicIds)
+                ->where('status', 'completed')
+                ->count() === count($topicIds);
+
+        $assessmentPassed = AssessmentAttempt::query()
+            ->where('assessment_id', $assessment->id)
+            ->where('user_id', $userId)
+            ->where('passed', true)
+            ->whereNotNull('submitted_at')
+            ->exists();
+
+        $eligible = $allTopicsCompleted && $assessmentPassed;
+
+        $certificate = Certificate::query()
+            ->where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->first();
+
+        if ($eligible) {
+            return DB::transaction(function () use ($userId, $courseId, $certificate) {
+                $certificate = Certificate::query()->firstOrNew([
+                    'user_id' => $userId,
+                    'course_id' => $courseId,
+                ]);
+
+                if (! $certificate->certificate_number) {
+                    $certificate->certificate_number = $this->generateCertificateNumber();
+                }
+
+                $certificate->status = 'issued';
+                $certificate->issued_at = now();
+                $certificate->save();
+
+                return $certificate;
+            });
+        }
+
+        if ($certificate && $certificate->status === 'issued') {
+            $certificate->status = 'revoked';
+            $certificate->save();
+        }
+
+        return $certificate;
+    }
+
+    private function syncEndedSessionAbsences(string $userId, Topic $topic): void
+    {
+        $endedSessions = $topic->videoSessions->filter(function ($session) {
+            return $session->status !== 'cancelled'
+                && $session->end_at
+                && $session->end_at->lte(now());
+        });
+
+        foreach ($endedSessions as $session) {
+            $attendance = Attendance::query()
+                ->where('user_id', $userId)
+                ->where('video_session_id', $session->id)
+                ->first();
+
+            if ($attendance) {
+                continue;
+            }
+
+            Attendance::query()->create([
+                'user_id' => $userId,
+                'video_session_id' => $session->id,
+                'status' => 'absent',
+                'check_in_at' => null,
+                'clock_out_at' => null,
+                'ip_address' => request()->ip(),
+            ]);
         }
     }
 
-    public function markTopicCompleted(string $userId, string $topicId, string $courseId, string $enrollmentId): TopicProgress
+    private function sessionHasEnded($session): bool
     {
-        $existingStatus = TopicProgress::where('course_enrollment_id', $enrollmentId)
-            ->where('topic_id', $topicId)
-            ->value('status');
-
-        $progress = TopicProgress::updateOrCreate(
-            [
-                'course_enrollment_id' => $enrollmentId,
-                'topic_id' => $topicId,
-            ],
-            [
-                'status' => 'completed',
-                'completed_at' => now(),
-            ]
-        );
-
-        if ($existingStatus !== 'completed') {
-            event(new TopicCompleted(
-                $userId,
-                $topicId,
-                $courseId,
-                $enrollmentId,
-                $progress->id
-            ));
+        if (! $session->end_at) {
+            return false;
         }
 
-        return $progress;
+        return $session->end_at->lte(now());
+    }
+
+    private function generateCertificateNumber(): string
+    {
+        return 'CERT-' . now()->format('Ymd') . '-' . Str::upper(Str::random(8));
+    }
+
+    private function requireEnrollment(string $userId, string $courseId): CourseEnrollment
+    {
+        $enrollment = CourseEnrollment::query()
+            ->where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->first();
+
+        if (! $enrollment) {
+            throw ValidationException::withMessages([
+                'course' => 'User belum terdaftar pada course ini.',
+            ]);
+        }
+
+        return $enrollment;
     }
 
     public function getUserSummary(?User $user): array

@@ -28,8 +28,8 @@ class CourseIndex extends Component
     public string $title = '';
     public string $slug = '';
     public string $poster = '';
-    public int $credit = 0;
-    public int $quota = 0;
+    public int $credit;
+    public int $quota;
     public string $description = '';
     public string $status = 'active';
 
@@ -59,7 +59,7 @@ class CourseIndex extends Component
 
     public function updatedTitle($value): void
     {
-        if (! $this->editingId) {
+        if (!$this->editingId) {
             $this->slug = Str::slug($value);
         }
     }
@@ -169,8 +169,6 @@ class CourseIndex extends Component
             'status',
         ]);
 
-        $this->credit = 0;
-        $this->quota = 0;
         $this->status = 'active';
     }
 }

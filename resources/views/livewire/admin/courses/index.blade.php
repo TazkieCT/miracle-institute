@@ -12,24 +12,6 @@
         </div>
     </x-ui.page-header>
 
-    {{-- STATS --}}
-    {{-- <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        @foreach([
-            ['Courses', $stats['courses']],
-            ['Topics', $stats['topics']],
-            ['Materials', $stats['materials']],
-            ['Sessions', $stats['sessions']],
-            ['Assessments', $stats['assessments']],
-            ['Certificates', $stats['certificates']],
-        ] as [$label, $value])
-            <div class="rounded-2xl bg-white border p-5">
-                <div class="text-xs text-slate-500">{{ $label }}</div>
-                <div class="text-2xl font-bold mt-1">
-                    {{ number_format($value) }}
-                </div>
-            </div>
-        @endforeach
-    </div> --}}
 
     {{-- TABLE --}}
     <section class="space-y-4">
@@ -155,99 +137,79 @@
         <div>{{ $rows->links() }}</div>
     </section>
 
-    {{-- MODAL --}}
+
+  
     <template x-teleport="body">
-           <div x-show="open"
-               x-cloak
-               x-transition
-               class="fixed inset-0 z-50 flex items-center justify-center">
-
-            <!-- overlay -->
-            <div class="absolute inset-0 bg-black/50"
-                 @click="open = false">
-            </div>
-
-            <!-- modal -->
-            <div @click.stop
-                 class="relative bg-white w-full max-w-2xl rounded-2xl shadow-xl p-6 space-y-4 mx-4">
-
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold">
-                        {{ $editingId ? 'Edit Course' : 'New Course' }}
-                    </h2>
-
-                    <button @click="open = false"
-                            class="text-slate-500 hover:text-black">
-                        ✕
-                    </button>
+        <div 
+            x-show="open"
+            x-cloak
+            x-transition
+            @click.self="open = false; $wire.set('showModal', false)"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        >
+            
+            <div @click.stop class="w-full max-w-2xl max-h-[90vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden">
+                
+                <!-- HEADER -->
+                <div class="p-6 border-b bg-white flex justify-between items-center shrink-0">
+                    <h2 class="text-lg font-semibold">{{ $editingId ? 'Edit Course' : 'New Course' }}</h2>
+                    <button @click="open = false; $wire.set('showModal', false)" class="text-slate-500 hover:text-black">✕</button>
                 </div>
 
-                <select wire:model="study_program_id" class="w-full border rounded-xl px-4 py-2">
-                    <option value="">Select program</option>
-                    @foreach($studyPrograms as $sp)
-                        <option value="{{ $sp->id }}">{{ $sp->title }}</option>
-                    @endforeach
-                </select>
+                <!-- BODY - SCROLLABLE -->
+                <div class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <!-- ISI FORM TETAP SAMA - JANGAN DIUBAH -->
+                    <select wire:model="study_program_id" class="w-full border rounded-xl px-4 py-2">
+                        <option value="">Select program</option>
+                        @foreach($studyPrograms as $sp)
+                            <option value="{{ $sp->id }}">{{ $sp->title }}</option>
+                        @endforeach
+                    </select>
 
-                <input wire:model="title"
-                       class="w-full border rounded-xl px-4 py-2"
-                       placeholder="Title">
+                    <input wire:model="title" class="w-full border rounded-xl px-4 py-2" placeholder="Title">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-slate-500 mb-1 block">Poster preview</label>
-                        <div class="h-40 w-full bg-slate-100 rounded-xl flex items-center justify-center overflow-hidden border">
-                            @if($poster)
-                                <img src="{{ asset($poster) }}" alt="poster" class="object-contain h-full w-full">
-                            @else
-                                <div class="text-xs text-slate-400">No poster selected</div>
-                            @endif
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-slate-500 mb-1 block">Poster preview</label>
+                            <div class="h-40 w-full bg-slate-100 rounded-xl flex items-center justify-center overflow-hidden border">
+                                @if($poster)
+                                    <img src="{{ asset($poster) }}" alt="poster" class="object-contain h-full w-full">
+                                @else
+                                    <div class="text-xs text-slate-400">No poster selected</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-slate-500 mb-1 block">Choose from thumbnails</label>
+                            <div id="file:thumbnail" class="grid grid-cols-4 gap-2 max-h-40 overflow-auto p-1 border rounded-lg">
+                                @foreach($thumbnails as $t)
+                                    <button type="button" wire:click="selectThumbnail('{{ $t }}')" class="overflow-hidden rounded-md p-0 border {{ $poster === $t ? 'ring-2 ring-slate-900' : '' }}">
+                                        <img src="{{ asset($t) }}" class="h-16 w-full object-cover" alt="thumb">
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="text-xs text-slate-500 mb-1 block">Choose from thumbnails</label>
-                        <div id="file:thumbnail" class="grid grid-cols-4 gap-2 max-h-40 overflow-auto p-1 border rounded-lg">
-                            @foreach($thumbnails as $t)
-                                <button type="button" wire:click="selectThumbnail('{{ $t }}')" class="overflow-hidden rounded-md p-0 border {{ $poster === $t ? 'ring-2 ring-slate-900' : '' }}">
-                                    <img src="{{ asset($t) }}" class="h-16 w-full object-cover" alt="thumb">
-                                </button>
-                            @endforeach
-                        </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input wire:model="credit" type="number" class="border rounded-xl px-4 py-2" placeholder="Credit">
+                        <input wire:model="quota" type="number" class="border rounded-xl px-4 py-2" placeholder="Quota">
                     </div>
+
+                    <textarea wire:model="description" rows="4" class="w-full border rounded-xl px-4 py-2" placeholder="Description"></textarea>
+
+                    <select wire:model="status" class="w-full border rounded-xl px-4 py-2">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <input wire:model="credit" type="number"
-                           class="border rounded-xl px-4 py-2" placeholder="Credit">
-
-                    <input wire:model="quota" type="number"
-                           class="border rounded-xl px-4 py-2" placeholder="Quota">
+                <!-- FOOTER -->
+                <div class="p-6 border-t bg-slate-50 flex justify-end gap-2 shrink-0">
+                    <button @click="open = false; $wire.set('showModal', false)" class="px-4 py-2 border rounded-xl">Cancel</button>
+                    <button wire:click="save" class="px-4 py-2 bg-slate-900 text-white rounded-xl">Save</button>
                 </div>
-
-                <textarea wire:model="description"
-                          rows="4"
-                          class="w-full border rounded-xl px-4 py-2"
-                          placeholder="Description"></textarea>
-
-                <select wire:model="status"
-                        class="w-full border rounded-xl px-4 py-2">
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
-
-                <div class="flex justify-end gap-2">
-                    <button @click="open = false"
-                            class="px-4 py-2 border rounded-xl">
-                        Cancel
-                    </button>
-
-                    <button wire:click="save"
-                            class="px-4 py-2 bg-slate-900 text-white rounded-xl">
-                        Save
-                    </button>
-                </div>
-
             </div>
         </div>
     </template>
