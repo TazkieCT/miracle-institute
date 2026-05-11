@@ -11,19 +11,19 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <div class="rounded-2xl border border-[#004777]/10 bg-white p-5 shadow-sm">
             <p class="text-sm text-[#004777]/70">Courses Enrolled</p>
-            <p class="mt-2 text-3xl font-black text-[#004777]">{{ $summary['courses_enrolled'] ?? 0 }}</p>
+            <p class="mt-2 text-3xl font-bold text-[#004777]">{{ $summary['courses_enrolled'] ?? 0 }}</p>
             <p class="mt-2 text-sm text-[#004777]/70">Yang sedang anda ikuti</p>
         </div>
 
         <div class="rounded-2xl border border-[#004777]/10 bg-white p-5 shadow-sm">
             <p class="text-sm text-[#004777]/70">Topics Completed</p>
-            <p class="mt-2 text-3xl font-black text-[#004777]">{{ $summary['topics_completed'] ?? 0 }}</p>
+            <p class="mt-2 text-3xl font-bold text-[#004777]">{{ $summary['topics_completed'] ?? 0 }}</p>
             <p class="mt-2 text-sm text-[#004777]/70">Topik yang telah diselesaikan</p>
         </div>
 
         <div class="rounded-2xl border border-[#004777]/10 bg-white p-5 shadow-sm">
             <p class="text-sm text-[#004777]/70">Certificates</p>
-            <p class="mt-2 text-3xl font-black text-[#004777]">{{ $summary['certificates'] ?? 0 }}</p>
+            <p class="mt-2 text-3xl font-bold text-[#004777]">{{ $summary['certificates'] ?? 0 }}</p>
             <p class="mt-2 text-sm text-[#004777]/70">Yang sudah anda dapatkan</p>
         </div>
     </div>

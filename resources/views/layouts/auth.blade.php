@@ -17,7 +17,7 @@
                     <div class="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
                         Miracle Institute
                     </div>
-                    <h1 class="text-4xl font-black leading-tight xl:text-5xl">
+                    <h1 class="text-4xl font-bold leading-tight xl:text-5xl">
                         Grow in faith with a calm, focused learning space.
                     </h1>
                 </div>

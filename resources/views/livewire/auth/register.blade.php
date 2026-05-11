@@ -1,6 +1,6 @@
 <div class="space-y-5 rounded-[2rem] border border-[#004777]/10 bg-white/95 p-6 shadow-[0_20px_60px_-24px_rgba(0,71,119,0.25)] backdrop-blur">
     <div>
-        <h1 class="text-2xl font-black text-[#004777]">Sign Up</h1>
+        <h1 class="text-2xl font-bold text-[#004777]">Sign Up</h1>
         <p class="text-sm text-[#004777]/70">Buat akun baru.</p>
     </div>
 
