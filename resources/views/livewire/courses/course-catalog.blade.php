@@ -7,7 +7,7 @@
 <div class="space-y-6 lg:px-20 2xl:px-28 origin-top">
 
     {{-- HEADER --}}
-    <section class="rounded-[2rem] border border-slate-200 bg-white overflow-hidden">
+    <section class="rounded-[2rem] border border-[#004777]/10 bg-white overflow-hidden">
         <div class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] p-7 xl:p-8">
 
             {{-- LEFT --}}
@@ -15,13 +15,13 @@
 
                 <div class="space-y-3">
 
-                    <h1 class="max-w-3xl text-3xl xl:text-4xl font-black tracking-tight text-slate-950 leading-tight">
+                    <h1 class="max-w-3xl text-3xl xl:text-4xl font-black tracking-tight text-[#004777] leading-tight">
                         {{ $isMentor
                             ? 'Guide, mentor, and oversee discipleship learning journeys.'
                             : 'Grow through structured discipleship learning and mentoring.' }}
                     </h1>
 
-                    <p class="max-w-2xl text-sm leading-7 text-slate-600">
+                    <p class="max-w-2xl text-sm leading-7 text-[#004777]/70">
                         {{ $isMentor
                             ? 'Kelola course pemuridan, pantau topic pembelajaran, dan bimbing peserta melalui materi yang terstruktur.'
                             : 'Pelajari materi pemuridan secara sistematis melalui topic, mentoring session, assessment, dan progress learning.' }}
@@ -32,22 +32,22 @@
                 {{-- STATS --}}
                 <div class="flex flex-wrap gap-3 text-sm">
 
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3">
-                        <div class="text-[11px] uppercase tracking-wide text-slate-400">
+                    <div class="rounded-2xl border border-[#004777]/10 bg-[#35A7FF]/8 px-5 py-3">
+                        <div class="text-[11px] uppercase tracking-wide text-[#35A7FF]/70">
                             Available Courses
                         </div>
 
-                        <div class="mt-1 text-xl font-bold text-slate-900">
+                        <div class="mt-1 text-xl font-bold text-[#004777]">
                             {{ $courses->total() }}
                         </div>
                     </div>
 
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3">
-                        <div class="text-[11px] uppercase tracking-wide text-slate-400">
+                    <div class="rounded-2xl border border-[#004777]/10 bg-[#35A7FF]/8 px-5 py-3">
+                        <div class="text-[11px] uppercase tracking-wide text-[#35A7FF]/70">
                             Study Programs
                         </div>
 
-                        <div class="mt-1 text-xl font-bold text-slate-900">
+                        <div class="mt-1 text-xl font-bold text-[#004777]">
                             {{ $studyPrograms->count() }}
                         </div>
                     </div>
@@ -57,22 +57,22 @@
             </div>
 
             {{-- RIGHT --}}
-            <div class="rounded-[2rem] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 text-white flex flex-col justify-between">
+            <div class="rounded-[2rem] border border-[#004777]/10 bg-gradient-to-br from-[#004777] via-[#00365E] to-[#003050] p-6 text-white flex flex-col justify-between">
 
                 <div>
                     <h2 class="mt-3 text-2xl font-bold leading-tight">
                         Learning centered on spiritual growth, mentoring, and consistency.
                     </h2>
 
-                    <p class="mt-3 text-sm leading-6 text-slate-300">
+                    <p class="mt-3 text-sm leading-6 text-white/75">
                         Setiap course dirancang untuk membantu peserta memahami materi pemuridan secara bertahap melalui pembelajaran terstruktur dan pendampingan mentor.
                     </p>
                 </div>
 
                 <div class="mt-7 grid grid-cols-2 gap-3">
 
-                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <div class="text-[11px] text-slate-400">
+                    <div class="rounded-2xl border border-white/10 bg-[#35A7FF]/20 p-4">
+                        <div class="text-[11px] text-white/70">
                             Structured
                         </div>
 
@@ -81,8 +81,8 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <div class="text-[11px] text-slate-400">
+                    <div class="rounded-2xl border border-white/10 bg-[#35A7FF]/20 p-4">
+                        <div class="text-[11px] text-white/70">
                             Guided
                         </div>
 
@@ -99,7 +99,7 @@
     </section>
 
     {{-- FILTER --}}
-    <section class="rounded-[2rem] border border-slate-200 bg-white p-5">
+    <section class="rounded-[2rem] border border-[#004777]/10 bg-white p-5">
         <div class="grid gap-4 lg:grid-cols-4">
 
             <div class="lg:col-span-2">
@@ -110,7 +110,7 @@
             </div>
 
             <select wire:model="studyProgram"
-                    class="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-slate-400 focus:bg-white">
+                    class="h-12 rounded-2xl border border-[#004777]/15 bg-[#f4faff] px-4 text-sm outline-none focus:border-[#35A7FF] focus:bg-white">
                 <option value="">All Study Programs</option>
 
                 @foreach($studyPrograms as $sp)
@@ -123,14 +123,14 @@
             <div class="grid grid-cols-2 gap-3">
 
                 <select wire:model="sort"
-                        class="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-slate-400 focus:bg-white">
+                        class="h-12 rounded-2xl border border-[#004777]/15 bg-[#f4faff] px-4 text-sm outline-none focus:border-[#35A7FF] focus:bg-white">
                     <option value="latest">Newest</option>
                     <option value="title">Title</option>
                     <option value="topics">Most Topics</option>
                 </select>
 
                 <select wire:model="perPage"
-                        class="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-slate-400 focus:bg-white">
+                        class="h-12 rounded-2xl border border-[#004777]/15 bg-[#f4faff] px-4 text-sm outline-none focus:border-[#35A7FF] focus:bg-white">
                     <option value="8">8</option>
                     <option value="12">12</option>
                     <option value="24">24</option>
@@ -150,7 +150,7 @@
                 $enrolled = in_array($course->id, $enrolledCourseIds, true);
             @endphp
 
-            <article class="group overflow-hidden rounded-2xl transition hover:bg-slate-100 border border-slate-200 bg-white flex h-full flex-col">
+            <article class="group overflow-hidden rounded-2xl transition hover:bg-[#35A7FF]/8 border border-[#004777]/10 bg-white flex h-full flex-col">
 
                 {{-- IMAGE (dashboard card style) --}}
                 <div class="p-2.5">
@@ -178,7 +178,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent"></div>
 
                         <div class="absolute left-3 top-3">
-                            <span class="inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur">
+                            <span class="inline-flex rounded-full border border-white/20 bg-[#35A7FF]/30 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur">
                                 {{ $course->studyProgram?->title }}
                             </span>
                         </div>
@@ -191,22 +191,22 @@
                     <div class="flex-1 space-y-3">
 
                         <div class="space-y-1.5 min-h-[76px]">
-                            <h3 class="line-clamp-2 text-[15px] font-bold leading-snug text-slate-900">
+                            <h3 class="line-clamp-2 text-[15px] font-bold leading-snug text-[#004777]">
                                 {{ $course->title }}
                             </h3>
 
-                            <p class="line-clamp-2 text-xs leading-5 text-slate-500">
+                            <p class="line-clamp-2 text-xs leading-5 text-[#004777]/70">
                                 {{ $course->description ?: 'No description available for this course.' }}
                             </p>
                         </div>
 
                         <div class="flex flex-wrap gap-1.5 text-[11px]">
 
-                            <span class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">
+                            <span class="rounded-full border border-[#004777]/15 bg-[#35A7FF]/10 px-2.5 py-1 text-[#004777]">
                                 {{ $course->topics_count }} Topics
                             </span>
 
-                            <span class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">
+                            <span class="rounded-full border border-[#004777]/15 bg-[#35A7FF]/10 px-2.5 py-1 text-[#004777]">
                                 {{ ucfirst($course->status) }}
                             </span>
 
@@ -224,14 +224,14 @@
                     <div class="mt-4 flex items-center gap-2">
 
                         <a href="{{ route('courses.show', $course->slug) }}"
-                        class="inline-flex flex-1 items-center justify-center rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-slate-800">
+                        class="inline-flex flex-1 items-center justify-center rounded-xl bg-[#004777] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#004777]/90">
                             Open
                         </a>
 
                         @if($isMentor)
 
                             <a href="{{ route('mentor.topics.index') }}"
-                            class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100">
+                            class="inline-flex items-center justify-center rounded-xl border border-[#004777]/15 px-4 py-2.5 text-xs font-medium text-[#004777] transition hover:bg-[#35A7FF]/10">
                                 Manage
                             </a>
 
@@ -242,7 +242,7 @@
                                 @unless($enrolled)
 
                                     <button wire:click="enroll('{{ $course->id }}')"
-                                            class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100">
+                                            class="inline-flex items-center justify-center rounded-xl border border-[#004777]/15 px-4 py-2.5 text-xs font-medium text-[#004777] transition hover:bg-[#35A7FF]/10">
                                         Enroll
                                     </button>
 
@@ -251,7 +251,7 @@
                             @else
 
                                 <a href="{{ route('login') }}"
-                                class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100">
+                                class="inline-flex items-center justify-center rounded-xl border border-[#004777]/15 px-4 py-2.5 text-xs font-medium text-[#004777] transition hover:bg-[#35A7FF]/10">
                                     Login
                                 </a>
 
@@ -268,10 +268,10 @@
         @empty
 
             <div class="col-span-full">
-                <div class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-20 text-center">
+                <div class="rounded-[2rem] border border-dashed border-[#004777]/20 bg-white px-8 py-20 text-center">
 
-                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-                        <svg class="h-8 w-8 text-slate-400"
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#35A7FF]/10">
+                        <svg class="h-8 w-8 text-[#004777]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -282,11 +282,11 @@
                         </svg>
                     </div>
 
-                    <h3 class="mt-5 text-lg font-bold text-slate-900">
+                    <h3 class="mt-5 text-lg font-bold text-[#004777]">
                         No courses found
                     </h3>
 
-                    <p class="mt-2 text-sm text-slate-500">
+                    <p class="mt-2 text-sm text-[#004777]/70">
                         Try changing filters or keywords.
                     </p>
 
