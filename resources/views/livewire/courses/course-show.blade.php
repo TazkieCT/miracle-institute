@@ -173,11 +173,6 @@
                                     </span>
                                 @endif
 
-                                <button wire:click="openAssessmentModal"
-                                        class="px-3 py-2 rounded-lg bg-[#35A7FF] text-white text-xs font-medium hover:bg-[#0088D4] transition">
-                                    View Details
-                                </button>
-
                                 @if($this->assessmentUnlocked)
                                     @if($this->activeAttempt)
                                         <a href="{{ route('assessments.take', $assessment->id) }}"

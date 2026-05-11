@@ -22,6 +22,8 @@ class AssessmentTaker extends Component
     public int $currentIndex = 0;
 
     public bool $openSubmit = false;
+    public bool $showIntro = true;
+    public bool $hasExistingAttempt = false;
 
     public function mount(Assessment $assessment, AssessmentFlowService $flowService): void
     {
@@ -35,8 +37,20 @@ class AssessmentTaker extends Component
             return;
         }
 
+        $this->hasExistingAttempt = $flowService->latestAttempt($this->assessment->id, Auth::id())?->submitted_at === null;
+
         $this->attempt = $flowService->startAttempt($this->assessment->id, Auth::id());
 
+        if ($this->attempt->submitted_at) {
+            redirect()->route('assessments.result', $this->attempt->id);
+            return;
+        }
+
+        $this->showIntro = true;
+    }
+
+    public function beginQuiz(AssessmentFlowService $flowService): void
+    {
         if ($this->attempt->submitted_at) {
             redirect()->route('assessments.result', $this->attempt->id);
             return;
@@ -60,6 +74,7 @@ class AssessmentTaker extends Component
             ->all();
 
         $this->loadAnswers();
+        $this->showIntro = false;
     }
 
     private function loadAnswers(): void

@@ -1,5 +1,84 @@
 <div wire:key="assessment-{{ $attempt->id }}-{{ $currentIndex }}" class="max-w-6xl mx-auto space-y-6 p-4 sm:p-6">
 
+    @if($showIntro)
+        <section class="rounded-3xl bg-white border p-6 shadow-sm space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div>
+                    <div class="text-xs uppercase tracking-wide text-slate-400">
+                        {{ $assessment->course?->title ?? 'Course Assessment' }}
+                    </div>
+
+                    <h1 class="text-2xl font-bold mt-1">
+                        {{ $assessment->title }}
+                    </h1>
+
+                    <p class="text-sm text-slate-500 mt-2 max-w-3xl leading-6">
+                        Assessment ini menjadi syarat kelulusan course setelah seluruh topik selesai dipelajari.
+                        Anda dapat mengulang sampai mencapai passing grade.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-2 justify-end">
+                    <span class="px-3 py-1 rounded-full text-xs border bg-slate-50 text-slate-600">
+                        Attempt #{{ $attempt->attempt_no }}
+                    </span>
+                    <span class="px-3 py-1 rounded-full text-xs border bg-slate-50 text-slate-600">
+                        Passing {{ $assessment->passing_grade }}%
+                    </span>
+                    <span class="px-3 py-1 rounded-full text-xs border bg-slate-50 text-slate-600">
+                        {{ $assessment->randomize_questions ? 'Randomized' : 'Fixed Order' }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                <div class="rounded-xl border p-3 bg-slate-50">
+                    <div class="text-xs text-slate-500">Started</div>
+                    <div class="font-semibold mt-1">{{ $attempt->started_at?->format('d M Y, H:i') ?? '-' }}</div>
+                </div>
+
+                <div class="rounded-xl border p-3 bg-slate-50">
+                    <div class="text-xs text-slate-500">Questions</div>
+                    <div class="font-semibold mt-1">{{ $attempt->total_questions }}</div>
+                </div>
+
+                <div class="rounded-xl border p-3 bg-slate-50">
+                    <div class="text-xs text-slate-500">State</div>
+                    <div class="font-semibold mt-1">{{ strtoupper($attempt->status) }}</div>
+                </div>
+
+                <div class="rounded-xl border p-3 bg-slate-50">
+                    <div class="text-xs text-slate-500">Progress</div>
+                    <div class="font-semibold mt-1">{{ collect($answers)->filter()->count() }} saved</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-start">
+                <div class="rounded-2xl border bg-slate-50 p-5">
+                    <div class="text-xs uppercase tracking-wide text-slate-400 mb-3">
+                        Instructions
+                    </div>
+
+                    <ul class="space-y-2 text-sm text-slate-700 list-disc pl-5">
+                        <li>Read each question carefully before answering.</li>
+                        <li>All answers are saved automatically.</li>
+                        <li>Submit when you are ready to finish the attempt.</li>
+                    </ul>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <button
+                        type="button"
+                        wire:click="beginQuiz"
+                        class="px-5 py-3 rounded-xl bg-[#004777] text-white text-sm font-medium hover:bg-[#003560] transition"
+                    >
+                        {{ $hasExistingAttempt ? 'Resume Test' : 'Start Test' }}
+                    </button>
+                </div>
+            </div>
+        </section>
+    @else
+
     <section class="rounded-3xl bg-white border p-6 shadow-sm space-y-4">
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
             <div>
@@ -202,5 +281,6 @@
                 </div>
             </div>
         </div>
+    @endif
     @endif
 </div>
