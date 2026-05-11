@@ -8,18 +8,18 @@
     <section class="rounded-3xl bg-white border p-6 sm:p-8 space-y-5 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="space-y-3 min-w-0">
-                <div class="text-xs uppercase tracking-wide text-slate-400">
+                <div class="text-xs uppercase tracking-wide text-[#004777]/60">
                     {{ $topic->course?->title }}
                 </div>
 
                 <div class="space-y-2">
-                    <h1 class="text-2xl sm:text-3xl font-bold">{{ $topic->name }}</h1>
-                    <p class="text-slate-600 max-w-3xl leading-7">{{ $topic->description }}</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-[#004777]">{{ $topic->name }}</h1>
+                    <p class="text-[#004777]/75 max-w-3xl leading-7">{{ $topic->description }}</p>
                 </div>
 
                 @if($canOpenMentorWorkspace)
                     <a href="{{ route('mentor.topics.show', $topic->slug) }}"
-                       class="inline-flex px-4 py-2 rounded-xl border text-sm hover:bg-slate-50 transition">
+                       class="inline-flex px-4 py-2 rounded-xl border border-[#004777] text-[#004777] text-sm hover:bg-[#004777] hover:text-white transition">
                         Open Mentor Workspace
                     </a>
                 @endif
@@ -27,7 +27,7 @@
 
             <div class="flex flex-col gap-2 items-start lg:items-end shrink-0">
                 @if($isMentor)
-                    <span class="px-3 py-1 rounded-full text-xs bg-slate-50 text-slate-600 border border-slate-200">
+                    <span class="px-3 py-1 rounded-full text-xs bg-[#35A7FF]/10 text-[#004777] border border-[#35A7FF]/30">
                         MENTOR REVIEW MODE
                     </span>
                 @elseif($topicCompleted)
@@ -35,7 +35,7 @@
                         TOPIC COMPLETED
                     </span>
                 @else
-                    <span class="px-3 py-1 rounded-full text-xs bg-slate-50 text-slate-600 border border-slate-200">
+                    <span class="px-3 py-1 rounded-full text-xs bg-[#35A7FF]/10 text-[#004777] border border-[#35A7FF]/30">
                         {{ strtoupper($topicStatus ?? 'not_started') }}
                     </span>
                 @endif
@@ -43,26 +43,26 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="rounded-2xl border bg-slate-50 p-4">
-                <div class="text-xs text-slate-500">Materials</div>
-                <div class="text-2xl font-bold mt-1">{{ $topic->materials->count() }}</div>
+            <div class="rounded-2xl border border-[#35A7FF]/20 bg-[#35A7FF]/8 p-4">
+                <div class="text-xs text-[#004777]/70">Materials</div>
+                <div class="text-2xl font-bold mt-1 text-[#004777]">{{ $topic->materials->count() }}</div>
             </div>
 
-            <div class="rounded-2xl border bg-slate-50 p-4">
-                <div class="text-xs text-slate-500">Attendance Records</div>
-                <div class="text-2xl font-bold mt-1">{{ $attendanceStats['checked_in'] }}</div>
+            <div class="rounded-2xl border border-[#35A7FF]/20 bg-[#35A7FF]/8 p-4">
+                <div class="text-xs text-[#004777]/70">Attendance Records</div>
+                <div class="text-2xl font-bold mt-1 text-[#004777]">{{ $attendanceStats['checked_in'] }}</div>
             </div>
 
-            <div class="rounded-2xl border bg-slate-50 p-4">
-                <div class="text-xs text-slate-500">Sessions</div>
-                <div class="text-2xl font-bold mt-1">
+            <div class="rounded-2xl border border-[#35A7FF]/20 bg-[#35A7FF]/8 p-4">
+                <div class="text-xs text-[#004777]/70">Sessions</div>
+                <div class="text-2xl font-bold mt-1 text-[#004777]">
                     {{ $topic->videoSessions->count() > 0 ? strtoupper($topic->videoSessions->first()->status) : 'NOT AVAILABLE' }}
                 </div>
             </div>
 
-            <div class="rounded-2xl border bg-slate-50 p-4">
-                <div class="text-xs text-slate-500">Progress</div>
-                <div class="text-2xl font-bold mt-1">
+            <div class="rounded-2xl border border-[#35A7FF]/20 bg-[#35A7FF]/8 p-4">
+                <div class="text-xs text-[#004777]/70">Progress</div>
+                <div class="text-2xl font-bold mt-1 text-[#004777]">
                     @if($isMentor)
                         REVIEW
                     @else
@@ -75,11 +75,11 @@
         <div class="flex flex-wrap gap-2 justify-between items-center">
             <div class="flex flex-wrap gap-2">
                 <button wire:click="setTab('materials')"
-                        class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'materials' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white hover:bg-slate-50' }}">
+                        class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'materials' ? 'bg-[#004777] text-white border-[#004777]' : 'bg-white text-[#004777] hover:bg-[#35A7FF]/10 border-[#35A7FF]/30' }}">
                     Materials
                 </button>
                 <button wire:click="setTab('sessions')"
-                        class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'sessions' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white hover:bg-slate-50' }}">
+                        class="px-4 py-2 rounded-xl border transition {{ $activeTab === 'sessions' ? 'bg-[#004777] text-white border-[#004777]' : 'bg-white text-[#004777] hover:bg-[#35A7FF]/10 border-[#35A7FF]/30' }}">
                     Sessions
                 </button>
             </div>
@@ -116,7 +116,7 @@
                     @endif
                 </button>
             @elseif($isMentor)
-                <span class="px-4 py-2 rounded-xl border bg-slate-50 text-xs text-slate-500">
+                <span class="px-4 py-2 rounded-xl border border-[#35A7FF]/30 bg-[#35A7FF]/10 text-xs text-[#004777]/80">
                     Read-only review
                 </span>
             @endif
@@ -142,11 +142,11 @@
 
                     <button wire:click="selectMaterial('{{ $material->id }}')"
                             class="shrink-0 w-[280px] text-left rounded-2xl border p-5 transition snap-start
-                            {{ $activeMaterial?->id === $material->id ? 'bg-slate-900 text-white border-slate-900' : 'bg-white hover:border-slate-400' }}">
+                            {{ $activeMaterial?->id === $material->id ? 'bg-[#004777] text-white border-[#004777]' : 'bg-white border-[#35A7FF]/30 hover:border-[#35A7FF]' }}">
                         <div class="flex items-center justify-between gap-3">
                             <div class="font-semibold">{{ $material->name }}</div>
                             <span class="text-xs px-2 py-1 rounded-full
-                                {{ $activeMaterial?->id === $material->id ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600' }}">
+                                {{ $activeMaterial?->id === $material->id ? 'bg-white/10 text-white' : 'bg-[#35A7FF]/10 text-[#004777]/80' }}">
                                 {{ strtoupper($material->type) }}
                             </span>
                         </div>
@@ -181,7 +181,7 @@
                             <button
                                 type="button"
                                 x-on:click="openMaterialCompleteModal = true"
-                                class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm transition hover:bg-slate-700"
+                                class="px-4 py-2 rounded-xl bg-[#004777] text-white text-sm transition hover:bg-[#003560]"
                             >
                                 Mark Complete
                             </button>
@@ -196,7 +196,7 @@
                         </div>
                     @else
                         <div class="rounded-2xl border p-5 bg-slate-50">
-                            <a href="{{ $materialUrl }}" target="_blank" class="text-slate-900 underline">
+                            <a href="{{ $materialUrl }}" target="_blank" class="text-[#004777] underline">
                                 Open / download material
                             </a>
                         </div>
@@ -348,7 +348,7 @@
                                 type="button"
                                 wire:click="confirmMaterialCompletion"
                                 wire:loading.attr="disabled"
-                                class="rounded-xl px-4 py-2 text-sm font-medium text-white bg-slate-900 hover:bg-slate-700 disabled:opacity-50"
+                                class="rounded-xl px-4 py-2 text-sm font-medium text-white bg-[#004777] hover:bg-[#003560] disabled:opacity-50"
                             >
                                 Mark Complete
                             </button>
@@ -440,7 +440,7 @@
                                 <span x-text="buttonText">{{ $buttonText }}</span>
                             </button>
                         @else
-                            <span class="px-4 py-2 rounded-xl border bg-slate-50 text-xs text-slate-500">
+                            <span class="px-4 py-2 rounded-xl border border-[#35A7FF]/30 bg-[#35A7FF]/10 text-xs text-[#004777]/80">
                                 Read-only review
                             </span>
                         @endif
@@ -612,7 +612,7 @@
                     }
 
                     if (this.phase === 'live') {
-                        return 'bg-slate-900 text-white border-slate-900 hover:bg-slate-700';
+                        return 'bg-[#004777] text-white border-[#004777] hover:bg-[#003560]';
                     }
 
                     return 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed';

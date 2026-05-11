@@ -202,9 +202,9 @@
 
     @if($studyProgramCount)
         <section class="space-y-4 rounded-3xl p-4 sm:p-5 lg:p-6">
-            <div class="flex flex-col gap-6 xl:flex-row xl:items-center">
-                <div class="space-y-2.5 xl:basis-[30%]">
-                    <h3 class="text-2xl sm:text-3xl font-bold leading-tight text-[#004777]">
+            <div class="flex flex-col gap-6 xl:flex-row xl:items-start">
+                <div class="space-y-2.5 xl:basis-[30%] xl:pt-2">
+                    <h3 class="text-2xl font-bold leading-tight text-[#004777] sm:text-3xl">
                         Grow in <em class="italic text-[#35A7FF]">faith and discover God’s</em> for your life
                     </h3>
                     <p class="text-sm leading-6 text-[#004777]/70">
@@ -214,7 +214,7 @@
 
                 <div class="min-w-0 flex-1 xl:basis-[70%]">
                     @if($studyProgramCarousel)
-                        <div class="mb-3 flex items-center justify-end gap-2">
+                        <div class="mb-3 hidden items-center justify-end gap-2 xl:flex">
                             <button type="button" id="study-program-prev"
                                     class="nav-btn h-8 w-8 rounded-full border border-[#004777]/15 bg-white text-[#004777] transition hover:bg-[#35A7FF]/10"
                                     aria-label="Scroll categories left">
@@ -228,36 +228,36 @@
                             </button>
                         </div>
 
-                        <div id="study-program-carousel" class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 scroll-smooth">
+                        <div id="study-program-carousel" class="grid grid-cols-1 gap-4 pb-3 md:grid-cols-2 xl:flex xl:snap-x xl:snap-mandatory xl:overflow-x-auto xl:scroll-smooth">
                             @foreach($studyPrograms as $sp)
                                 <a href="{{ route('courses.index', ['studyProgram' => $sp->slug]) }}"
                                    data-study-program-card
-                                   class="group flex h-40 w-[220px] shrink-0 snap-start flex-col justify-center rounded-2xl border border-[#004777]/10 bg-[#35A7FF]/5 p-4 transition hover:-translate-y-0.5 hover:border-[#35A7FF] hover:shadow-md sm:w-[240px] lg:w-[260px]">
+                                   class="group flex h-40 w-full flex-col justify-center rounded-2xl border border-[#004777]/10 bg-[#35A7FF]/5 p-4 transition hover:-translate-y-0.5 hover:border-[#35A7FF] hover:shadow-md xl:w-[260px] xl:shrink-0 xl:snap-start sm:h-44">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#004777] text-lg font-semibold text-white shadow-md">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#004777] text-base font-semibold text-white shadow-md sm:h-12 sm:w-12 sm:text-lg">
                                             {{ strtoupper(mb_substr($sp->title, 0, 1)) }}
                                         </div>
 
                                         <div class="min-w-0">
-                                            <div class="truncate font-semibold text-[#004777]">{{ $sp->title }}</div>
-                                            <div class="mt-1 truncate text-sm text-[#004777]/70">
+                                            <div class="truncate text-sm font-semibold text-[#004777] sm:text-base">{{ $sp->title }}</div>
+                                            <div class="mt-1 truncate text-xs text-[#004777]/70 sm:text-sm">
                                                 {{ \Illuminate\Support\Str::limit($sp->description, 70) }}
                                             </div>
                                         </div>
 
-                                        <div class="ml-1 text-lg text-[#35A7FF] transition group-hover:text-[#004777]">→</div>
+                                        <div class="ml-1 text-base text-[#35A7FF] transition group-hover:text-[#004777] sm:text-lg">→</div>
                                     </div>
                                 </a>
                             @endforeach
                         </div>
                     @else
-                        <div class="grid gap-4" style="grid-template-columns: repeat({{ $studyProgramCount }}, minmax(0, 1fr));">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             @foreach($studyPrograms as $sp)
                                 <a href="{{ route('courses.index', ['studyProgram' => $sp->slug]) }}"
-                                   class="flex h-40 items-center gap-4 rounded-2xl border border-[#004777]/10 bg-white p-5 transition hover:border-[#35A7FF] hover:shadow-sm">
+                                   class="flex min-h-40 items-center gap-4 rounded-2xl border border-[#004777]/10 bg-white p-5 transition hover:border-[#35A7FF] hover:shadow-sm">
                                     <div class="min-w-0">
-                                        <div class="font-semibold text-[#004777]">{{ $sp->title }}</div>
-                                        <div class="mt-1 text-sm text-[#004777]/70">
+                                        <div class="text-base font-semibold text-[#004777]">{{ $sp->title }}</div>
+                                        <div class="mt-1 text-sm leading-6 text-[#004777]/70">
                                             {{ \Illuminate\Support\Str::limit($sp->description, 70) }}
                                         </div>
                                     </div>
