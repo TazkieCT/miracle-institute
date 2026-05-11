@@ -15,7 +15,7 @@
 
                 <div class="space-y-3">
 
-                    <h1 class="max-w-3xl text-3xl xl:text-4xl font-black tracking-tight text-[#004777] leading-tight">
+                    <h1 class="max-w-3xl text-3xl xl:text-4xl font-bold tracking-tight text-[#004777] leading-tight">
                         {{ $isMentor
                             ? 'Guide, mentor, and oversee discipleship learning journeys.'
                             : 'Grow through structured discipleship learning and mentoring.' }}
@@ -33,7 +33,7 @@
                 <div class="flex flex-wrap gap-3 text-sm">
 
                     <div class="rounded-2xl border border-[#004777]/10 bg-[#35A7FF]/8 px-5 py-3">
-                        <div class="text-[11px] uppercase tracking-wide text-[#35A7FF]/70">
+                        <div class="text-[11px] uppercase tracking-wide text-[#004777]/70">
                             Available Courses
                         </div>
 
@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="rounded-2xl border border-[#004777]/10 bg-[#35A7FF]/8 px-5 py-3">
-                        <div class="text-[11px] uppercase tracking-wide text-[#35A7FF]/70">
+                        <div class="text-[11px] uppercase tracking-wide text-[#004777]/70">
                             Study Programs
                         </div>
 
