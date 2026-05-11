@@ -6,67 +6,75 @@
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-3">
         <div class="rounded-2xl border bg-white p-5">
-            <div class="text-xs uppercase tracking-wide text-slate-500">Topics</div>
-            <div class="mt-2 text-3xl font-bold text-slate-900">{{ $mentorTopicsCount }}</div>
-            <div class="mt-1 text-sm text-slate-500">Topik yang kamu kelola</div>
+            <div class="text-xs uppercase tracking-wide text-[#004777]/60">Topics</div>
+            <div class="mt-2 text-3xl font-bold text-[#004777]">{{ $mentorTopicsCount }}</div>
+            <div class="mt-1 text-sm text-[#004777]/70">Topik yang kamu kelola</div>
         </div>
 
         <div class="rounded-2xl border bg-white p-5">
-            <div class="text-xs uppercase tracking-wide text-slate-500">Materials</div>
-            <div class="mt-2 text-3xl font-bold text-slate-900">{{ $mentorMaterialsCount }}</div>
-            <div class="mt-1 text-sm text-slate-500">Materi yang kamu upload</div>
+            <div class="text-xs uppercase tracking-wide text-[#004777]/60">Materials</div>
+            <div class="mt-2 text-3xl font-bold text-[#004777]">{{ $mentorMaterialsCount }}</div>
+            <div class="mt-1 text-sm text-[#004777]/70">Materi yang kamu upload</div>
         </div>
 
         <div class="rounded-2xl border bg-white p-5">
-            <div class="text-xs uppercase tracking-wide text-slate-500">Students</div>
-            <div class="mt-2 text-3xl font-bold text-slate-900">{{ $mentorStudentsCount }}</div>
-            <div class="mt-1 text-sm text-slate-500">Siswa yang terhubung</div>
+            <div class="text-xs uppercase tracking-wide text-[#004777]/60">Students</div>
+            <div class="mt-2 text-3xl font-bold text-[#004777]">{{ $mentorStudentsCount }}</div>
+            <div class="mt-1 text-sm text-[#004777]/70">Siswa yang terhubung</div>
         </div>
     </div>
 
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <section class="rounded-2xl border bg-white p-5">
-            <div class="mb-4 flex items-end justify-between gap-4">
+            <div class="mb-8 flex items-end justify-between gap-4">
                 <div>
-                    <h2 class="text-lg font-semibold">Managed Topics</h2>
-                    <p class="text-sm text-slate-500">Daftar topic yang bisa kamu kelola.</p>
+                    <h2 class="text-lg font-semibold text-[#004777]">Managed Courses</h2>
+                    <p class="text-sm text-[#004777]/70">Daftar course yang bisa kamu kelola.</p>
                 </div>
 
-                <a href="{{ route('mentor.topics.index') }}" class="text-sm font-medium text-slate-900 hover:underline">
+                <a href="{{ route('mentor.topics.index') }}" class="text-sm font-medium text-[#004777] hover:underline">
                     View all
                 </a>
             </div>
 
-            <div class="space-y-4">
+            <div class="divide-y divide-[#004777]/10">
                 @forelse($topicsByCourse as $courseTopics)
                     @php
                         $course = $courseTopics->first()->course;
                     @endphp
 
-                    <div class="rounded-2xl border p-4">
-                        <div class="flex items-start justify-between gap-4">
+                    <div class="py-4" x-data="{ open: false }">
+                        <button
+                            type="button"
+                            class="flex w-full items-start justify-between gap-4 text-left"
+                            x-on:click="open = !open"
+                            x-bind:aria-expanded="open.toString()"
+                        >
                             <div>
-                                <div class="text-sm font-semibold text-slate-900">{{ $course?->title ?? 'No Course' }}</div>
-                                <div class="mt-1 text-xs text-slate-500">
+                                <div class="text-sm font-semibold text-[#004777]">{{ $course?->title ?? 'No Course' }}</div>
+                                <div class="mt-1 text-xs text-[#004777]/60">
                                     {{ $course?->studyProgram?->title ?? '-' }} · {{ $courseTopics->count() }} topic
                                 </div>
                             </div>
 
-                            <span class="rounded-full border px-2 py-1 text-xs text-slate-600">
-                                Active
-                            </span>
-                        </div>
+                            <div class="flex items-center gap-3">
+                                <span class="rounded-full border border-[#35A7FF]/30 bg-[#35A7FF]/10 px-2 py-1 text-xs text-[#004777]">
+                                    Active
+                                </span>
+                                <span class="text-xs font-medium text-[#004777]/60" x-text="open ? 'Hide' : 'Show'"></span>
+                            </div>
+                        </button>
 
-                        <div class="mt-4 space-y-2">
+                        <div class="mt-4 space-y-2" x-cloak x-show="open" x-transition>
                             @foreach($courseTopics->take(3) as $topic)
                                 <div class="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3">
                                     <div class="min-w-0">
-                                        <div class="truncate text-sm font-medium text-slate-900">{{ $topic->name }}</div>
-                                        <div class="text-xs text-slate-500">{{ ucfirst($topic->status) }}</div>
+                                        <div class="truncate text-sm font-medium text-[#004777]">{{ $topic->name }}</div>
+                                        <div class="text-xs text-[#004777]/60">{{ ucfirst($topic->status) }}</div>
                                     </div>
 
                                     <a href="{{ route('mentor.topics.show', $topic->slug) }}"
-                                       class="shrink-0 rounded-xl bg-slate-900 px-3 py-2 text-xs font-medium text-white hover:bg-slate-700">
+                                       class="shrink-0 rounded-xl bg-[#004777] px-3 py-2 text-xs font-medium text-white hover:bg-[#003560]">
                                         Manage
                                     </a>
                                 </div>
@@ -74,7 +82,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="rounded-2xl border border-dashed p-6 text-sm text-slate-500">
+                    <div class="rounded-2xl border border-dashed border-[#35A7FF]/30 p-6 text-sm text-[#004777]/60">
                         Belum ada topic yang kamu kelola.
                     </div>
                 @endforelse
@@ -83,28 +91,28 @@
 
         <section class="rounded-2xl border bg-white p-5">
             <div class="mb-4">
-                <h2 class="text-lg font-semibold">Recent Materials</h2>
-                <p class="text-sm text-slate-500">Materi terakhir yang kamu tambahkan.</p>
+                <h2 class="text-lg font-semibold text-[#004777]">Recent Materials</h2>
+                <p class="text-sm text-[#004777]/70">Materi terakhir yang kamu tambahkan.</p>
             </div>
 
-            <div class="divide-y">
+            <div class="divide-y divide-[#004777]/10">
                 @forelse($latestMaterials as $material)
                     <div class="py-4">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <div class="truncate text-sm font-medium text-slate-900">{{ $material->name }}</div>
-                                <div class="mt-1 truncate text-xs text-slate-500">
+                                <div class="truncate text-sm font-medium text-[#004777]">{{ $material->name }}</div>
+                                <div class="mt-1 truncate text-xs text-[#004777]/60">
                                     {{ $material->topic?->course?->title }} · {{ $material->topic?->name }} · {{ strtoupper($material->type) }}
                                 </div>
                             </div>
 
-                            <span class="shrink-0 rounded-full border px-2 py-1 text-[11px] uppercase tracking-wide text-slate-600">
+                            <span class="shrink-0 rounded-full border border-[#35A7FF]/30 bg-[#35A7FF]/10 px-2 py-1 text-[11px] uppercase tracking-wide text-[#004777]">
                                 {{ $material->status }}
                             </span>
                         </div>
                     </div>
                 @empty
-                    <div class="py-6 text-sm text-slate-500">Belum ada materi.</div>
+                    <div class="py-6 text-sm text-[#004777]/60">Belum ada materi.</div>
                 @endforelse
             </div>
         </section>

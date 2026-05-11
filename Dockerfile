@@ -16,6 +16,7 @@ RUN apt-get update \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         dom \
+        fileinfo \
         gd \
         intl \
         mbstring \

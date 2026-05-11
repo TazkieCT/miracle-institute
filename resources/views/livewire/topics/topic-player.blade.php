@@ -16,21 +16,10 @@
                     <h1 class="text-2xl sm:text-3xl font-bold text-[#004777]">{{ $topic->name }}</h1>
                     <p class="text-[#004777]/75 max-w-3xl leading-7">{{ $topic->description }}</p>
                 </div>
-
-                @if($canOpenMentorWorkspace)
-                    <a href="{{ route('mentor.topics.show', $topic->slug) }}"
-                       class="inline-flex px-4 py-2 rounded-xl border border-[#004777] text-[#004777] text-sm hover:bg-[#004777] hover:text-white transition">
-                        Open Mentor Workspace
-                    </a>
-                @endif
             </div>
 
-            <div class="flex flex-col gap-2 items-start lg:items-end shrink-0">
-                @if($isMentor)
-                    <span class="px-3 py-1 rounded-full text-xs bg-[#35A7FF]/10 text-[#004777] border border-[#35A7FF]/30">
-                        MENTOR REVIEW MODE
-                    </span>
-                @elseif($topicCompleted)
+            {{-- <div class="flex flex-col gap-2 items-start lg:items-end shrink-0">
+                @if($topicCompleted)
                     <span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
                         TOPIC COMPLETED
                     </span>
@@ -39,7 +28,7 @@
                         {{ strtoupper($topicStatus ?? 'not_started') }}
                     </span>
                 @endif
-            </div>
+            </div> --}}
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -115,10 +104,6 @@
                         </span>
                     @endif
                 </button>
-            @elseif($isMentor)
-                <span class="px-4 py-2 rounded-xl border border-[#35A7FF]/30 bg-[#35A7FF]/10 text-xs text-[#004777]/80">
-                    Read-only review
-                </span>
             @endif
         </div>
     </section>
