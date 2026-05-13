@@ -1,9 +1,48 @@
 <section class="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <div class="flex flex-col h-full w-full rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm">
         <!-- Header Section -->
-        <div class="mb-5 border-b border-slate-100 pb-4 text-center sm:text-left">
-            <h2 class="text-xl font-semibold text-slate-800">Selected Material</h2>
-            <p class="mt-1 text-sm text-slate-500">Preview dan detail data material.</p>
+            <div class="mb-6 flex flex-col items-center justify-between gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:text-left">
+            <!-- Bagian Judul & Deskripsi -->
+            <div class="text-center sm:text-left">
+                <h2 class="text-lg font-bold text-slate-900 sm:text-xl">
+                    Selected Material
+                </h2>
+                <p class="mt-1.5 text-sm text-slate-500">
+                    Preview dan detail data material yang dipilih.
+                </p>
+            </div>
+
+            <!-- Bagian Tombol Aksi -->
+            <div class="flex w-full flex-wrap justify-center gap-3 sm:w-auto sm:justify-end">
+                @if($selectedMaterial)
+                    <!-- Tombol Edit -->
+                    <button type="button"
+                            wire:click="editMaterial('{{ $selectedMaterial->id }}')"
+                            class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:text-slate-900 hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 active:scale-95">
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                            <path d="m15 5 4 4"/>
+                        </svg>
+                        Edit
+                    </button>
+
+                  
+                    <button type="button"
+                            wire:click="deleteMaterial('{{ $selectedMaterial->id }}')"
+                            class="inline-flex items-center gap-2 rounded-lg border border-rose-200 bg-white px-4 py-2 text-sm font-medium text-rose-600 shadow-sm transition-all duration-200 hover:bg-rose-50 hover:text-rose-700 hover:shadow focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 active:scale-95">
+                       
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            <line x1="10" x2="10" y1="11" y2="17"/>
+                            <line x1="14" x2="14" y1="11" y2="17"/>
+                        </svg>
+                        Delete
+                    </button>
+                @endif
+            </div>
         </div>
 
         <!-- Content Section -->
@@ -165,17 +204,12 @@
     >
         <form wire:submit.prevent="saveMaterial" class="space-y-4">
 
-            <div wire:loading wire:target="materialFile,saveMaterial" class="animate-pulse space-y-2 mb-2">
-                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
-                <div class="h-4 bg-gray-300 rounded w-1/2"></div>
-            </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
 
                 <div class="sm:col-span-2">
                     <label class="text-xs font-medium text-slate-500">Material Name</label>
                     <input wire:model="materialName" class="mt-1 w-full rounded-xl border px-4 py-2" placeholder="Material name">
-                    @error('materialName') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
@@ -186,7 +220,7 @@
                             <option value="{{ $type }}">{{ strtoupper($type) }}</option>
                         @endforeach
                     </select>
-                    @error('materialType') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+                    
                     @if(empty($materialTypeOptions))
                         <p class="mt-1 text-xs text-slate-500">Semua tipe sudah dipakai pada topic ini.</p>
                     @endif
@@ -198,14 +232,14 @@
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
                     </select>
-                    @error('materialStatus') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+                    
                 </div>
 
                 @if(in_array($materialType, ['pdf','ppt']))
                     <div class="sm:col-span-2">
                         <label class="text-xs font-medium text-slate-500">Material File</label>
                         <input type="file" wire:model="materialFile" class="mt-1 w-full rounded-xl border px-4 py-2" accept=".pdf,.ppt,.pptx">
-                        @error('materialFile') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+                        
                     </div>
                 @endif
 
@@ -215,7 +249,7 @@
                         <input wire:model="materialExternalUrl"
                             class="mt-1 w-full rounded-xl border px-4 py-2"
                             placeholder="YouTube URL / video ID">
-                        @error('materialExternalUrl') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+                       
 
                         @if($materialExternalUrl)
                             <div class="mt-2 aspect-video overflow-hidden rounded-2xl bg-slate-100">
@@ -231,10 +265,30 @@
                 <div class="sm:col-span-2">
                     <label class="text-xs font-medium text-slate-500">Sort Order</label>
                     <input wire:model="materialSortOrder" type="number" min="0" class="mt-1 w-full rounded-xl border px-4 py-2">
-                    @error('materialSortOrder') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
                 </div>
 
+               
             </div>
+            
+            <div wire:loading wire:target="materialFile, saveMaterial" class="w-full mb-5">
+                <div class="flex animate-pulse gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div class="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <div class="flex-1 space-y-3 py-1">
+                        <div class="h-3 w-3/4 rounded bg-slate-200"></div>
+                        <div class="space-y-2">
+                            <div class="h-3 w-5/6 rounded bg-slate-200"></div>
+                            <div class="h-3 w-1/2 rounded bg-slate-200"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @error('materialName') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+            @error('materialType') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+            @error('materialFile') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+            @error('materialStatus') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+            @error('materialExternalUrl') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+            @error('materialSortOrder') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
 
             <div class="flex items-center justify-end gap-3 border-t pt-4">
                 <button type="button" wire:click="closeMaterialModal"

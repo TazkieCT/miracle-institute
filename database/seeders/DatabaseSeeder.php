@@ -279,8 +279,8 @@ class DatabaseSeeder extends Seeder
     {
         $rows = [];
         $sampleVideoUrl = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygURTmV2ZXIgZ2l2ZSB5b3UgdXCgBwE%3D';
-        $samplePdfPath = 'public/storage/files/pdf_example.pdf';
-        $samplePptPath = 'public/storage/files/ppt_example.ppt';
+        $samplePdfPath = 'https://drive.google.com/file/d/1r_UteQTPR3zCdBnryhEABjmhvIdmd-sR/view';
+        $samplePptPath = 'https://drive.google.com/file/d/1bcpUpuKY2plw1Pi8e8lC83TDZtPJ0h5O/view';
 
         foreach ($topicsByCourse as $courseSlug => $topics) {
             foreach ($topics as $topic) {
