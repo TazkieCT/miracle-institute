@@ -278,17 +278,32 @@ class DatabaseSeeder extends Seeder
     private function seedMaterials(array $topicsByCourse, string $asset, $now): array
     {
         $rows = [];
+        $sampleVideoUrl = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygURTmV2ZXIgZ2l2ZSB5b3UgdXCgBwE%3D';
+        $samplePdfPath = 'public/storage/files/pdf_example.pdf';
+        $samplePptPath = 'public/storage/files/ppt_example.ppt';
+
         foreach ($topicsByCourse as $courseSlug => $topics) {
             foreach ($topics as $topic) {
                 foreach (['video', 'pdf', 'ppt'] as $index => $type) {
+                    $path = null;
+                    $externalUrl = null;
+
+                    if ($type === 'video') {
+                        $externalUrl = $sampleVideoUrl;
+                    } elseif ($type === 'pdf') {
+                        $path = $samplePdfPath;
+                    } elseif ($type === 'ppt') {
+                        $path = $samplePptPath;
+                    }
+
                     $rows[] = [
                         'id' => $this->uuid(),
                         'topic_id' => $topic['id'],
                         'uploader_id' => $topic['teacher_id'],
                         'name' => $topic['name'] . ' ' . strtoupper($type),
                         'type' => $type,
-                        'path' => $type === 'video' ? null : 'materials/' . Str::slug($courseSlug . '-' . $topic['name'] . '-' . $type) . '.' . ($type === 'ppt' ? 'ppt' : $type),
-                        'external_url' => $type === 'video' ? 'https://youtu.be/' . Str::lower(Str::random(11)) : null,
+                        'path' => $path,
+                        'external_url' => $externalUrl,
                         'visibility' => 'public',
                         'sort_order' => $index + 1,
                         'status' => $topic['status'] === 'published' ? 'active' : 'inactive',
@@ -298,6 +313,7 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
+
         DB::table('materials')->insert($rows);
         return $rows;
     }
