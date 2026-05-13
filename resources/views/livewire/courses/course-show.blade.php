@@ -193,7 +193,7 @@
                                 </span>
 
                                 @if($isStudent && $enrolled)
-                                    <a href="{{ route('certificates.download', $courseCertificate->id) }}"
+                                    <a href="{{ route('certificates.course.claim', $courseCertificate->id) }}"
                                        class="inline-flex px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-700 transition">
                                         Download Certificate
                                     </a>

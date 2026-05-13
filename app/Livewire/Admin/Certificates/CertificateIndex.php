@@ -21,9 +21,6 @@ class CertificateIndex extends Component
     public string $certificate_number = '';
     public string $user_id = '';
     public string $course_id = '';
-    public string $topic_id = '';
-    public string $type = 'course';
-    public string $file_path = '';
     public ?string $issued_at = null;
     public string $status = 'issued';
 
@@ -47,9 +44,6 @@ class CertificateIndex extends Component
             'certificate_number' => 'nullable|string|max:255',
             'user_id' => 'required|exists:users,id',
             'course_id' => 'nullable|exists:courses,id',
-            'topic_id' => 'nullable|exists:topics,id',
-            'type' => 'required|string|max:50',
-            'file_path' => 'nullable|string|max:255',
             'issued_at' => 'nullable|date',
             'status' => 'required|string|max:50',
         ];
@@ -89,9 +83,6 @@ class CertificateIndex extends Component
         $this->certificate_number = $row->certificate_number;
         $this->user_id = $row->user_id;
         $this->course_id = $row->course_id ?? '';
-        $this->topic_id = $row->topic_id ?? '';
-        $this->type = $row->type;
-        $this->file_path = $row->file_path ?? '';
         $this->issued_at = optional($row->issued_at)->format('Y-m-d\TH:i');
         $this->status = $row->status;
 
@@ -110,9 +101,6 @@ class CertificateIndex extends Component
                 'certificate_number' => $number,
                 'user_id' => $this->user_id,
                 'course_id' => $this->course_id ?: null,
-                'topic_id' => $this->topic_id ?: null,
-                'type' => $this->type,
-                'file_path' => $this->file_path ?: null,
                 'issued_at' => $this->issued_at ? Carbon::parse($this->issued_at) : now(),
                 'status' => $this->status,
             ]
@@ -130,18 +118,15 @@ class CertificateIndex extends Component
 
     public function render()
     {
-        $baseQuery = Certificate::with(['user', 'course', 'topic'])
+        $baseQuery = Certificate::with(['user', 'course'])
             ->when($this->search, function ($q) {
                 $q->where(function ($inner) {
                     $inner->where('certificate_number', 'like', "%{$this->search}%")
                         ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$this->search}%")->orWhere('name', 'like', "%{$this->search}%")->orWhere('email', 'like', "%{$this->search}%"))
-                        ->orWhereHas('course', fn ($c) => $c->where('title', 'like', "%{$this->search}%"))
-                        ->orWhereHas('topic', fn ($t) => $t->where('name', 'like', "%{$this->search}%"));
+                        ->orWhereHas('course', fn ($c) => $c->where('title', 'like', "%{$this->search}%"));
                 });
             })
             ->when($this->courseFilter, fn ($q) => $q->where('course_id', $this->courseFilter))
-            ->when($this->topicFilter, fn ($q) => $q->where('topic_id', $this->topicFilter))
-            ->when($this->typeFilter, fn ($q) => $q->where('type', $this->typeFilter))
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter));
 
         return view('livewire.admin.certificates.index', [
@@ -165,14 +150,10 @@ class CertificateIndex extends Component
             'certificate_number',
             'user_id',
             'course_id',
-            'topic_id',
-            'type',
-            'file_path',
             'issued_at',
             'status',
         ]);
 
-        $this->type = 'course';
         $this->status = 'issued';
     }
 }

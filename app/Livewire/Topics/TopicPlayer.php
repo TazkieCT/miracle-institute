@@ -631,4 +631,5 @@ class TopicPlayer extends Component
 
         return implode(' ', $parts);
     }
+
 }

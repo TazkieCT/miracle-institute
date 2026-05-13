@@ -11,20 +11,25 @@ class CertificateController extends Controller
 {
     public function claimCourse(Course $course, CertificateService $service)
     {
-        abort_unless(auth()->check(), 403);
+        abort_unless(auth()->check(), 401);
 
-        $certificate = $service->issueCourseCertificate($course, auth()->user());
+        try {
+            $certificate = $service->issueCourseCertificate($course, auth()->user());
 
-        return redirect()->route('certificates.download', $certificate->id);
+            return redirect()->route('certificates.download', $certificate->id);
+            
+        } catch (\RuntimeException $e) {
+
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function download(Certificate $certificate, CertificateService $service)
     {
-        abort_unless(auth()->check(), 403);
+        abort_unless(auth()->check(), 401);
 
         abort_unless(
-            auth()->id() === $certificate->user_id ||
-            auth()->user()->can('manage_certificates'),
+            auth()->id() == $certificate->user_id || auth()->user()->can('manage_certificates'),
             403
         );
 
