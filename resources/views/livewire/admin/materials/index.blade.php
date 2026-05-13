@@ -137,17 +137,28 @@
 
     <template x-teleport="body">
         <div x-show="open"
-             x-cloak
-             x-transition
-             @click.self="open = false; $wire.set('showModal', false)"
-             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            x-cloak
+            x-transition
+            @click.self="open = false; $wire.set('showModal', false)"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+
             <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6 space-y-4">
+
+                <!-- Header -->
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold">{{ $editingId ? 'Edit Material' : 'New Material' }}</h2>
                     <button @click="open = false; $wire.set('showModal', false)" class="text-slate-500">✕</button>
                 </div>
 
+                <!-- Skeleton loader saat uploading -->
+                <div wire:loading wire:target="materialFile,save" class="animate-pulse space-y-2 mb-2">
+                    <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+                </div>
+
+                <!-- Form -->
                 <div class="space-y-3">
+                    <!-- Topic -->
                     <select wire:model.live="topic_id" class="w-full border rounded-xl px-4 py-2">
                         <option value="">Select topic</option>
                         @foreach($topics as $t)
@@ -155,28 +166,48 @@
                         @endforeach
                     </select>
 
+                    <!-- Name -->
                     <input wire:model.live="name" class="w-full border rounded-xl px-4 py-2" placeholder="Material name">
 
-                    <select wire:model.live="type" wire:key="material-type-{{ $topic_id ?? 'new' }}-{{ $editingId ?? 'create' }}" class="w-full border rounded-xl px-4 py-2">
+                    <!-- Type -->
+                    <select wire:model.live="type"
+                            wire:key="material-type-{{ $topic_id ?? 'new' }}-{{ $editingId ?? 'create' }}"
+                            class="w-full border rounded-xl px-4 py-2">
                         <option value="">Select type</option>
                         @foreach($this->availableTypes as $opt)
                             <option value="{{ $opt }}">{{ strtoupper($opt) }}</option>
                         @endforeach
-                        @if($editingId && $type && !in_array($type, $this->availableTypes))
+                        @if($editingId && $type && !in_array($type, $this->availableTypes, true))
                             <option value="{{ $type }}">{{ strtoupper($type) }} (current)</option>
                         @endif
                     </select>
 
+                    <!-- External URL for video -->
                     @if($type === 'video')
-                        <input wire:model.live="external_url" class="w-full border rounded-xl px-4 py-2" placeholder="YouTube / Vimeo URL">
+                        <input wire:model.live="external_url"
+                            class="w-full border rounded-xl px-4 py-2"
+                            placeholder="YouTube URL or video ID">
+
+                        <!-- Video preview -->
+                        @if($external_url)
+                            <iframe
+                                src="{{ app(MaterialAssetService::class)->youtube->toEmbedUrl($external_url) }}"
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                class="w-full h-64 md:h-96 rounded-xl shadow mt-2"
+                            ></iframe>
+                        @endif
+
+                    <!-- File input for PDF/PPT -->
                     @elseif(in_array($type, ['pdf', 'ppt'], true))
-                        <input wire:model.live="path" class="w-full border rounded-xl px-4 py-2" placeholder="File path (storage)">
+                        <input type="file" wire:model="materialFile" class="w-full border rounded-xl px-4 py-2">
                     @endif
 
+                    <!-- Visibility & Status -->
                     <div class="grid grid-cols-2 gap-3">
                         <select wire:model.live="visibility" class="border rounded-xl px-4 py-2">
-                            <option value="Public">Public</option>
-                            <option value="Private">Private</option>
+                            <option value="public">Public</option>
+                            <option value="private">Private</option>
                         </select>
 
                         <select wire:model.live="status" class="border rounded-xl px-4 py-2">
@@ -185,18 +216,28 @@
                         </select>
                     </div>
 
-                    <input wire:model.live="sort_order" type="number" class="w-full border rounded-xl px-4 py-2" placeholder="Sort order">
+                    <!-- Sort Order -->
+                    <input wire:model.live="sort_order" type="number" min="0"
+                        class="w-full border rounded-xl px-4 py-2" placeholder="Sort order">
 
+                    <!-- Validation Errors -->
                     @error('topic_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @error('name') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @error('type') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @error('external_url') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                    @error('path') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('materialFile') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
 
+                <!-- Actions -->
                 <div class="flex justify-end gap-2 pt-3">
-                    <button @click="open = false; $wire.set('showModal', false)" class="px-4 py-2 border rounded-xl">Cancel</button>
-                    <button wire:click="save" class="px-4 py-2 bg-slate-900 text-white rounded-xl">Save</button>
+                    <button @click="open = false; $wire.set('showModal', false)" class="px-4 py-2 border rounded-xl">
+                        Cancel
+                    </button>
+                    <button wire:click="save"
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 bg-slate-900 text-white rounded-xl">
+                        {{ $uploading ? 'Uploading...' : 'Save' }}
+                    </button>
                 </div>
             </div>
         </div>

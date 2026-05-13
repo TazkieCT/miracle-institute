@@ -118,6 +118,12 @@ Route::middleware('auth')->group(function () {
         ->middleware(['auth', 'verified', 'throttle:10,1'])
         ->name('sessions.join');
 
+    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])
+        ->name('google.redirect');
+
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
+        ->name('google.callback');
+
     Route::post('/logout', function (Request $request) {
 
         Auth::logout();
@@ -366,21 +372,3 @@ Route::middleware([
                 ->name('permissions.index');
         });
 });
-
-/*
-|--------------------------------------------------------------------------
-| Google OAuth
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/auth/google/redirect', [
-    GoogleAuthController::class,
-    'redirect'
-])->middleware('guest')
-    ->name('auth.google.redirect');
-
-Route::get('/auth/google/callback', [
-    GoogleAuthController::class,
-    'callback'
-])->middleware('guest')
-    ->name('auth.google.callback');

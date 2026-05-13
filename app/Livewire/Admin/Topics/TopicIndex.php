@@ -110,11 +110,10 @@ class TopicIndex extends Component
 
     public function render()
     {
-        $rows = Topic::with(['course', 'teacher'])
+        $rows = Topic::with(['course', 'teacher', 'course.certificates'])
             ->withCount([
                 'materials',
                 'videoSessions',
-                'certificates',
             ])
             ->with(['course.assessment'])
             ->when($this->search, function ($q) {

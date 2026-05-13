@@ -27,6 +27,7 @@ class CertificateService
             $existing = Certificate::query()
                 ->where('course_id', $course->id)
                 ->where('user_id', $user->id)
+                ->where('type', 'course')
                 ->lockForUpdate()
                 ->first();
 
@@ -51,12 +52,13 @@ class CertificateService
                     ->exists();
             });
 
-            if (!$allCompleted) {
+            if (! $allCompleted) {
                 throw new \RuntimeException('Course belum selesai, sertifikat belum bisa diterbitkan.');
             }
 
             $sequence = Certificate::query()
                 ->where('course_id', $course->id)
+                ->where('type', 'course')
                 ->lockForUpdate()
                 ->count() + 1;
 
@@ -85,7 +87,9 @@ class CertificateService
             $certificate->forceFill([
                 'certificate_number' => $certificateNumber,
                 'user_id' => $user->id,
+                'type' => 'course',
                 'course_id' => $course->id,
+                'topic_id' => null,
                 'issued_at' => $issuedAt,
                 'status' => 'issued',
             ])->save();
@@ -242,7 +246,7 @@ class CertificateService
 
     private function extractSequenceLabel(?string $certificateNumber): string
     {
-        if (!$certificateNumber) {
+        if (! $certificateNumber) {
             return '0000';
         }
 
@@ -292,7 +296,7 @@ class CertificateService
     {
         $path = public_path('images/logo.png');
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             return '';
         }
 
