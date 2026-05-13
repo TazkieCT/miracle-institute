@@ -192,10 +192,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <input wire:model="credit" type="number" class="border rounded-xl px-4 py-2" placeholder="Credit">
-                        <input wire:model="quota" type="number" class="border rounded-xl px-4 py-2" placeholder="Quota">
-                    </div>
+                    <input wire:model="credit" type="number" class="border rounded-xl px-4 py-2" placeholder="Credit">
 
                     <textarea wire:model="description" rows="4" class="w-full border rounded-xl px-4 py-2" placeholder="Description"></textarea>
 

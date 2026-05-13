@@ -60,13 +60,7 @@
                                 {{ $course->credit }}
                             </div>
                         </div>
-        
-                        <div class="rounded-xl border bg-slate-50 p-3">
-                            <div class="text-[11px] text-slate-500">Quota</div>
-                            <div class="mt-1 text-base sm:text-lg font-semibold text-slate-900">
-                                {{ $course->quota }}
-                            </div>
-                        </div>
+    
         
                         <div class="rounded-xl border bg-slate-50 p-3">
                             <div class="text-[11px] text-slate-500">Status</div>
@@ -163,7 +157,7 @@
 
                         <div class="flex flex-wrap items-center gap-2">
                             @if($assessmentMeta)
-                                @if($this->assessmentUnlocked)
+                                @if($this->assessmentUnlocked || $this->hasStudentFinishedAssessment)
                                     <span class="px-2.5 py-1 rounded-full text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200">
                                         Unlocked
                                     </span>
@@ -173,7 +167,7 @@
                                     </span>
                                 @endif
 
-                                @if($this->assessmentUnlocked)
+                                @if($this->assessmentUnlocked || $this->hasStudentFinishedAssessment)
                                     @if($this->activeAttempt)
                                         <a href="{{ route('assessments.take', $assessment->id) }}"
                                            class="px-3 py-2 rounded-lg bg-amber-500 text-white text-xs font-semibold hover:bg-amber-600 transition">
