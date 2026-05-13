@@ -150,15 +150,12 @@
                     <button @click="open = false; $wire.set('showModal', false)" class="text-slate-500">✕</button>
                 </div>
 
-                <!-- Skeleton loader saat uploading -->
-                <div wire:loading wire:target="materialFile,save" class="animate-pulse space-y-2 mb-2">
-                    <div class="h-4 bg-gray-300 rounded w-3/4"></div>
-                    <div class="h-4 bg-gray-300 rounded w-1/2"></div>
-                </div>
+                
+               
 
                 <!-- Form -->
                 <div class="space-y-3">
-                    <!-- Topic -->
+                  
                     <select wire:model.live="topic_id" class="w-full border rounded-xl px-4 py-2">
                         <option value="">Select topic</option>
                         @foreach($topics as $t)
@@ -166,10 +163,10 @@
                         @endforeach
                     </select>
 
-                    <!-- Name -->
+                   
                     <input wire:model.live="name" class="w-full border rounded-xl px-4 py-2" placeholder="Material name">
 
-                    <!-- Type -->
+                    
                     <select wire:model.live="type"
                             wire:key="material-type-{{ $topic_id ?? 'new' }}-{{ $editingId ?? 'create' }}"
                             class="w-full border rounded-xl px-4 py-2">
@@ -182,28 +179,27 @@
                         @endif
                     </select>
 
-                    <!-- External URL for video -->
+                    
                     @if($type === 'video')
                         <input wire:model.live="external_url"
                             class="w-full border rounded-xl px-4 py-2"
                             placeholder="YouTube URL or video ID">
 
-                        <!-- Video preview -->
-                        @if($external_url)
+                        {{-- @if($external_url)
                             <iframe
                                 src="{{ app(MaterialAssetService::class)->youtube->toEmbedUrl($external_url) }}"
                                 allowfullscreen
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 class="w-full h-64 md:h-96 rounded-xl shadow mt-2"
                             ></iframe>
-                        @endif
+                        @endif --}}
 
-                    <!-- File input for PDF/PPT -->
+                   
                     @elseif(in_array($type, ['pdf', 'ppt'], true))
                         <input type="file" wire:model="materialFile" class="w-full border rounded-xl px-4 py-2">
                     @endif
 
-                    <!-- Visibility & Status -->
+                    
                     <div class="grid grid-cols-2 gap-3">
                         <select wire:model.live="visibility" class="border rounded-xl px-4 py-2">
                             <option value="public">Public</option>
@@ -216,18 +212,31 @@
                         </select>
                     </div>
 
-                    <!-- Sort Order -->
+                   
                     <input wire:model.live="sort_order" type="number" min="0"
                         class="w-full border rounded-xl px-4 py-2" placeholder="Sort order">
 
-                    <!-- Validation Errors -->
+                    </div>
+                    
+                    
+                    <div wire:loading wire:target="materialFile,save" class="w-full mb-5">
+                        <div class="flex animate-pulse gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <div class="h-10 w-10 rounded-full bg-slate-200"></div>
+                            <div class="flex-1 space-y-3 py-1">
+                                <div class="h-3 w-3/4 rounded bg-slate-200"></div>
+                                <div class="space-y-2">
+                                    <div class="h-3 w-5/6 rounded bg-slate-200"></div>
+                                    <div class="h-3 w-1/2 rounded bg-slate-200"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     @error('topic_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @error('name') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @error('type') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @error('external_url') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     @error('materialFile') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
                 <!-- Actions -->
                 <div class="flex justify-end gap-2 pt-3">
                     <button @click="open = false; $wire.set('showModal', false)" class="px-4 py-2 border rounded-xl">
