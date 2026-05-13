@@ -55,14 +55,6 @@
                         </div>
         
                         <div class="rounded-xl border bg-slate-50 p-3">
-                            <div class="text-[11px] text-slate-500">Credit</div>
-                            <div class="mt-1 text-base sm:text-lg font-semibold text-slate-900">
-                                {{ $course->credit }}
-                            </div>
-                        </div>
-    
-        
-                        <div class="rounded-xl border bg-slate-50 p-3">
                             <div class="text-[11px] text-slate-500">Status</div>
                             <div class="mt-1 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium text-slate-700">
                                 {{ ucfirst($course->status) }}
