@@ -125,7 +125,7 @@
         <section class="space-y-3">
             <div>
                 <h2 class="text-lg sm:text-xl font-semibold">Continue Your Journey</h2>
-                <p class="text-sm text-[#004777]/70">Continue where you left off in your discipleship journey.</p>
+                {{-- <p class="text-sm text-[#004777]/70">Continue where you left off in your discipleship journey.</p> --}}
             </div>
 
             <div class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0">
@@ -197,13 +197,13 @@
     @if($studyProgramCount)
         <section class="space-y-4 rounded-3xl p-4 sm:p-5 lg:p-6">
             <div class="flex flex-col gap-6 xl:flex-row xl:items-start">
-                <div class="space-y-2.5 xl:basis-[30%] xl:pt-2">
+                <div class="space-y-2.5 xl:basis-[30%] xl:self-stretch flex flex-col justify-center items-center">
                     <h3 class="text-2xl font-bold leading-tight text-[#004777] sm:text-3xl">
-                        Grow in <em class="italic text-[#35A7FF]">faith and discover God’s</em> for your life
+                        Grow in <em class="italic text-[#35A7FF]">faith and discover God's</em> for your life
                     </h3>
-                    <p class="text-sm leading-6 text-[#004777]/70">
+                    {{-- <p class="text-sm leading-6 text-[#004777]/70">
                         Explore discipleship programs, biblical teachings, and spiritual growth paths designed to strengthen your relationship with God.
-                    </p>
+                    </p> --}}
                 </div>
 
                 <div class="min-w-0 flex-1 xl:basis-[70%]">
@@ -267,7 +267,7 @@
     <section class="space-y-3">
         <div>
             <h2 class="text-lg sm:text-xl font-semibold">Featured Teachings</h2>
-            <p class="text-sm text-[#004777]/70">Discover impactful teachings and discipleship classes prepared to strengthen your faith journey.</p>
+            {{-- <p class="text-sm text-[#004777]/70">Discover impactful teachings and discipleship classes prepared to strengthen your faith journey.</p> --}}
         </div>
 
         <div class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0">

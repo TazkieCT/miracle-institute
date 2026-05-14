@@ -17,6 +17,8 @@ class MyLearning extends Component
     public $tab = 'courses';
     public $searchCourse = '';
     public $filterCourse = 'all';
+    public $searchCertificate = '';
+    public $sortCertificate = 'latest';
 
     public function resetCourseFilters()
     {
@@ -24,10 +26,21 @@ class MyLearning extends Component
         $this->filterCourse = 'all';
     }
 
+    public function resetCertificateFilters()
+    {
+        $this->searchCertificate = '';
+        $this->sortCertificate = 'latest';
+    }
+
     public function updatedSearchCourse()
     {
         // optional: normalize search input
         $this->searchCourse = trim($this->searchCourse);
+    }
+
+    public function updatedSearchCertificate()
+    {
+        $this->searchCertificate = trim($this->searchCertificate);
     }
 
     public function render(ProgressService $progressService)
@@ -90,7 +103,16 @@ class MyLearning extends Component
 
         $certificates = Certificate::with('course')
             ->where('user_id', $user->id)
-            ->orderBy('issued_at', 'desc')
+            ->when(filled($this->searchCertificate), function ($query) {
+                $query->where(function ($certificateQuery) {
+                    $certificateQuery
+                        ->where('certificate_number', 'like', '%' . $this->searchCertificate . '%')
+                        ->orWhereHas('course', function ($courseQuery) {
+                            $courseQuery->where('title', 'like', '%' . $this->searchCertificate . '%');
+                        });
+                });
+            })
+            ->orderBy('issued_at', $this->sortCertificate === 'oldest' ? 'asc' : 'desc')
             ->take(6)
             ->get();
 

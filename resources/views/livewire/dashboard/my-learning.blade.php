@@ -62,10 +62,10 @@
                             <input type="search"
                                    wire:model.live.debounce.300ms="searchCourse"
                                    placeholder="Search course..."
-                                   class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-slate-900 focus:bg-white sm:w-56" />
+                                   class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-900 focus:bg-white sm:w-56" />
                         </div>
 
-                        <select wire:model.live="filterCourse" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none">
+                        <select wire:model.live="filterCourse" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none">
                             <option value="all">All</option>
                             <option value="in_progress">In Progress</option>
                             <option value="completed">Completed</option>
@@ -188,7 +188,23 @@
             {{-- Certificate tab content --}}
             @if($tab === 'certificate')
             <div class="space-y-4">
-                <h2 class="text-lg font-bold text-[#004777]">Certificates</h2>
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                    <h2 class="text-lg font-bold text-[#004777]">Certificates</h2>
+
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <div class="relative">
+                            <input type="search"
+                                   wire:model.live.debounce.300ms="searchCertificate"
+                                   placeholder="Search certificate..."
+                                   class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-900 focus:bg-white sm:w-64" />
+                        </div>
+
+                        <select wire:model.live="sortCertificate" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none">
+                            <option value="latest">Latest</option>
+                            <option value="oldest">Oldest</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     @forelse($certificates as $certificate)
