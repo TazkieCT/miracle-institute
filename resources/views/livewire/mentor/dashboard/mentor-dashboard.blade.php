@@ -31,10 +31,6 @@
                     <h2 class="text-lg font-semibold text-[#004777]">Managed Courses</h2>
                     <p class="text-sm text-[#004777]/70">Daftar course yang bisa kamu kelola.</p>
                 </div>
-
-                <a href="{{ route('mentor.topics.index') }}" class="text-sm font-medium text-[#004777] hover:underline">
-                    View all
-                </a>
             </div>
 
             <div class="divide-y divide-[#004777]/10">

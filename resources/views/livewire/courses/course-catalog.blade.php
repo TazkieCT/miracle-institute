@@ -230,11 +230,6 @@
 
                         @if($isMentor)
 
-                            <a href="{{ route('mentor.topics.index') }}"
-                            class="inline-flex items-center justify-center rounded-xl border border-[#004777]/15 px-4 py-2.5 text-xs font-medium text-[#004777] transition hover:bg-[#35A7FF]/10">
-                                Manage
-                            </a>
-
                         @else
 
                             @auth

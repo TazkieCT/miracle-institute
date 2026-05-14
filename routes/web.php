@@ -246,10 +246,6 @@ Route::middleware([
                 ->middleware('permission:manage_topics')
                 ->name('dashboard');
 
-            Route::get('/topics', MentorTopicIndex::class)
-                ->middleware('permission:manage_topics')
-                ->name('topics.index');
-
             Route::get('/topics/{slug}', TopicWorkspace::class)
                 ->middleware('permission:manage_topics')
                 ->name('topics.show');
