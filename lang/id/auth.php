@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'failed' => 'Kredensial tersebut tidak cocok dengan data kami.',
+    'password' => 'Kata sandi yang diberikan salah.',
+    'throttle' => 'Terlalu banyak percobaan masuk. Silakan coba lagi dalam :seconds detik.',
+    'login' => 'Masuk',
+    'sign_up' => 'Daftar',
+    'email' => 'Email',
+    'password_label' => 'Kata Sandi',
+    'confirm_password' => 'Konfirmasi Kata Sandi',
+    'name' => 'Nama',
+    'remember_me' => 'Ingat saya',
+    'forgot_password' => 'Lupa kata sandi?',
+    'create_account' => 'Buat akun',
+    'already_have_account' => 'Sudah punya akun?',
+    'login_to_continue' => 'Masuk untuk melanjutkan.',
+    'create_new_account' => 'Buat akun baru.',
+    'forgot_password_title' => 'Lupa Kata Sandi',
+    'enter_email_for_reset' => 'Masukkan email Anda untuk menerima tautan reset.',
+    'send_reset_link' => 'Kirim tautan reset',
+    'back_to_login' => 'Kembali ke login',
+    'reset_password' => 'Reset Kata Sandi',
+    'create_new_password' => 'Buat kata sandi baru.',
+    'new_password' => 'Kata sandi baru',
+    'confirm_new_password' => 'Konfirmasi kata sandi baru',
+];
