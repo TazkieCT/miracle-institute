@@ -11,7 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
         $middleware->alias([
+            'setlocale' => \App\Http\Middleware\SetLocale::class,
             'set.active.role' => \App\Http\Middleware\SetActiveRole::class,
             'role' => \App\Http\Middleware\EnsureRole::class,
             'course.enrolled' => \App\Http\Middleware\EnsureCourseEnrollment::class,
