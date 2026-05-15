@@ -1,18 +1,18 @@
 <section class="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h2 class="text-xl font-semibold tracking-tight text-slate-900">
-                Attendances
+                {{ __('mentor.topic_tabs.attendances.title') }}
             </h2>
 
             <p class="mt-1 text-sm text-slate-500">
-                Rekap kehadiran berdasarkan session topic.
+                {{ __('mentor.topic_tabs.attendances.subtitle') }}
             </p>
         </div>
 
         @if($canManageAttendance)
             <span class="inline-flex items-center rounded-full bg-emerald-600 px-3 py-1 text-xs font-medium text-white">
-                Attendance Manager
+                {{ __('mentor.topic_tabs.attendances.manager_badge') }}
             </span>
         @endif
     </div>
@@ -33,9 +33,9 @@
                     </div>
 
                     <div class="flex gap-2 text-[11px] uppercase tracking-wide">
-                        <span class="rounded-full border px-2 py-1">Present {{ $sessionAttendances->where('status', 'present')->count() }}</span>
-                        <span class="rounded-full border px-2 py-1">Late {{ $sessionAttendances->where('status', 'late')->count() }}</span>
-                        <span class="rounded-full border px-2 py-1">Absent {{ $sessionAttendances->where('status', 'absent')->count() }}</span>
+                        <span class="rounded-full border px-2 py-1">{{ __('mentor.topic_tabs.attendances.stats.present', ['count' => $sessionAttendances->where('status', 'present')->count()]) }}</span>
+                        <span class="rounded-full border px-2 py-1">{{ __('mentor.topic_tabs.attendances.stats.late', ['count' => $sessionAttendances->where('status', 'late')->count()]) }}</span>
+                        <span class="rounded-full border px-2 py-1">{{ __('mentor.topic_tabs.attendances.stats.absent', ['count' => $sessionAttendances->where('status', 'absent')->count()]) }}</span>
                     </div>
                 </div>
 
@@ -43,9 +43,9 @@
                     <table class="w-full text-sm">
                         <thead class="bg-slate-50 text-left">
                             <tr>
-                                <th class="p-3">Student</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3">Check In</th>
+                                <th class="p-3">{{ __('mentor.topic_tabs.attendances.table.student') }}</th>
+                                <th class="p-3">{{ __('mentor.topic_tabs.attendances.table.status') }}</th>
+                                <th class="p-3">{{ __('mentor.topic_tabs.attendances.table.check_in') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,7 +61,9 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="p-4 text-center text-slate-500">Belum ada attendance.</td>
+                                    <td colspan="3" class="p-4 text-center text-slate-500">
+                                        {{ __('mentor.topic_tabs.attendances.table.empty_session') }}
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -72,11 +74,11 @@
             <div class="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
                 <div class="mx-auto max-w-md">
                     <div class="text-sm font-medium text-slate-700">
-                        Attendance belum tersedia
+                        {{ __('mentor.topic_tabs.attendances.empty.title') }}
                     </div>
 
                     <p class="mt-2 text-sm leading-6 text-slate-500">
-                        Session aktif belum dibuat atau belum ada data kehadiran student.
+                        {{ __('mentor.topic_tabs.attendances.empty.description') }}
                     </p>
                 </div>
             </div>
