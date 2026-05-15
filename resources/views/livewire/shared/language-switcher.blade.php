@@ -1,8 +1,8 @@
 <div class="language-switcher">
-    <label for="language-select" class="sr-only">{{ __('messages.language') }}</label>
+    <label for="language-select" class="sr-only">{{ __('general.shared.language_switcher.label') }}</label>
 
     <div class="inline-flex items-center gap-2">
-        <span class="text-sm font-medium">{{ __('messages.language') }}:</span>
+        <span class="text-sm font-medium">{{ __('general.shared.language_switcher.label') }}:</span>
 
         <select id="language-select"
             wire:model.live="locale"
