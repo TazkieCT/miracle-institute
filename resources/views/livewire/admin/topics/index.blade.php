@@ -3,50 +3,34 @@
         title="{{ __('admin.topics.page_title') }}"
         subtitle="{{ __('admin.topics.page_subtitle') }}"
     >
-        <button wire:click="create"
-            class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
-            {{ __('admin.topics.actions.create') }}
-        </button>
+        <div class="flex items-center gap-2">
+            @if($selectedCourse)
+                <a href="{{ localized_route('admin.courses.index') }}"
+                   class="rounded-xl border px-4 py-2 text-sm">
+                    Back
+                </a>
+            @endif
+
+            <button wire:click="create"
+                class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
+                {{ __('admin.topics.actions.create') }}
+            </button>
+        </div>
     </x-ui.page-header>
 
     @if($selectedCourse)
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-            {{ __('admin.topics.filters.all_courses') }}:
-            <span class="font-semibold text-slate-900">{{ $selectedCourse->title }}</span>
+        <div class="rounded-2xl border bg-white p-4">
+            <div class="text-xs text-slate-500">Selected Course</div>
+            <div class="mt-1 text-lg font-semibold text-slate-900">{{ $selectedCourse->title }}</div>
         </div>
     @endif
 
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-        @foreach([
-            ['Courses', $stats['courses']],
-            ['Topics', $stats['topics']],
-            ['Materials', $stats['materials']],
-            ['Sessions', $stats['sessions']],
-            ['Certificates', $stats['certificates']],
-        ] as [$label, $value])
-            <div class="rounded-2xl border bg-white p-5">
-                <div class="text-xs text-slate-500">{{ __('admin.topics.stats.' . strtolower($label)) }}</div>
-                <div class="mt-1 text-2xl font-bold">
-                    {{ number_format($value) }}
-                </div>
-            </div>
-        @endforeach
-    </div>
-
     <section class="space-y-4">
         <div class="rounded-2xl border bg-white p-4">
-            <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <input wire:model.live="search"
                     class="rounded-xl border px-4 py-2"
                     placeholder="{{ __('admin.topics.search_placeholder') }}">
-
-                <select wire:model.live="courseFilter"
-                    class="rounded-xl border px-4 py-2">
-                    <option value="">{{ __('admin.topics.filters.all_courses') }}</option>
-                    @foreach($courses as $course)
-                        <option value="{{ $course->id }}">{{ $course->title }}</option>
-                    @endforeach
-                </select>
 
                 <select wire:model.live="teacherFilter"
                     class="rounded-xl border px-4 py-2">
@@ -69,7 +53,6 @@
         <x-ui.table-shell class="table-auto">
             <thead class="bg-slate-50 text-left">
                 <tr>
-                    <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.topics.table.course') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.topics.table.topic') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.topics.table.teacher') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.topics.table.order') }}</th>
@@ -82,8 +65,6 @@
             <tbody class="divide-y divide-slate-100 bg-white">
                 @forelse($rows as $row)
                     <tr class="align-top">
-                        <td class="whitespace-nowrap px-4 py-3">{{ $row->course?->title }}</td>
-
                         <td class="px-4 py-3">
                             <div class="font-medium text-slate-900">{{ $row->name }}</div>
                             <div class="text-xs text-slate-500">{{ $row->category }}</div>
@@ -134,7 +115,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-6 text-center text-slate-500">
+                        <td colspan="6" class="px-4 py-6 text-center text-slate-500">
                             {{ __('admin.topics.empty') }}
                         </td>
                     </tr>
@@ -168,12 +149,13 @@
                 </div>
 
                 <div class="space-y-4 overflow-y-auto p-5">
-                    <select wire:model="course_id" class="w-full rounded-xl border px-4 py-2">
-                        <option value="">{{ __('admin.topics.form.select_course') }}</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}">{{ $course->title }}</option>
-                        @endforeach
-                    </select>
+                    @if($selectedCourse)
+                        <input
+                            value="{{ $selectedCourse->title }}"
+                            disabled
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600"
+                        >
+                    @endif
 
                     <select wire:model="teacher_id" class="w-full rounded-xl border px-4 py-2">
                         <option value="">{{ __('admin.topics.form.select_teacher') }}</option>

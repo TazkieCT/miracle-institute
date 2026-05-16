@@ -50,21 +50,6 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
-                    @foreach([
-                        'Total' => $stats['total'],
-                        'Scheduled' => $stats['scheduled'],
-                        'Ongoing' => $stats['ongoing'],
-                        'Completed' => $stats['completed'],
-                        'Cancelled' => $stats['cancelled'],
-                    ] as $label => $value)
-                        <div class="rounded-2xl border bg-white p-4">
-                            <div class="text-[11px] text-slate-500">{{ __('admin.sessions.stats.' . strtolower($label)) }}</div>
-                            <div class="mt-1 text-lg font-bold">{{ number_format($value) }}</div>
-                        </div>
-                    @endforeach
-                </div>
-
                 <div class="overflow-hidden rounded-2xl border bg-white">
                     <div class="border-b bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
                         Session Attendance
@@ -110,21 +95,6 @@
             @endif
         </div>
     @else
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
-            @foreach([
-                'Total' => $stats['total'],
-                'Scheduled' => $stats['scheduled'],
-                'Ongoing' => $stats['ongoing'],
-                'Completed' => $stats['completed'],
-                'Cancelled' => $stats['cancelled'],
-            ] as $label => $value)
-                <div class="rounded-2xl border bg-white p-4">
-                    <div class="text-[11px] text-slate-500">{{ __('admin.sessions.stats.' . strtolower($label)) }}</div>
-                    <div class="mt-1 text-lg font-bold">{{ number_format($value) }}</div>
-                </div>
-            @endforeach
-        </div>
-
         <div class="space-y-4">
             <div class="rounded-2xl border bg-white p-4 space-y-3">
                 <div class="grid grid-cols-1 gap-3 md:grid-cols-4">

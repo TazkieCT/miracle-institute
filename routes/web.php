@@ -320,7 +320,18 @@ Route::prefix('{locale}')
                         ->middleware('permission:manage_courses')
                         ->name('courses.index');
 
-                    Route::get('/topics', TopicIndex::class)
+                    Route::get('/topics', function () {
+                        $courseFilter = request()->query('courseFilter');
+
+                        if ($courseFilter) {
+                            return redirect(localized_route('admin.topics.index', ['courseFilter' => $courseFilter]));
+                        }
+
+                        return redirect(localized_route('admin.courses.index'));
+                    })->middleware('permission:manage_topics')->name('topics.legacy');
+
+                    Route::get('/topics/{courseFilter}', TopicIndex::class)
+                        ->whereUuid('courseFilter')
                         ->middleware('permission:manage_topics')
                         ->name('topics.index');
 
