@@ -30,20 +30,7 @@
         </div>
     </x-ui.page-header>
 
-    @if($selectedCourse || $selectedFilterTopic)
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-            <div class="flex flex-wrap items-center gap-2">
-                <span>{{ __('admin.sessions.filters.all_courses') }}:</span>
-                <span class="font-semibold text-slate-900">{{ $selectedCourse?->title ?? __('admin.sessions.filters.all_courses') }}</span>
-
-                @if($selectedFilterTopic)
-                    <span class="text-slate-400">/</span>
-                    <span>{{ __('admin.sessions.filters.all_topics') }}:</span>
-                    <span class="font-semibold text-slate-900">{{ $selectedFilterTopic->name }}</span>
-                @endif
-            </div>
-        </div>
-    @endif
+    {{-- scope banner removed per UI simplification request --}}
 
     @if($selectedFilterTopic)
         <div class="space-y-4">

@@ -7,7 +7,6 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\VideoSessionJoinController;
 
 use App\Livewire\Admin\Assessments\AssessmentIndex as AdminAssessmentIndex;
-use App\Livewire\Admin\Assessments\QuestionManager;
 use App\Livewire\Admin\Certificates\CertificateIndex;
 use App\Livewire\Admin\Courses\CourseIndex;
 use App\Livewire\Admin\Dashboard\DashboardIndex;
@@ -386,15 +385,35 @@ Route::prefix('{locale}')
                         ->middleware('permission:manage_users')
                         ->name('users.roles');
 
-                    Route::get('/assessments', AdminAssessmentIndex::class)
+                    Route::get('/assessments', function () {
+                        $courseFilter = request()->query('courseFilter');
+
+                        if ($courseFilter) {
+                            return redirect(localized_route('admin.assessments.index', ['courseFilter' => $courseFilter]));
+                        }
+
+                        return redirect(localized_route('admin.topics.index'));
+                    })->middleware('permission:manage_assessments')->name('assessments.legacy');
+
+                    Route::get('/assessments/{courseFilter}', AdminAssessmentIndex::class)
+                        ->whereUuid('courseFilter')
                         ->middleware('permission:manage_assessments')
                         ->name('assessments.index');
 
-                    Route::get('/assessments/{assessmentId}/questions', QuestionManager::class)
-                        ->middleware('permission:manage_assessments')
-                        ->name('assessments.questions');
+                    // Question manager moved into assessments index; legacy route removed.
 
-                    Route::get('/certificates', CertificateIndex::class)
+                    Route::get('/certificates', function () {
+                        $courseFilter = request()->query('courseFilter');
+
+                        if ($courseFilter) {
+                            return redirect(localized_route('admin.certificates.index', ['courseFilter' => $courseFilter]));
+                        }
+
+                        return redirect(localized_route('admin.topics.index'));
+                    })->middleware('permission:manage_certificates')->name('certificates.legacy');
+
+                    Route::get('/certificates/{courseFilter}', CertificateIndex::class)
+                        ->whereUuid('courseFilter')
                         ->middleware('permission:manage_certificates')
                         ->name('certificates.index');
 

@@ -89,7 +89,7 @@ return [
             ],
             [
                 'label' => 'Certificates',
-                'route' => 'admin.certificates.index',
+                'route' => 'admin.certificates.legacy',
                 'roles' => ['admin'],
                 'ability' => 'manage_certificates',
             ],

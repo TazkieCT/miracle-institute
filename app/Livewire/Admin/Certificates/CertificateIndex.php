@@ -29,6 +29,11 @@ class CertificateIndex extends Component
     public string $typeFilter = '';
     public string $statusFilter = '';
 
+    public function mount(?string $courseFilter = null): void
+    {
+        $this->courseFilter = $courseFilter ?? '';
+    }
+
     protected $queryString = [
         'search' => ['except' => ''],
         'courseFilter' => ['except' => ''],
@@ -72,6 +77,7 @@ class CertificateIndex extends Component
     public function create(): void
     {
         $this->resetForm();
+        $this->course_id = $this->courseFilter ?: '';
         $this->showModal = true;
     }
 

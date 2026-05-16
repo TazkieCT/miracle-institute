@@ -14,7 +14,7 @@
 
     $learningMenus = [
         ['label' => __('admin.sidebar.courses'), 'route' => 'admin.courses.index'],
-        ['label' => __('admin.sidebar.certificates'), 'route' => 'admin.certificates.index'],
+        ['label' => __('admin.sidebar.certificates'), 'route' => 'admin.certificates.legacy'],
     ];
 
     $canMap = [
@@ -26,6 +26,7 @@
         'admin.materials.index' => 'manage_topics',
         'admin.sessions.index' => 'manage_topics',
         'admin.assessments.index' => 'manage_assessments',
+        'admin.certificates.legacy' => 'manage_certificates',
         'admin.certificates.index' => 'manage_certificates',
 
         'admin.users.index' => 'manage_users',

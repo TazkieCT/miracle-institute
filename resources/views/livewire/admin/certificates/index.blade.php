@@ -3,16 +3,24 @@
         title="{{ __('admin.certificates.page_title') }}"
         subtitle="{{ __('admin.certificates.page_subtitle') }}"
     >
-        <button wire:click="create"
-            class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
-            {{ __('admin.certificates.actions.create') }}
-        </button>
+        <div class="flex items-center gap-2">
+            @if($selectedCourse)
+                <a href="{{ localized_route('admin.topics.index', ['courseFilter' => $selectedCourse->id]) }}"
+                   class="rounded-xl border px-4 py-2 text-sm">
+                    Back
+                </a>
+            @endif
+
+            <button wire:click="create"
+                class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
+                {{ __('admin.certificates.actions.create') }}
+            </button>
+        </div>
     </x-ui.page-header>
 
     @if($selectedCourse)
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-            {{ __('admin.certificates.filters.all_courses') }}:
-            <span class="font-semibold text-slate-900">{{ $selectedCourse->title }}</span>
+        <div class="rounded-2xl border bg-white px-4 py-3 text-sm text-slate-700">
+            {{ $selectedCourse->title }}
         </div>
     @endif
 
@@ -44,40 +52,46 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
-        <input wire:model.live="search"
-            class="w-full rounded-xl border px-4 py-2"
-            placeholder="{{ __('admin.certificates.search_placeholder') }}">
+    @if(!$selectedCourse)
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
+            <input wire:model.live="search"
+                class="w-full rounded-xl border px-4 py-2"
+                placeholder="{{ __('admin.certificates.search_placeholder') }}">
 
-        <select wire:model.live="courseFilter" class="rounded-xl border px-4 py-2">
-            <option value="">{{ __('admin.certificates.filters.all_courses') }}</option>
-            @foreach($courses as $course)
-                <option value="{{ $course->id }}">{{ $course->title }}</option>
-            @endforeach
-        </select>
+            <select wire:model.live="courseFilter" class="rounded-xl border px-4 py-2">
+                <option value="">{{ __('admin.certificates.filters.all_courses') }}</option>
+                @foreach($courses as $course)
+                    <option value="{{ $course->id }}">{{ $course->title }}</option>
+                @endforeach
+            </select>
 
-        <select wire:model.live="topicFilter" class="rounded-xl border px-4 py-2">
-            <option value="">{{ __('admin.certificates.filters.all_topics') }}</option>
-            @foreach($topics as $topic)
-                <option value="{{ $topic->id }}">
-                    {{ $topic->course?->title }} · {{ $topic->name }}
-                </option>
-            @endforeach
-        </select>
+            <select wire:model.live="topicFilter" class="rounded-xl border px-4 py-2">
+                <option value="">{{ __('admin.certificates.filters.all_topics') }}</option>
+                @foreach($topics as $topic)
+                    <option value="{{ $topic->id }}">
+                        {{ $topic->course?->title }} · {{ $topic->name }}
+                    </option>
+                @endforeach
+            </select>
 
-        <select wire:model.live="typeFilter" class="rounded-xl border px-4 py-2">
-            <option value="">{{ __('admin.certificates.filters.all_types') }}</option>
-            <option value="course">{{ __('admin.certificates.types.course') }}</option>
-            <option value="topic">{{ __('admin.certificates.types.topic') }}</option>
-        </select>
+            <select wire:model.live="typeFilter" class="rounded-xl border px-4 py-2">
+                <option value="">{{ __('admin.certificates.filters.all_types') }}</option>
+                <option value="course">{{ __('admin.certificates.types.course') }}</option>
+                <option value="topic">{{ __('admin.certificates.types.topic') }}</option>
+            </select>
 
-        <select wire:model.live="statusFilter" class="rounded-xl border px-4 py-2">
-            <option value="">{{ __('admin.certificates.filters.all_status') }}</option>
-            <option value="issued">{{ __('admin.certificates.status.issued') }}</option>
-            <option value="draft">{{ __('admin.certificates.status.draft') }}</option>
-            <option value="expired">{{ __('admin.certificates.status.expired') }}</option>
-        </select>
-    </div>
+            <select wire:model.live="statusFilter" class="rounded-xl border px-4 py-2">
+                <option value="">{{ __('admin.certificates.filters.all_status') }}</option>
+                <option value="issued">{{ __('admin.certificates.status.issued') }}</option>
+                <option value="draft">{{ __('admin.certificates.status.draft') }}</option>
+                <option value="expired">{{ __('admin.certificates.status.expired') }}</option>
+            </select>
+        </div>
+    @else
+        <div class="rounded-2xl border bg-white px-4 py-3 text-sm text-slate-700">
+            {{ $selectedCourse->title }}
+        </div>
+    @endif
 
     <x-ui.table-shell class="table-auto">
         <thead class="bg-slate-50 text-left">
@@ -186,13 +200,21 @@
                         @endforeach
                     </select>
 
-                    <select wire:model="course_id"
-                        class="w-full rounded-xl border px-4 py-2">
-                        <option value="">{{ __('admin.certificates.form.select_course') }}</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}">{{ $course->title }}</option>
-                        @endforeach
-                    </select>
+                    @if($selectedCourse)
+                        <input
+                            value="{{ $selectedCourse->title }}"
+                            disabled
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600"
+                        >
+                    @else
+                        <select wire:model="course_id"
+                            class="w-full rounded-xl border px-4 py-2">
+                            <option value="">{{ __('admin.certificates.form.select_course') }}</option>
+                            @foreach($courses as $course)
+                                <option value="{{ $course->id }}">{{ $course->title }}</option>
+                            @endforeach
+                        </select>
+                    @endif
 
                     <select wire:model="topic_id"
                         class="w-full rounded-xl border px-4 py-2">

@@ -116,15 +116,7 @@
                                     {{ __('admin.topics.actions.sessions') }}
                                 </a>
 
-                                <a href="{{ localized_route('admin.assessments.index', ['courseFilter' => $row->course_id]) }}"
-                                   class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
-                                    {{ __('admin.topics.actions.assessments') }}
-                                </a>
-
-                                <a href="{{ localized_route('admin.certificates.index', ['courseFilter' => $row->course_id]) }}"
-                                   class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
-                                    {{ __('admin.topics.actions.certificates') }}
-                                </a>
+                                {{-- Assessments & Certificates actions removed from topic row — available on Courses page only --}}
 
                                 <div class="my-1 w-full border-t"></div>
 

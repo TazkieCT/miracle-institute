@@ -1,115 +1,125 @@
-<div x-data="{ open: @entangle('showModal').live }" class="mx-auto max-w-6xl space-y-6 px-4">
+<div x-data="{ assessmentOpen: @entangle('showModal').live }" class="mx-auto max-w-6xl space-y-6 px-4">
     <x-ui.page-header
         title="{{ __('admin.assessments.page_title') }}"
         subtitle="{{ __('admin.assessments.page_subtitle') }}"
     >
-        <button wire:click="create"
-            class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
-            {{ __('admin.assessments.actions.create') }}
-        </button>
+        <div class="flex items-center gap-2">
+            @if($selectedCourse)
+                <a href="{{ localized_route('admin.topics.index', ['courseFilter' => $selectedCourse->id]) }}"
+                   class="rounded-xl border px-4 py-2 text-sm">
+                    Back
+                </a>
+            @endif
+
+            @if($selectedAssessment)
+                <button wire:click="edit('{{ $selectedAssessment->id }}')"
+                    class="rounded-xl border px-4 py-2 text-sm">
+                    {{ __('admin.assessments.actions.edit') }}
+                </button>
+
+                <button wire:click="createQuestion"
+                    class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
+                    {{ __('admin.question_manager.actions.create') }}
+                </button>
+            @else
+                <button wire:click="create"
+                    class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
+                    {{ __('admin.assessments.actions.create') }}
+                </button>
+            @endif
+        </div>
     </x-ui.page-header>
 
     @if($selectedCourse)
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-            {{ __('admin.assessments.filters.all_courses') }}:
-            <span class="font-semibold text-slate-900">{{ $selectedCourse->title }}</span>
+        <div class="rounded-2xl border bg-white p-5 space-y-4">
+            <div>
+                <div class="text-xs uppercase tracking-wide text-slate-500">Course</div>
+                <div class="text-xl font-semibold text-slate-900">{{ $selectedCourse->title }}</div>
+            </div>
+
+            @if($selectedAssessment)
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+                    <div class="rounded-2xl border bg-slate-50 p-4">
+                        <div class="text-xs text-slate-500">Assessment</div>
+                        <div class="mt-1 font-semibold">{{ $selectedAssessment->title }}</div>
+                    </div>
+                    <div class="rounded-2xl border bg-slate-50 p-4">
+                        <div class="text-xs text-slate-500">Passing Grade</div>
+                        <div class="mt-1 font-semibold">{{ $selectedAssessment->passing_grade }}</div>
+                    </div>
+                    <div class="rounded-2xl border bg-slate-50 p-4">
+                        <div class="text-xs text-slate-500">Questions</div>
+                        <div class="mt-1 font-semibold">{{ $selectedAssessment->questions->count() }}</div>
+                    </div>
+                    <div class="rounded-2xl border bg-slate-50 p-4">
+                        <div class="text-xs text-slate-500">Attempts</div>
+                        <div class="mt-1 font-semibold">{{ $selectedAssessment->attempts_count ?? 0 }}</div>
+                    </div>
+                </div>
+
+                <div class="overflow-hidden rounded-2xl border bg-white">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50 text-left">
+                            <tr>
+                                <th class="p-4">Question</th>
+                                <th class="p-4">Options</th>
+                                <th class="p-4">Order</th>
+                                <th class="p-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($selectedAssessment->questions as $question)
+                                <tr class="border-t align-top">
+                                    <td class="p-4">
+                                        <div class="font-medium text-slate-900">{{ $question->question }}</div>
+                                        <div class="text-xs text-slate-500">{{ $question->question_type }}</div>
+                                    </td>
+                                    <td class="space-y-1 p-4 text-xs text-slate-700">
+                                        @foreach($question->options as $option)
+                                            <div class="{{ $option->is_correct ? 'font-semibold text-emerald-600' : '' }}">
+                                                {{ $option->is_correct ? '✓' : '•' }} {{ $option->option_text }}
+                                            </div>
+                                        @endforeach
+                                    </td>
+                                    <td class="p-4 text-center">{{ $question->sort_order }}</td>
+                                    <td class="p-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            <button wire:click="editQuestion('{{ $question->id }}')"
+                                                class="rounded-lg bg-blue-100 px-3 py-1.5 text-xs text-blue-700 hover:bg-blue-200">
+                                                {{ __('admin.question_manager.actions.edit') }}
+                                            </button>
+
+                                            <button wire:click="deleteQuestion('{{ $question->id }}')"
+                                                class="rounded-lg bg-red-100 px-3 py-1.5 text-xs text-red-700 hover:bg-red-200">
+                                                {{ __('admin.question_manager.actions.delete') }}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="p-6 text-center text-slate-500">
+                                        {{ __('admin.question_manager.empty') }}
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="rounded-2xl border border-dashed bg-slate-50 p-6 text-slate-600">
+                    Belum ada assessment untuk course ini.
+                </div>
+            @endif
         </div>
     @endif
 
-    <div class="grid grid-cols-1 gap-3 md:grid-cols-3 xl:grid-cols-3">
-        <input wire:model.live="search"
-            class="w-full rounded-xl border px-4 py-2"
-            placeholder="{{ __('admin.assessments.search_placeholder') }}">
-
-        <select wire:model.live="courseFilter" class="rounded-xl border px-4 py-2">
-            <option value="">{{ __('admin.assessments.filters.all_courses') }}</option>
-            @foreach($courses as $course)
-                <option value="{{ $course->id }}">{{ $course->title }}</option>
-            @endforeach
-        </select>
-
-        <select wire:model.live="statusFilter" class="rounded-xl border px-4 py-2">
-            <option value="">{{ __('admin.assessments.filters.all_status') }}</option>
-            <option value="active">{{ __('admin.assessments.status.active') }}</option>
-            <option value="inactive">{{ __('admin.assessments.status.inactive') }}</option>
-            <option value="draft">{{ __('admin.assessments.status.draft') }}</option>
-        </select>
-    </div>
-
-    <x-ui.table-shell class="table-auto">
-        <thead class="bg-slate-50 text-left">
-            <tr>
-                <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.assessments.table.course') }}</th>
-                <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.assessments.table.assessment') }}</th>
-                <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.assessments.table.questions') }}</th>
-                <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.assessments.table.grade') }}</th>
-                <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.assessments.table.attempts') }}</th>
-                <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.assessments.table.status') }}</th>
-                <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.assessments.table.action') }}</th>
-            </tr>
-        </thead>
-
-        <tbody class="divide-y divide-slate-100 bg-white">
-            @forelse($rows as $row)
-                <tr class="align-top">
-                    <td class="whitespace-nowrap px-4 py-3">
-                        {{ $row->course?->title ?? '-' }}
-                    </td>
-
-                    <td class="px-4 py-3">
-                        <div class="font-medium text-slate-900">{{ $row->title }}</div>
-                        <div class="text-xs text-slate-500">{{ __('admin.assessments.course_centered_note') }}</div>
-                    </td>
-
-                    <td class="whitespace-nowrap px-4 py-3">{{ $row->questions_count }}</td>
-                    <td class="whitespace-nowrap px-4 py-3">{{ $row->passing_grade }}</td>
-                    <td class="whitespace-nowrap px-4 py-3">{{ $row->attempts_count }}</td>
-
-                    <td class="whitespace-nowrap px-4 py-3">
-                        <span class="rounded-full bg-slate-100 px-2 py-1 text-xs">
-                            {{ __('admin.assessments.status.' . $row->status, [], $row->status) }}
-                        </span>
-                    </td>
-
-                    <td class="px-4 py-3">
-                        <div class="flex flex-wrap gap-2">
-                            <a href="{{ localized_route('admin.assessments.questions', $row->id) }}"
-                               class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
-                                {{ __('admin.assessments.actions.questions') }}
-                            </a>
-
-                            <div class="my-1 w-full border-t"></div>
-
-                            <button wire:click="edit('{{ $row->id }}')"
-                                class="rounded-lg bg-blue-100 px-3 py-1.5 text-xs text-blue-700 hover:bg-blue-200">
-                                {{ __('admin.assessments.actions.edit') }}
-                            </button>
-
-                            <button wire:click="delete('{{ $row->id }}')"
-                                class="rounded-lg bg-red-100 px-3 py-1.5 text-xs text-red-700 hover:bg-red-200">
-                                {{ __('admin.assessments.actions.delete') }}
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="7" class="px-4 py-6 text-center text-slate-500">
-                        {{ __('admin.assessments.empty') }}
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </x-ui.table-shell>
-
-    <div>{{ $rows->links() }}</div>
-
     <template x-teleport="body">
         <div
-            x-show="open"
+            x-show="assessmentOpen"
             x-cloak
             x-transition
-            @click.self="open = false"
+            @click.self="assessmentOpen = false"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         >
             <div class="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-xl">
@@ -119,20 +129,27 @@
                         {{ $editingId ? __('admin.assessments.modal.edit_title') : __('admin.assessments.modal.create_title') }}
                     </h2>
 
-                    <button @click="open = false" class="text-slate-500 hover:text-black">
+                    <button @click="assessmentOpen = false" class="text-slate-500 hover:text-black">
                         ✕
                     </button>
                 </div>
 
                 <div class="space-y-4 overflow-y-auto p-5">
-                    <select wire:model="course_id" class="w-full rounded-xl border px-4 py-2">
-                        <option value="">{{ __('admin.assessments.form.select_course') }}</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}" @disabled(!$editingId && $course->assessment)>
-                                {{ $course->title }}
-                            </option>
-                        @endforeach
-                    </select>
+                    @if($selectedCourse)
+                        <input
+                            value="{{ $selectedCourse->title }}"
+                            disabled
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600"
+                        >
+                    @else
+                        <select wire:model="course_id" class="w-full rounded-xl border px-4 py-2">
+                            <option value="">{{ __('admin.assessments.form.select_course') }}</option>
+                            @foreach($courses as $course)
+                                <option value="{{ $course->id }}" @disabled(!$editingId && $course->assessment)>
+                                    {{ $course->title }}</option>
+                            @endforeach
+                        </select>
+                    @endif
 
                     <input wire:model="title"
                         class="w-full rounded-xl border px-4 py-2"
@@ -163,7 +180,7 @@
 
                 <div class="flex justify-end gap-2 border-t bg-slate-50 p-5">
                     <button
-                        @click="open = false"
+                        @click="assessmentOpen = false"
                         class="rounded-xl border px-4 py-2">
                         {{ __('admin.assessments.actions.cancel') }}
                     </button>
@@ -174,6 +191,159 @@
                     </button>
                 </div>
 
+            </div>
+        </div>
+    </template>
+
+    <template x-teleport="body">
+        <div
+            x-data="{ open: @entangle('questionModalOpen').live }"
+            x-show="open"
+            x-cloak
+            x-transition
+            @click.self="open = false"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        >
+            <div class="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl bg-white shadow-xl">
+
+                <div class="flex items-center justify-between border-b p-5">
+                    <h2 class="text-lg font-semibold">
+                        {{ $questionEditingId ? __('admin.question_manager.modal.edit_title') : __('admin.question_manager.modal.create_title') }}
+                    </h2>
+
+                    <button @click="open = false" class="text-slate-500 hover:text-black">
+                        ✕
+                    </button>
+                </div>
+
+                <div class="space-y-4 overflow-y-auto p-5">
+                    @if($selectedAssessment)
+                        <div class="rounded-xl border px-4 py-2 bg-slate-50 text-sm">{{ $selectedCourse?->title }} · {{ $selectedAssessment->title }}</div>
+                    @endif
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+                        <div class="rounded-2xl border bg-white p-5">
+                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.course') }}</div>
+                            <div class="mt-1 text-lg font-bold">{{ $selectedCourse?->title ?? '-' }}</div>
+                        </div>
+
+                        <div class="rounded-2xl border bg-white p-5">
+                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.questions') }}</div>
+                            <div class="mt-1 text-2xl font-bold">{{ number_format($selectedAssessment?->questions->count() ?? 0) }}</div>
+                        </div>
+
+                        <div class="rounded-2xl border bg-white p-5">
+                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.attempts') }}</div>
+                            <div class="mt-1 text-2xl font-bold">{{ number_format($selectedAssessment ? \App\Models\AssessmentAttempt::where('assessment_id', $selectedAssessment->id)->count() : 0) }}</div>
+                        </div>
+
+                        <div class="rounded-2xl border bg-white p-5">
+                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.passing_grade') }}</div>
+                            <div class="mt-1 text-2xl font-bold">{{ $selectedAssessment?->passing_grade ?? '-' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-hidden rounded-2xl border bg-white">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="p-4 text-left">{{ __('admin.question_manager.table.question') }}</th>
+                                    <th class="p-4 text-left">{{ __('admin.question_manager.table.options') }}</th>
+                                    <th class="p-4">{{ __('admin.question_manager.table.order') }}</th>
+                                    <th class="p-4">{{ __('admin.question_manager.table.action') }}</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if($selectedAssessment)
+                                    @forelse($selectedAssessment->questions as $q)
+                                        <tr class="align-top border-t">
+                                            <td class="p-4">
+                                                <div class="font-medium">{{ $q->question }}</div>
+                                                <div class="text-xs text-slate-500">{{ $q->question_type }}</div>
+                                            </td>
+
+                                            <td class="space-y-1 p-4 text-xs">
+                                                @foreach($q->options as $opt)
+                                                    <div class="{{ $opt->is_correct ? 'font-semibold text-emerald-600' : 'text-slate-500' }}">
+                                                        {{ $opt->is_correct ? '✓' : '•' }} {{ $opt->option_text }}
+                                                    </div>
+                                                @endforeach
+                                            </td>
+
+                                            <td class="p-4 text-center">{{ $q->sort_order }}</td>
+
+                                            <td class="p-4">
+                                                <div class="flex justify-center gap-2">
+                                                    <button wire:click="editQuestion('{{ $q->id }}')"
+                                                        class="rounded-lg bg-blue-100 px-3 py-1.5 text-xs text-blue-700 hover:bg-blue-200">
+                                                        {{ __('admin.question_manager.actions.edit') }}
+                                                    </button>
+
+                                                    <button wire:click="deleteQuestion('{{ $q->id }}')"
+                                                        class="rounded-lg bg-red-100 px-3 py-1.5 text-xs text-red-700 hover:bg-red-200">
+                                                        {{ __('admin.question_manager.actions.delete') }}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="p-6 text-center text-slate-500">
+                                                {{ __('admin.question_manager.empty') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="space-y-4">
+                        <textarea wire:model="question_text"
+                            rows="4"
+                            class="w-full rounded-xl border px-4 py-2"
+                            placeholder="{{ __('admin.question_manager.form.question_placeholder') }}"></textarea>
+
+                        <div class="space-y-3">
+                            <div class="text-sm font-medium">{{ __('admin.question_manager.form.options_title') }}</div>
+
+                            @foreach($question_options as $i => $opt)
+                                <div class="flex items-center gap-3">
+                                    <button
+                                        type="button"
+                                        wire:click="$set('question_correctIndex', {{ $i }})"
+                                        class="flex h-5 w-5 items-center justify-center rounded border {{ $question_correctIndex === $i ? 'bg-emerald-600 text-white' : 'bg-white' }}"
+                                    >
+                                        @if($question_correctIndex === $i) ✓ @endif
+                                    </button>
+
+                                    <input type="text"
+                                        wire:model="question_options.{{ $i }}.option_text"
+                                        class="w-full rounded-lg border px-3 py-2"
+                                        placeholder="{{ __('admin.question_manager.form.option_placeholder', ['number' => $i + 1]) }}">
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <input wire:model="question_sort_order"
+                            type="number"
+                            class="w-full rounded-xl border px-4 py-2"
+                            placeholder="{{ __('admin.question_manager.form.sort_order_placeholder') }}">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 border-t bg-slate-50 p-5">
+                    <button @click="open = false"
+                        class="rounded-xl border px-4 py-2">
+                        {{ __('admin.question_manager.actions.cancel') }}
+                    </button>
+
+                    <button wire:click="saveQuestion"
+                        class="rounded-xl bg-slate-900 px-4 py-2 text-white">
+                        {{ __('admin.question_manager.actions.save') }}
+                    </button>
+                </div>
             </div>
         </div>
     </template>
