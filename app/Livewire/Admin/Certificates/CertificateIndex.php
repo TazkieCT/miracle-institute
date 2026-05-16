@@ -5,8 +5,6 @@ namespace App\Livewire\Admin\Certificates;
 use App\Livewire\Concerns\WithAdminTableState;
 use App\Models\Certificate;
 use App\Models\Course;
-use App\Models\Topic;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -36,10 +34,6 @@ class CertificateIndex extends Component
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'courseFilter' => ['except' => ''],
-        'topicFilter' => ['except' => ''],
-        'typeFilter' => ['except' => ''],
-        'statusFilter' => ['except' => ''],
         'perPage' => ['except' => 10],
     ];
 
@@ -135,19 +129,12 @@ class CertificateIndex extends Component
             ->when($this->courseFilter, fn ($q) => $q->where('course_id', $this->courseFilter))
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter));
 
+        $certificatesCount = (clone $baseQuery)->count();
+
         return view('livewire.admin.certificates.index', [
             'rows' => (clone $baseQuery)->latest()->paginate($this->perPage),
-            'courses' => Course::orderBy('title')->get(),
-            'topics' => Topic::with('course')->orderBy('name')->get(),
-            'users' => User::orderBy('name')->get(),
             'selectedCourse' => $this->courseFilter ? Course::find($this->courseFilter) : null,
-            'selectedTopic' => $this->topicFilter ? Topic::with('course')->find($this->topicFilter) : null,
-            'stats' => [
-                'total' => (clone $baseQuery)->count(),
-                'issued' => (clone $baseQuery)->where('status', 'issued')->count(),
-                'draft' => (clone $baseQuery)->where('status', 'draft')->count(),
-                'expired' => (clone $baseQuery)->where('status', 'expired')->count(),
-            ],
+            'certificatesCount' => $certificatesCount,
         ])->layout('layouts.admin');
     }
 

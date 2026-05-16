@@ -420,7 +420,7 @@ Route::prefix('{locale}')
                             return redirect(localized_route('admin.certificates.index', ['courseFilter' => $courseFilter]));
                         }
 
-                        return redirect(localized_route('admin.topics.index'));
+                        return redirect(localized_route('admin.courses.index'));
                     })->middleware('permission:manage_certificates')->name('certificates.legacy');
 
                     Route::get('/certificates/{courseFilter}', CertificateIndex::class)
