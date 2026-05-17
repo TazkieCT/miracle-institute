@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live }" class="mx-auto max-w-6xl space-y-6 px-4">
+<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.courses.page_title') }}"
         subtitle="{{ __('admin.courses.page_subtitle') }}"
@@ -94,20 +94,32 @@
 
                                 <div class="my-1 w-full border-t"></div>
 
-                                <button wire:click="edit('{{ $row->id }}')" title="{{ __('admin.courses.actions.edit') }}"
-                                        class="rounded-lg bg-slate-100 p-2 text-xs hover:bg-slate-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M4 13.5V20h6.5L20.5 9.999l-6.5-6.5L4 13.5z" />
-                                    </svg>
-                                </button>
+                                <div class="relative group">
+                                    <button wire:click="edit('{{ $row->id }}')" title="{{ __('admin.courses.actions.edit') }}"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition hover:bg-blue-100">
+                                        <span class="sr-only">{{ __('admin.courses.actions.edit') }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182L10.582 17.13a4.5 4.5 0 0 1-1.897 1.13L6 19l.74-2.685a4.5 4.5 0 0 1 1.13-1.897L16.862 4.487ZM16.862 4.487 19.5 7.125" />
+                                        </svg>
+                                    </button>
+                                    <span class="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+                                        {{ __('admin.courses.actions.edit') }}
+                                    </span>
+                                </div>
 
-                                <button wire:click="delete('{{ $row->id }}')" title="{{ __('admin.courses.actions.delete') }}"
-                                        onclick="confirm('{{ __('admin.courses.confirm_delete') }}') || event.stopImmediatePropagation()"
-                                        class="rounded-lg bg-slate-100 p-2 text-xs hover:bg-slate-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3" />
-                                    </svg>
-                                </button>
+                                <div class="relative group">
+                                    <button wire:click="delete('{{ $row->id }}')" title="{{ __('admin.courses.actions.delete') }}"
+                                            onclick="confirm('{{ __('admin.courses.confirm_delete') }}') || event.stopImmediatePropagation()"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                        <span class="sr-only">{{ __('admin.courses.actions.delete') }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.245-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                        </svg>
+                                    </button>
+                                    <span class="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+                                        {{ __('admin.courses.actions.delete') }}
+                                    </span>
+                                </div>
                             </div>
                         </td>
                     </tr>

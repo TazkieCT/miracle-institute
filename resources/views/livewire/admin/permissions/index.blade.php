@@ -93,7 +93,7 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 scale-100"
                  x-transition:leave-end="opacity-0 scale-95"
-                 class="relative mx-4 w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl">
+                 class="relative mx-4 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-slate-900">
                         {{ $editingId ? __('admin.permissions.modal.edit_title') : __('admin.permissions.modal.create_title') }}

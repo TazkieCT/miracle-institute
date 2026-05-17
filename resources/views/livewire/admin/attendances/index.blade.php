@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live }" class="mx-auto max-w-6xl space-y-6 px-4">
+<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.attendances.page_title') }}"
         subtitle="{{ __('admin.attendances.page_subtitle') }}"
@@ -143,7 +143,7 @@
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
             @click.self="open=false; $wire.set('showModal', false)">
 
-            <div class="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-6 space-y-4">
+            <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 space-y-4">
 
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold">

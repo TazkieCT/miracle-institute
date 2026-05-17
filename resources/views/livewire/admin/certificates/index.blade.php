@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-6xl space-y-6 px-4">
+<div class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.certificates.page_title') }}"
         subtitle="{{ __('admin.certificates.page_subtitle') }}"
