@@ -97,6 +97,7 @@ class CertificateService
         $pdf = Pdf::loadView('pdf.certificates.course', [
             'certificateNumber' => $certificate->certificate_number,
             'courseCode' => $this->courseCode($course),
+            'certificate' => $certificate,
             'course' => $course,
             'user' => $user,
             'issuedAt' => $issuedAt,
@@ -106,7 +107,10 @@ class CertificateService
             'backTopics' => $this->buildBackTopics($course, $user),
             'achievementSummary' => $this->buildAchievementSummary($course, $user, $topics->count()),
             'logoBase64' => $this->placeholderImageBase64(),
-        ])->setPaper('a4', 'portrait');
+            'background' => null,
+            'backgroundBack' => null,
+            'signature' => null,
+        ])->setPaper('a4', 'landscape');
 
         return $pdf->download($filename);
     }

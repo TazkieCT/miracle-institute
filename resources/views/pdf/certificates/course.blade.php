@@ -5,493 +5,227 @@
         ? ($issuedAt instanceof Carbon ? $issuedAt : Carbon::parse($issuedAt))
         : now();
 
-    $frontDate = $frontDate ?? $issuedAt->translatedFormat('d F Y');
     $certificateNumber = $certificateNumber ?? ('CERT-CRS-' . now()->format('Ymd') . '-0001');
-    $courseCode = $courseCode ?? 'CRS';
-    $sequenceLabel = $sequenceLabel ?? '0001';
+    $participantName = strtoupper($user->full_name ?? $user->name ?? '-');
+    $signatureName = 'Ali Sutiyono';
 
-    $frontSummary = $frontSummary ?? [
-        'participant_name' => $user->name ?? '-',
-        'course_title' => $course->title ?? '-',
-        'program_title' => $course->studyProgram->title ?? '-',
-        'total_topics' => 0,
-        'completed_topics' => 0,
-    ];
-
-    $backTopics = $backTopics ?? [];
-
-    $achievementSummary = $achievementSummary ?? [
-        'topics_total' => 0,
-        'topics_completed' => 0,
-        'attendance_present' => 0,
-        'attendance_late' => 0,
-        'attendance_absent' => 0,
-    ];
-
-    $logoBase64 = $logoBase64 ?? '';
+    // Placeholders: can be replaced by actual storage paths/base64 later.
+    $background = $background ?? null;
+    $backgroundBack = $backgroundBack ?? null;
+    $signature = $signature ?? null;
 @endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <title>Sertifikat - {{ $course->title ?? '-' }}</title>
     <style>
-        @page { margin: 18px; }
-        * { box-sizing: border-box; }
+        @page { margin: 0; size: 297mm 210mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html,
         body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            color: #111827;
-            background: #fff;
-            margin: 0;
-            padding: 0;
+            width: 297mm;
+            font-family: 'Times New Roman', serif;
         }
 
         .page {
-            width: 100%;
-            min-height: 1000px;
             position: relative;
-        }
-
-        .page-break {
-            page-break-after: always;
-        }
-
-        .sheet {
-            border: 2px solid #0f172a;
-            border-radius: 18px;
-            padding: 24px;
-            min-height: 1000px;
-            height: auto; 
-            position: relative;
-            box-sizing: border-box;
-            
-            margin-bottom: 20px; 
-        }
-
-        .sheet-inner {
-            position: absolute;
-            
-            top: 12px;
-            bottom: 12px;
-            left: 12px;
-            right: 12px;
-            
-            border: 1px solid #cbd5e1;
-            border-radius: 14px;
-            pointer-events: none;
-        }
-
-
-
-        .header {
-            display: table;
-            width: 100%;
-            margin-bottom: 18px;
-        }
-
-        .header-left,
-        .header-right {
-            display: table-cell;
-            vertical-align: middle;
-        }
-
-        .header-right {
-            text-align: right;
-        }
-
-        .brand {
-            display: table;
-        }
-
-        .brand-logo,
-        .brand-text {
-            display: table-cell;
-            vertical-align: middle;
-        }
-
-        .logo {
-            width: 62px;
-            height: 62px;
-            border-radius: 14px;
-            object-fit: cover;
-            margin-right: 12px;
-        }
-
-        .brand-title {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: .14em;
-            color: #475569;
-            font-weight: 700;
-        }
-
-        .brand-sub {
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 3px;
-        }
-
-        .cert-no {
-            font-size: 12px;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        .title {
-            text-align: center;
-            margin-top: 22px;
-        }
-
-        .title h1 {
-            margin: 0;
-            font-size: 28px;
-            letter-spacing: .10em;
-            text-transform: uppercase;
-            color: #0f172a;
-        }
-
-        .title p {
-            margin: 8px 0 0;
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        .main-box {
-            margin: 34px auto 0;
-            max-width: 720px;
-            text-align: center;
-        }
-
-        .label {
-            font-size: 12px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: .12em;
-            font-weight: 700;
-        }
-
-        .name {
-            margin-top: 10px;
-            font-size: 30px;
-            font-weight: 800;
-            color: #111827;
-            line-height: 1.25;
-            word-break: break-word;
-        }
-
-        .course {
-            margin-top: 10px;
-            font-size: 22px;
-            font-weight: 700;
-            color: #0f172a;
-            line-height: 1.3;
-            word-break: break-word;
-        }
-
-        .meta {
-            margin-top: 16px;
-            font-size: 13px;
-            color: #475569;
-            line-height: 1.8;
-        }
-
-        .pill {
-            display: inline-block;
-            margin-top: 14px;
-            padding: 6px 14px;
-            border-radius: 999px;
-            background: #eff6ff;
-            color: #1d4ed8;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-        }
-
-        .summary-grid {
-            margin-top: 28px;
-            display: table;
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 10px;
-        }
-
-        .summary-cell {
-            display: table-cell;
-            width: 33.333%;
-        }
-
-        .summary-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            background: #f8fafc;
-            padding: 14px;
-            min-height: 86px;
-        }
-
-        .summary-card .k {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: .10em;
-            color: #64748b;
-        }
-
-        .summary-card .v {
-            margin-top: 8px;
-            font-size: 16px;
-            font-weight: 800;
-            color: #0f172a;
-            line-height: 1.35;
-            word-break: break-word;
-        }
-
-        .footer {
-            position: absolute;
-            left: 24px;
-            right: 24px;
-            bottom: 24px;
-            display: table;
-            width: calc(100% - 48px);
-        }
-
-        .footer-col {
-            display: table-cell;
-            width: 50%;
-            text-align: center;
-            vertical-align: bottom;
-        }
-
-        .sign-title {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .sign-line {
-            margin: 54px auto 0;
-            border-top: 1px solid #111827;
-            max-width: 240px;
-            padding-top: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .back-header {
-            margin-bottom: 18px;
-        }
-
-        .back-header h2 {
-            margin: 0;
-            font-size: 22px;
-            color: #0f172a;
-        }
-
-        .back-header p {
-            margin: 6px 0 0;
-            font-size: 12px;
-            color: #64748b;
-            line-height: 1.7;
-        }
-
-        .table-wrap {
-            border: 1px solid #dbe3ef;
-            border-radius: 14px;
+            width: 297mm;
+            height: 210mm;
             overflow: hidden;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
-        thead th {
-            background: #0f172a;
-            color: #fff;
-            font-size: 11px;
-            padding: 10px 8px;
-            text-align: left;
-            vertical-align: top;
-            word-wrap: break-word;
-        }
-
-        tbody td {
-            border-top: 1px solid #e2e8f0;
-            padding: 10px 8px;
-            font-size: 11px;
-            vertical-align: top;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .topic-cell {
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #3730a3;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-        }
-
-        .legend {
-            margin-top: 16px;
-            font-size: 11px;
-            color: #64748b;
-            line-height: 1.7;
-        }
-
-        .watermark {
+        .background {
             position: absolute;
-            inset: 0;
-            opacity: 0.05;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
 
-        .watermark img {
-            width: 360px;
-            max-width: 70%;
+        .background img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 297mm;
+            height: 210mm;
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            text-align: center;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .second-content {
+            padding: 20mm 20mm 24mm 20mm;
+            height: 210mm;
+            position: relative;
+        }
+
+        .second-title {
+            text-align: center;
+            font-size: 24px;
+            color: #0000c7;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .material-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .material-table {
+            width: 100%;
+            min-height: 100mm;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+
+        .material-table th,
+        .material-table td {
+            border: 1px solid #000;
+            padding: 8px 10px;
+        }
+
+        .material-table th {
+            background: #f2f2f2;
+            text-align: center;
+        }
+
+        .material-table td {
+            background: #ffffff;
+            text-align: center;
+        }
+
+        .material-table td.no,
+        .material-table td.duration {
+            text-align: center;
+            width: 15%;
+        }
+
+        .material-table td.topic {
+            width: 70%;
+        }
+
+        .signature-right-bottom {
+            text-align: center;
+            margin-left: auto;
+            width: 70mm;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-    <div class="page page-break">
-        <div class="sheet">
-            <div class="sheet-inner"></div>
+    <div class="page">
+        @if($background)
+            <div class="background">
+                <img src="{{ $background }}" alt="">
+            </div>
+        @endif
 
-            <div class="watermark">
-                @if(!empty($logoBase64))
-                    <img src="{{ $logoBase64 }}" alt="Watermark">
+        <div class="wrapper">
+            <div class="content">
+                <h1 style="font-size: 24px; color: #0000c7; font-weight: bold;">
+                    KSP <span style="color: #c20000;">CU</span> BEREROD GRATIA
+                </h1>
+                <h2 style="font-size: 46px; color: #000; font-weight: 900; letter-spacing: 3px; margin: 5px 0;">SERTIFIKAT</h2>
+                <p style="font-size: 20px; color: #000; font-weight: bold; font-style: italic;">No. {{ $certificateNumber }}</p>
+                <p style="font-size: 24px; color: #000; margin: 15px 0 5px 0;">Diberikan kepada:</p>
+                <div style="font-size: 28px; color: #000; font-weight: bold; border-bottom: 3px solid #000; display: inline-block; padding: 8px 30px;">
+                    {{ $participantName }}
+                </div>
+                <p style="font-size: 24px; color: #000; margin: 5px 0 0 0;">Telah mengikuti dan menyelesaikan :</p>
+                <div style="font-size: 28px; color: #000; font-weight: bold; margin: 0 0 5px 0;">{{ $course->title ?? '-' }}</div>
+                <div style="font-size: 22px; color: #000; margin: 10px 0;">
+                    Sebagai <strong>Peserta</strong> yang diselenggarakan KSP CU Bererod Gratia di Kantor Pusat.
+                </div>
+                <p style="font-size: 20px; color: #000; margin: 20px 0 0 0;">
+                    <strong>{{ $issuedAt->locale('id')->isoFormat('D MMMM Y') }}</strong>
+                </p>
+                @if($signature)
+                    <div>
+                        <img src="{{ $signature }}" alt="Signature" style="width: 150px; height: auto;">
+                    </div>
                 @endif
-            </div>
-
-            <div class="header">
-                <div class="header-left">
-                    <div class="brand">
-                        @if(!empty($logoBase64))
-                            <div class="brand-logo">
-                                <img class="logo" src="{{ $logoBase64 }}" alt="Logo">
-                            </div>
-                        @endif
-                        <div class="brand-text">
-                            <div class="brand-title">Official Certificate</div>
-                            <div class="brand-sub">{{ $course->studyProgram?->title ?? '-' }}</div>
-                        </div>
-                    </div>
+                <div style="border-bottom: 2px solid #000; width: 250px; margin: 0 auto;">
+                    <p style="font-size: 26px; font-weight: bold; color: #000;">{{ $signatureName }}</p>
                 </div>
-
-                <div class="header-right">
-                    <div class="cert-no">
-                        <strong>Certificate No.</strong><br>
-                        {{ $certificateNumber }}<br>
-                        <strong>Course Code.</strong> {{ $courseCode }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="title">
-                <h1>Certificate of Completion</h1>
-                <p>Dokumen resmi penyelesaian pembelajaran yang diterbitkan berdasarkan data progres yang tervalidasi.</p>
-            </div>
-
-            <div class="main-box">
-                <div class="label">This certifies that</div>
-                <div class="name">{{ $user->name }}</div>
-                <div class="meta">has successfully completed the course</div>
-                <div class="course">{{ $course->title }}</div>
-                <div class="pill">Issued on {{ $frontDate }}</div>
-                <div class="meta">
-                    Completion Sequence: <strong>{{ $sequenceLabel }}</strong><br>
-                    Program: <strong>{{ $course->studyProgram?->title ?? '-' }}</strong>
-                </div>
-            </div>
-
-            <div class="summary-grid">
-                <div class="summary-cell">
-                    <div class="summary-card">
-                        <div class="k">Participant</div>
-                        <div class="v">{{ $frontSummary['participant_name'] ?? $user->name }}</div>
-                    </div>
-                </div>
-                <div class="summary-cell">
-                    <div class="summary-card">
-                        <div class="k">Course</div>
-                        <div class="v">{{ $frontSummary['course_title'] ?? $course->title }}</div>
-                    </div>
-                </div>
+                <p style="font-size: 16px; color: #000; margin: 3px 0 0 0;">WAKIL KETUA PENGURUS</p>
             </div>
         </div>
     </div>
 
-    <div class="page">
-        <div class="sheet">
-            <div class="sheet-inner"></div>
-
-            <div class="back-header">
-                <h2>Topic and Attendance Summary</h2>
-                <p>
-                    The list of topics, attendance status, and attendance dates are displayed for official archiving purposes.
-                </p>
+    <div class="page-break page">
+        @if($backgroundBack)
+            <div class="background">
+                <img src="{{ $backgroundBack }}" alt="">
             </div>
+        @endif
 
-            <div class="table-wrap">
-                <table>
+        <div class="wrapper">
+            <div class="second-content">
+                <h1 class="second-title">
+                    KSP <span style="color: #c20000;">CU</span> BEREROD GRATIA
+                </h1>
+
+                <p class="material-title">
+                    MATERI {{ strtoupper($course->title ?? '-') }} TAHUN {{ $issuedAt->format('Y') }}.
+                </p>
+
+                <table class="material-table">
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Topic</th>
-                            <th style="width: 30%;">Attendance</th>
-                            <th style="width: 30%;">Attendance Date</th>
+                            <th>No</th>
+                            <th>Judul Materi</th>
+                            <th>Durasi Waktu</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($backTopics as $topic)
-                            @foreach($topic['sessions'] as $index => $session)
-                                <tr>
-                                    @if($index === 0)
-                                        <td rowspan="{{ count($topic['sessions']) }}" class="topic-cell">
-                                            {{ $topic['topic_name'] }}
-                                        </td>
-                                        <td rowspan="{{ count($topic['sessions']) }}">
-                                            <span class="badge">{{ strtoupper($topic['topic_status'] ?? '-') }}</span>
-                                        </td>
-                                    @endif
-                                    <td>{{ $session['attendance_date'] ?? '-' }}</td>
-                                </tr>
-                            @endforeach
+                        @forelse($course->topics as $index => $topic)
+                            <tr>
+                                <td class="no">{{ $index + 1 }}</td>
+                                <td class="topic">{{ $topic->name }}</td>
+                                <td class="duration">{{ (int) ($topic->duration ?? 0) }} Menit</td>
+                            </tr>
                         @empty
                             <tr>
-                                <td colspan="4" style="text-align:center; padding:18px;">
-                                    No attendance records available.
-                                </td>
+                                <td colspan="3" style="text-align:center;">Belum ada materi</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-            </div>
 
-            <div class="summary-grid" style="margin-top: 20px;">
-                <div class="summary-cell">
-                    <div class="summary-card">
-                        <div class="k">Total Topics</div>
-                        <div class="v">{{ $achievementSummary['topics_total'] ?? 0 }}</div>
+                <div class="signature-right-bottom">
+                    <p style="font-size: 20px; color: #000; margin: 0;">
+                        <strong>{{ $issuedAt->locale('id')->isoFormat('D MMMM Y') }}</strong>
+                    </p>
+                    @if($signature)
+                        <div>
+                            <img src="{{ $signature }}" alt="Signature" style="width: 150px; height: auto;">
+                        </div>
+                    @endif
+                    <div style="border-bottom: 2px solid #000; width: 250px; margin: 0 auto;">
+                        <p style="font-size: 26px; font-weight: bold; color: #000;">{{ $signatureName }}</p>
                     </div>
-                </div>
-                <div class="summary-cell">
-                    <div class="summary-card">
-                        <div class="k">Topics Completed</div>
-                        <div class="v">{{ $achievementSummary['topics_completed'] ?? 0 }}</div>
-                    </div>
+                    <p style="font-size: 16px; color: #000; margin: 3px 0 0 0;">WAKIL KETUA PENGURUS</p>
                 </div>
             </div>
         </div>
