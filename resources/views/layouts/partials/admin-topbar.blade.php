@@ -9,7 +9,7 @@
                 @livewire('shared.language-switcher')
                 <form method="POST" action="{{ localized_route('logout') }}">
                     @csrf
-                    <button class="rounded-xl bg-slate-900 px-3 py-2 text-sm text-white">
+                    <button class="rounded-xl border border-brand-dark/20 bg-transparent px-3 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
                         {{ __('admin.layout.logout') }}
                     </button>
                 </form>

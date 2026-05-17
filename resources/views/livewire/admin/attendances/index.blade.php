@@ -5,7 +5,7 @@
     >
         <div>
             <button wire:click="create"
-                class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
+                class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
                 {{ __('admin.attendances.actions.create') }}
             </button>
         </div>
@@ -190,7 +190,7 @@
                     </button>
 
                     <button wire:click="save"
-                        class="rounded-xl bg-slate-900 px-4 py-2 text-white">
+                        class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
                         {{ __('admin.attendances.actions.save') }}
                     </button>
                 </div>

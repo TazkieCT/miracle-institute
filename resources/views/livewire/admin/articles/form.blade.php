@@ -100,7 +100,7 @@
             </button>
 
             <button form="article-form"
-                    class="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800">
+                    class="rounded-xl border border-brand-dark/20 bg-transparent px-5 py-2.5 text-sm font-medium text-brand-dark transition hover:bg-brand/10">
                 {{ __('admin.articles.actions.save') }}
             </button>
         </div>

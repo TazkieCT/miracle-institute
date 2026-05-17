@@ -38,7 +38,7 @@
 
             <button
                 wire:click="save"
-                class="rounded-xl bg-slate-900 px-5 py-3 text-white hover:bg-slate-800"
+                class="rounded-xl border border-[#004777]/20 bg-transparent px-5 py-3 text-[#004777] transition hover:bg-[#35A7FF]/10"
             >
                 {{ __('admin.user_role_manager.save') }}
             </button>

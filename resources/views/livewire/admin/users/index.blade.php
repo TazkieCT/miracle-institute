@@ -58,7 +58,7 @@
                             </td>
 
                             <td class="px-4 py-3 text-right">
-                                <a href="{{ localized_route('admin.users.roles', $row->id) }}" class="inline-flex items-center rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium text-white transition hover:bg-slate-800">
+                                <a href="{{ localized_route('admin.users.roles', $row->id) }}" class="inline-flex items-center rounded-lg border border-brand-dark/20 bg-transparent px-3 py-2 text-xs font-medium text-brand-dark transition hover:bg-brand/10">
                                     {{ __('admin.users.actions.manage_roles') }}
                                 </a>
                             </td>

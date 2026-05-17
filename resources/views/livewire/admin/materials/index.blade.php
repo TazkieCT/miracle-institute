@@ -24,7 +24,7 @@
                                 <span class="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">MAX 5</span>
                             </button>
                         @else
-                            <button wire:click="create('{{ $selectedTopic->id }}')" class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white">
+                            <button wire:click="create('{{ $selectedTopic->id }}')" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
                                 {{ __('admin.materials.actions.add') }}
                             </button>
                         @endif
@@ -170,7 +170,7 @@
                     </button>
                     <button wire:click="save"
                             wire:loading.attr="disabled"
-                            class="rounded-xl bg-slate-900 px-4 py-2 text-white">
+                            class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
                         {{ $uploading ? __('admin.materials.actions.uploading') : __('admin.materials.actions.save') }}
                     </button>
                 </div>

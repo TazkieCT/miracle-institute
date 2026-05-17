@@ -5,7 +5,7 @@
     >
         <div class="flex gap-2">
             <a href="{{ localized_route('admin.articles.create') }}"
-               class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white transition hover:bg-slate-800">
+               class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
                 {{ __('admin.articles.actions.create') }}
             </a>
         </div>

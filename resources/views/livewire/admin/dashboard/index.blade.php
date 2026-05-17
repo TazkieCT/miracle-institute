@@ -31,7 +31,7 @@
             <button
                 wire:click="setWeeks({{ $w }})"
                 class="rounded-xl border px-4 py-2 text-sm
-                    {{ $weeks === $w ? 'bg-slate-900 text-white' : 'bg-white' }}"
+                    {{ $weeks === $w ? 'border border-[#35A7FF] bg-transparent text-[#004777]' : 'bg-white' }}"
             >
                 {{ trans_choice('admin.dashboard.filters.weeks', $w, ['count' => $w]) }}
             </button>
