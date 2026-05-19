@@ -23,7 +23,7 @@ class GoogleDriveService
             throw new RuntimeException('GOOGLE_DRIVE_ROOT_FOLDER belum diisi.');
         }
 
-        $client = $this->clientFactory->makeForCurrentUser();
+        $client = $this->clientFactory->makeForSystem();
         $drive = new Drive($client);
 
         $driveFile = new DriveFile([
@@ -48,7 +48,7 @@ class GoogleDriveService
         }
 
         try {
-            $client = $this->clientFactory->makeForCurrentUser();
+            $client = $this->clientFactory->makeForSystem();
             $drive = new Drive($client);
             $drive->files->delete($fileId);
         } catch (\Throwable $e) {
