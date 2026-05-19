@@ -445,6 +445,52 @@ return [
         ],
     ],
 
+    'profile' => [
+        'hero' => [
+            'badge' => 'Pusat Akun',
+            'title' => 'Kelola profil Anda',
+            'subtitle' => 'Perbarui detail akun Anda agar pengalaman belajar tetap terasa personal dan mudah dikelola.',
+            'active_role' => 'Peran aktif',
+            'member_since' => 'Bergabung sejak',
+        ],
+        'stats' => [
+            'roles' => 'Peran',
+            'status' => 'Status',
+            'email' => 'Email',
+        ],
+        'status' => [
+            'verified' => 'Terverifikasi',
+            'unverified' => 'Belum terverifikasi',
+        ],
+        'summary' => [
+            'title' => 'Ringkasan profil',
+            'verification' => 'Verifikasi',
+            'empty' => 'Belum diisi',
+        ],
+        'fields' => [
+            'image' => 'Foto profil',
+            'name' => 'Nama lengkap',
+            'email' => 'Alamat email',
+            'phone' => 'Nomor telepon',
+            'gender' => 'Jenis kelamin',
+            'dob' => 'Tanggal lahir',
+        ],
+        'gender' => [
+            'male' => 'Laki-laki',
+            'female' => 'Perempuan',
+        ],
+        'form' => [
+            'title' => 'Ubah informasi',
+            'subtitle' => 'Perbarui detail pribadi dan foto profil Anda dari satu tempat.',
+            'select_gender' => 'Pilih jenis kelamin',
+            'image_help' => 'Unggah foto persegi untuk hasil terbaik.',
+            'save' => 'Simpan perubahan',
+        ],
+        'flash' => [
+            'saved' => 'Profil berhasil diperbarui.',
+        ],
+    ],
+
     'assessment_taker' => [
         'defaults' => [
             'course_assessment' => 'Assessment Course',

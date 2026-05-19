@@ -32,7 +32,7 @@
 
                             <div class="flex flex-wrap gap-2.5 pt-1">
                                 <a href="{{ localized_route('courses.index') }}"
-                                   class="rounded-xl bg-[#35A7FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#35A7FF]/90">
+                                   class="rounded-xl bg-[#3B82F6] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3B82F6]/90">
                                     {{ __('general.explore_dashboard.hero.guest.explore_journey') }}
                                 </a>
 
@@ -85,7 +85,7 @@
 
                         <div class="flex flex-wrap gap-2.5 pt-1">
                             <a href="{{ localized_route('courses.index') }}"
-                               class="rounded-xl bg-[#35A7FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#35A7FF]/90">
+                               class="rounded-xl bg-[#3B82F6] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3B82F6]/90">
                                 {{ __('general.explore_dashboard.hero.member.explore_classes') }}
                             </a>
 
@@ -118,14 +118,13 @@
                 </div>
             </div>
         @endif
-
     </section>
 
     @if(!$isGuest && !$isMentor && count($continueCourses))
         <section class="space-y-3">
             <div>
                 <h2 class="text-lg font-semibold sm:text-xl">{{ __('general.explore_dashboard.continue.title') }}</h2>
-                <p class="text-sm text-[#004777]/70">{{ __('general.explore_dashboard.continue.description') }}</p>
+                {{-- <p class="text-sm text-[#004777]/70">{{ __('general.explore_dashboard.continue.description') }}</p> --}}
             </div>
 
             <div class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0">
@@ -149,9 +148,9 @@
                         }
                     @endphp
 
-                                                    <a href="{{ localized_route('courses.show', $item->course->slug) }}"
-                                                        class="group w-[280px] shrink-0 overflow-hidden rounded-2xl transition-colors hover:bg-gray-200 sm:w-[300px] lg:w-[320px]">
-                                                    <div class="p-2.5 transition-colors group-hover:bg-gray-200">
+                    <a href="{{ localized_route('courses.show', $item->course->slug) }}"
+                        class="group w-[280px] shrink-0 overflow-hidden rounded-2xl transition-colors hover:bg-gray-200 sm:w-[300px] lg:w-[320px]">
+                        <div class="p-2.5 transition-colors group-hover:bg-gray-200">
                             <div class="overflow-hidden rounded-lg thumb">
                                 @if($courseImageSrc)
                                     <img src="{{ $courseImageSrc }}"
@@ -167,7 +166,7 @@
                             </div>
 
                             <div class="mt-3">
-                                <div class="text-[11px] uppercase tracking-wide text-[#35A7FF]/70">
+                                <div class="text-[11px] uppercase tracking-wide text-[#3B82F6]/70">
                                     {{ $item->course->studyProgram?->title }}
                                 </div>
                                 <div class="mt-1 text-sm font-semibold leading-tight">
@@ -180,7 +179,7 @@
                                         <span>{{ __('general.explore_dashboard.continue.progress') }}</span>
                                         <span class="font-semibold text-[#004777]">{{ $progress }}%</span>
                                     </div>
-                                    <div class="h-1.5 overflow-hidden rounded-full bg-[#35A7FF]/20">
+                                    <div class="h-1.5 overflow-hidden rounded-full bg-[#3B82F6]/20">
                                         <div class="h-1.5 rounded-full bg-[#004777]" style="width: {{ $progress }}%"></div>
                                     </div>
                                 </div>
@@ -208,13 +207,13 @@
                     @if($studyProgramCarousel)
                         <div class="mb-3 hidden items-center justify-end gap-2 xl:flex">
                             <button type="button" id="study-program-prev"
-                                    class="nav-btn h-8 w-8 rounded-full border border-[#004777]/15 bg-white text-[#004777] transition hover:bg-[#35A7FF]/10"
+                                    class="nav-btn h-8 w-8 rounded-full border border-[#004777]/15 bg-white text-[#004777] transition hover:bg-[#3B82F6]/10"
                                     aria-label="{{ __('general.explore_dashboard.study_programs.scroll_left') }}">
                                 ←
                             </button>
 
                             <button type="button" id="study-program-next"
-                                    class="nav-btn h-8 w-8 rounded-full border border-[#004777]/15 bg-white text-[#004777] transition hover:bg-[#35A7FF]/10"
+                                    class="nav-btn h-8 w-8 rounded-full border border-[#004777]/15 bg-white text-[#004777] transition hover:bg-[#3B82F6]/10"
                                     aria-label="{{ __('general.explore_dashboard.study_programs.scroll_right') }}">
                                 →
                             </button>
@@ -224,7 +223,7 @@
                             @foreach($studyPrograms as $sp)
                                           <a href="{{ localized_route('courses.index', ['studyProgram' => $sp->slug]) }}"
                                               data-study-program-card
-                                              class="group flex h-40 w-full flex-col justify-center rounded-2xl border border-[#004777]/10 bg-[#35A7FF]/5 p-4 transition hover:-translate-y-0.5 hover:border-[#35A7FF] hover:shadow-md xl:w-[320px] xl:shrink-0 xl:snap-start sm:h-44">
+                                              class="group flex h-40 w-full flex-col justify-center rounded-2xl border border-[#004777]/20 bg-[#3B82F6]/5 p-4 transition hover:-translate-y-0.5 hover:border-[#3B82F6] hover:shadow-md xl:w-[320px] xl:shrink-0 xl:snap-start sm:h-44">
                                     <div class="flex items-center gap-3">
                                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#004777] text-base font-semibold text-white shadow-md sm:h-12 sm:w-12 sm:text-lg">
                                             {{ strtoupper(mb_substr($sp->title, 0, 1)) }}
@@ -237,7 +236,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="ml-1 text-base text-[#35A7FF] transition group-hover:text-[#004777] sm:text-lg">→</div>
+                                        <div class="ml-1 text-base text-[#3B82F6] transition group-hover:text-[#004777] sm:text-lg">→</div>
                                     </div>
                                 </a>
                             @endforeach
@@ -245,8 +244,8 @@
                     @else
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             @foreach($studyPrograms as $sp)
-                                <a href="{{ localized_route('courses.index', ['studyProgram' => $sp->slug]) }}"
-                                   class="flex min-h-40 items-center gap-4 rounded-2xl border border-[#004777]/10 bg-white p-5 transition hover:border-[#35A7FF] hover:shadow-sm">
+                                          <a href="{{ localized_route('courses.index', ['studyProgram' => $sp->slug]) }}"
+                                              class="flex min-h-40 items-center gap-4 rounded-2xl border border-[#004777]/20 bg-white p-5 transition hover:border-[#35A7FF] hover:shadow-sm">
                                     <div class="min-w-0">
                                         <div class="text-base font-semibold text-[#004777]">{{ $sp->title }}</div>
                                         <div class="mt-1 text-sm leading-6 text-[#004777]/70">
@@ -265,7 +264,7 @@
     <section class="space-y-3">
         <div>
             <h2 class="text-lg font-semibold sm:text-xl">{{ __('general.explore_dashboard.featured_teachings.title') }}</h2>
-            <p class="text-sm text-[#004777]/70">{{ __('general.explore_dashboard.featured_teachings.description') }}</p>
+            {{-- <p class="text-sm text-[#004777]/70">{{ __('general.explore_dashboard.featured_teachings.description') }}</p> --}}
         </div>
 
         <div class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0">
@@ -286,11 +285,11 @@
                     }
                 @endphp
 
-                      <div class="group w-[280px] shrink-0 cursor-pointer overflow-hidden rounded-2xl transition-colors hover:bg-gray-200 sm:w-[300px] lg:w-[320px]"
-                     role="link" tabindex="0"
-                     onclick="window.location='{{ localized_route('courses.show', $course->slug) }}'"
-                     onkeydown="if(event.key==='Enter'){ window.location='{{ localized_route('courses.show', $course->slug) }}' }"> 
-                          <div class="p-2.5 transition-colors group-hover:bg-gray-200">
+                    <div class="group w-[280px] shrink-0 cursor-pointer overflow-hidden rounded-2xl transition-colors hover:bg-gray-200 sm:w-[300px] lg:w-[320px]"
+                    role="link" tabindex="0"
+                    onclick="window.location='{{ localized_route('courses.show', $course->slug) }}'"
+                    onkeydown="if(event.key==='Enter'){ window.location='{{ localized_route('courses.show', $course->slug) }}' }"> 
+                        <div class="p-2.5 transition-colors group-hover:bg-gray-200">
                         <div class="overflow-hidden rounded-lg thumb">
                             @if($courseImageSrc)
                                 <img src="{{ $courseImageSrc }}"
@@ -306,7 +305,7 @@
                         </div>
 
                         <div class="mt-3">
-                            <div class="text-[11px] uppercase tracking-wide text-[#35A7FF]/70">
+                            <div class="text-[11px] uppercase tracking-wide text-[#3B82F6]/70">
                                 {{ $course->studyProgram?->title }}
                             </div>
                             <div class="card-title mt-1 text-sm font-semibold leading-tight">
@@ -318,7 +317,7 @@
 
                             <div class="badges mt-2 flex flex-wrap gap-1.5">
                                 @if(!empty($course->is_premium))
-                                    <span class="badge badge-premium rounded px-2 py-0.5 text-[11px] bg-[#35A7FF]/10 text-[#004777]">
+                                    <span class="badge badge-premium rounded px-2 py-0.5 text-[11px] bg-[#3B82F6]/10 text-[#004777]">
                                         ⊙ {{ __('general.explore_dashboard.featured_teachings.premium') }}
                                     </span>
                                 @endif
@@ -356,7 +355,7 @@
                     <div class="flex items-start gap-3">
                         <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#35A7FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                         <div class="text-sm">
@@ -368,7 +367,7 @@
                     <div class="flex items-start gap-3">
                         <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#35A7FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                         <div class="text-sm">
@@ -380,7 +379,7 @@
                     <div class="flex items-start gap-3">
                         <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#35A7FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                         <div class="text-sm">
@@ -392,7 +391,7 @@
                     <div class="flex items-start gap-3">
                         <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#35A7FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M13 4.5L6.5 11L3 7.5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                         <div class="text-sm">

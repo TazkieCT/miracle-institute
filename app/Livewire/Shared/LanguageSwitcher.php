@@ -10,12 +10,17 @@ use Livewire\Component;
 class LanguageSwitcher extends Component
 {
     public string $locale;
-    public ?string $currentRouteName; 
-    public array $currentRouteParams;
+    public ?string $currentRouteName = null;
+    public array $currentRouteParams = [];
 
     public array $availableLocales = [
         'id' => 'Indonesia',
         'en' => 'English',
+    ];
+
+    public array $localeFlags = [
+        'id' => '🇮🇩',
+        'en' => '🇺🇸',
     ];
 
     public function mount()

@@ -444,6 +444,52 @@ return [
         ],
     ],
 
+    'profile' => [
+        'hero' => [
+            'badge' => 'Account Center',
+            'title' => 'Manage your profile',
+            'subtitle' => 'Keep your account details up to date so your learning experience stays personal and easy to manage.',
+            'active_role' => 'Active role',
+            'member_since' => 'Member since',
+        ],
+        'stats' => [
+            'roles' => 'Roles',
+            'status' => 'Status',
+            'email' => 'Email',
+        ],
+        'status' => [
+            'verified' => 'Verified',
+            'unverified' => 'Not verified',
+        ],
+        'summary' => [
+            'title' => 'Profile summary',
+            'verification' => 'Verification',
+            'empty' => 'Not set yet',
+        ],
+        'fields' => [
+            'image' => 'Profile photo',
+            'name' => 'Full name',
+            'email' => 'Email address',
+            'phone' => 'Phone number',
+            'gender' => 'Gender',
+            'dob' => 'Date of birth',
+        ],
+        'gender' => [
+            'male' => 'Male',
+            'female' => 'Female',
+        ],
+        'form' => [
+            'title' => 'Edit information',
+            'subtitle' => 'Update your personal details and profile photo from one place.',
+            'select_gender' => 'Select gender',
+            'image_help' => 'Upload a square photo for the best result.',
+            'save' => 'Save changes',
+        ],
+        'flash' => [
+            'saved' => 'Profile updated successfully.',
+        ],
+    ],
+
     'assessment_taker' => [
         'defaults' => [
             'course_assessment' => 'Course Assessment',

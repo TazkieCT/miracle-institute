@@ -12,7 +12,7 @@ class RedirectIfRoleMismatch
         $activeRole = session('active_role');
 
         if (!in_array($activeRole, $roles)) {
-            return redirect()->route('redirect.by.role');
+            return redirect()->to(localized_route('redirect.by.role'));
         }
 
         return $next($request);

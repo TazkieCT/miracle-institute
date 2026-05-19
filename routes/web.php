@@ -46,9 +46,10 @@ use App\Livewire\Frontend\LandingPage;
 use App\Livewire\Mentor\Dashboard\MentorDashboard;
 // use App\Livewire\Mentor\Topics\TopicIndex as MentorTopicIndex;
 use App\Livewire\Mentor\Topics\TopicWorkspace;
+use App\Livewire\Profile\ProfilePage;
 
 use App\Livewire\Topics\TopicPlayer;
-
+use App\Services\RoleService;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -177,6 +178,25 @@ Route::prefix('{locale}')
 
                 return redirect()->to(localized_route('home'));
             })->name('logout');
+
+            Route::post('/role/switch', function (Request $request, RoleService $roleService) {
+                $user = $request->user();
+
+                if (! $user) {
+                    return redirect()->to(localized_route('login'));
+                }
+
+                $validated = $request->validate([
+                    'role_name' => ['required', 'string'],
+                ]);
+
+                $roleService->switchRole($user, $validated['role_name']);
+
+                return redirect()->to(localized_route('redirect.by.role'));
+            })->name('role.switch');
+
+            Route::get('/profile', ProfilePage::class)
+                ->name('profile.show');
 
             Route::get('/email/verify', VerifyEmailNotice::class)
                 ->name('verification.notice');
