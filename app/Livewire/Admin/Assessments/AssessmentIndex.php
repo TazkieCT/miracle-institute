@@ -42,6 +42,8 @@ class AssessmentIndex extends Component
 
     public function mount(?string $courseFilter = null): void
     {
+        $this->showModal = false;
+        $this->questionModalOpen = false;
         $this->courseFilter = $courseFilter ?? '';
     }
 

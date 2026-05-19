@@ -18,6 +18,13 @@ class PermissionIndex extends Component
     public ?string $editingId = null;
     public string $name = '';
 
+    public function mount(): void
+    {
+        $this->showModal = false;
+        $this->showDeleteModal = false;
+        $this->deleteId = null;
+    }
+
     public function create(): void
     {
         $this->resetForm();

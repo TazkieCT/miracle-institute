@@ -53,7 +53,7 @@
 
     <nav class="flex-1 space-y-1 overflow-y-auto p-4">
         @foreach($visibleMain as $item)
-            <a href="{{ localized_route($item['route']) }}" wire:navigate class="{{ $activeClass($item['route']) }}">
+            <a href="{{ localized_route($item['route']) }}" class="{{ $activeClass($item['route']) }}">
                 {{ $item['label'] }}
             </a>
 

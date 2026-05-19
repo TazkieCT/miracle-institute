@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
+<div class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.attendances.page_title') }}"
         subtitle="{{ __('admin.attendances.page_subtitle') }}"
@@ -39,7 +39,7 @@
                 <option value="">{{ __('admin.attendances.filters.all_topics') }}</option>
                 @foreach($topics as $topic)
                     <option value="{{ $topic->id }}">
-                        {{ $topic->course?->title }} · {{ $topic->name }}
+                        {{ $topic->course?->title }} Â· {{ $topic->name }}
                     </option>
                 @endforeach
             </select>
@@ -48,7 +48,7 @@
                 <option value="">{{ __('admin.attendances.filters.all_sessions') }}</option>
                 @foreach($sessions as $session)
                     <option value="{{ $session->id }}">
-                        {{ $session->topic?->name }} · {{ $session->title }}
+                        {{ $session->topic?->name }} Â· {{ $session->title }}
                     </option>
                 @endforeach
             </select>
@@ -136,12 +136,9 @@
 
     <div>{{ $rows->links() }}</div>
 
-    <template x-teleport="body">
-        <div x-show="open"
-            x-cloak
-            x-transition
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
-            @click.self="open=false; $wire.set('showModal', false)">
+    @if($showModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+            wire:click.self="$set('showModal', false)">
 
             <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 space-y-4">
 
@@ -149,14 +146,14 @@
                     <h2 class="text-lg font-semibold">
                         {{ $editingId ? __('admin.attendances.modal.edit_title') : __('admin.attendances.modal.create_title') }}
                     </h2>
-                    <button @click="open=false; $wire.set('showModal', false)">✕</button>
+                    <button type="button" wire:click="$set('showModal', false)">Close</button>
                 </div>
 
                 <select wire:model="video_session_id" class="w-full rounded-xl border px-4 py-2">
                     <option value="">{{ __('admin.attendances.form.select_session') }}</option>
                     @foreach($sessions as $session)
                         <option value="{{ $session->id }}">
-                            {{ $session->topic?->name }} · {{ $session->title }}
+                            {{ $session->topic?->name }} Â· {{ $session->title }}
                         </option>
                     @endforeach
                 </select>
@@ -165,7 +162,7 @@
                     <option value="">{{ __('admin.attendances.form.select_user') }}</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}">
-                            {{ $user->full_name }} · {{ $user->email }}
+                            {{ $user->full_name }} Â· {{ $user->email }}
                         </option>
                     @endforeach
                 </select>
@@ -184,7 +181,7 @@
                     placeholder="{{ __('admin.attendances.form.ip_address_placeholder') }}">
 
                 <div class="flex justify-end gap-2 pt-2">
-                    <button @click="open=false; $wire.set('showModal', false)"
+                    <button type="button" wire:click="$set('showModal', false)"
                         class="rounded-xl border px-4 py-2">
                         {{ __('admin.attendances.actions.cancel') }}
                     </button>
@@ -197,5 +194,5 @@
 
             </div>
         </div>
-    </template>
+    @endif
 </div>

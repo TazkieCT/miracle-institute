@@ -38,6 +38,11 @@ class AttendanceIndex extends Component
         'perPage' => ['except' => 10],
     ];
 
+    public function mount(): void
+    {
+        $this->showModal = false;
+    }
+
     protected function rules(): array
     {
         return [

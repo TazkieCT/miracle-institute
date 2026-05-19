@@ -14,6 +14,14 @@
 }
 
 @layer base {
+    *,
+    ::before,
+    ::after,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-slate-200, currentColor);
+    }
+
     body {
         background-color: #f4faff;
         color: #004777;

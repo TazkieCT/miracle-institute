@@ -21,6 +21,13 @@ class RoleIndex extends Component
     public ?string $description = null;
     public array $permissionIds = [];
 
+    public function mount(): void
+    {
+        $this->showModal = false;
+        $this->showDeleteModal = false;
+        $this->deleteId = null;
+    }
+
     protected function rules(): array
     {
         return [

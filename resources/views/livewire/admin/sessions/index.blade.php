@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
+<div class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.sessions.page_title') }}"
         subtitle="{{ __('admin.sessions.page_subtitle') }}"
@@ -214,11 +214,9 @@
         </div>
     @endif
 
-    <template x-teleport="body">
-        <div x-show="open"
-             x-cloak
-             x-transition
-             @click.self="open = false; $wire.set('showModal', false)"
+    @if($showModal)
+        <div
+             wire:click.self="$set('showModal', false)"
              class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
 
             <div class="max-h-[90vh] w-full max-w-2xl space-y-4 overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
@@ -227,7 +225,7 @@
                     <h2 class="text-lg font-semibold">
                         {{ $editingId ? __('admin.sessions.modal.edit_title') : __('admin.sessions.modal.create_title') }}
                     </h2>
-                    <button @click="open = false; $wire.set('showModal', false)">✕</button>
+                    <button type="button" wire:click="$set('showModal', false)">✕</button>
                 </div>
 
                 <div class="space-y-2">
@@ -333,7 +331,7 @@
                 @error('end_at') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
 
                 <div class="flex justify-end gap-2">
-                    <button @click="open = false; $wire.set('showModal', false)"
+                    <button type="button" wire:click="$set('showModal', false)"
                         class="rounded-xl border px-4 py-2">
                         {{ __('admin.sessions.actions.cancel') }}
                     </button>
@@ -345,5 +343,5 @@
                 </div>
             </div>
         </div>
-    </template>
+    @endif
 </div>

@@ -1,4 +1,4 @@
-<div x-data="{ assessmentOpen: @entangle('showModal').live }" class="space-y-6">
+<div class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.assessments.page_title') }}"
         subtitle="{{ __('admin.assessments.page_subtitle') }}"
@@ -132,12 +132,9 @@
         </div>
     @endif
 
-    <template x-teleport="body">
+    @if($showModal)
         <div
-            x-show="assessmentOpen"
-            x-cloak
-            x-transition
-            @click.self="assessmentOpen = false"
+            wire:click.self="$set('showModal', false)"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         >
             <div class="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-xl">
@@ -198,7 +195,8 @@
 
                 <div class="flex justify-end gap-2 border-t bg-slate-50 p-5">
                     <button
-                        @click="assessmentOpen = false"
+                        type="button"
+                        wire:click="$set('showModal', false)"
                         class="rounded-xl border px-4 py-2">
                         {{ __('admin.assessments.actions.cancel') }}
                     </button>
@@ -211,15 +209,11 @@
 
             </div>
         </div>
-    </template>
+    @endif
 
-    <template x-teleport="body">
+    @if($questionModalOpen)
         <div
-            x-data="{ open: @entangle('questionModalOpen').live }"
-            x-show="open"
-            x-cloak
-            x-transition
-            @click.self="open = false"
+            wire:click.self="$set('questionModalOpen', false)"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         >
             <div class="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-xl">
@@ -352,7 +346,7 @@
                 </div>
 
                 <div class="flex justify-end gap-3 border-t bg-slate-50 p-5">
-                    <button @click="open = false"
+                    <button type="button" wire:click="$set('questionModalOpen', false)"
                         class="rounded-xl border px-4 py-2">
                         {{ __('admin.question_manager.actions.cancel') }}
                     </button>
@@ -364,5 +358,5 @@
                 </div>
             </div>
         </div>
-    </template>
+    @endif
 </div>

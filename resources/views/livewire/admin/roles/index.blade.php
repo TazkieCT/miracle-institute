@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live, deleteOpen: @entangle('showDeleteModal').live }" class="space-y-6">
+<div class="space-y-6">
     <x-ui.page-header title="{{ __('admin.roles.page_title') }}" subtitle="{{ __('admin.roles.page_subtitle') }}">
         <button wire:click="create" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
             {{ __('admin.roles.actions.create') }}
@@ -87,31 +87,17 @@
         <div>{{ $rows->links() }}</div>
     </section>
 
-    <template x-teleport="body">
-        <div x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="absolute inset-0 bg-black/50"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click="open = false"></div>
+    @if($showModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center">
+            <div class="absolute inset-0 bg-black/50" wire:click="$set('showModal', false)"></div>
 
-            <div @click.stop
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-95"
-                 class="relative mx-4 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
+            <div class="relative mx-4 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-slate-900">
                         {{ $editingId ? __('admin.roles.modal.edit_title') : __('admin.roles.modal.create_title') }}
                     </h2>
 
-                    <button @click="open = false" class="text-slate-500 hover:text-slate-900">✕</button>
+                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-slate-900">Close</button>
                 </div>
 
                 <div class="mt-5 space-y-4">
@@ -153,7 +139,7 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button @click="open = false" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
+                    <button type="button" wire:click="$set('showModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
                         {{ __('admin.roles.actions.cancel') }}
                     </button>
                     <button wire:click="save" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
@@ -162,32 +148,18 @@
                 </div>
             </div>
         </div>
-    </template>
+    @endif
 
-    <template x-teleport="body">
-        <div x-show="deleteOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="absolute inset-0 bg-black/50"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click="deleteOpen = false"></div>
+    @if($showDeleteModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center">
+            <div class="absolute inset-0 bg-black/50" wire:click="$set('showDeleteModal', false)"></div>
 
-            <div @click.stop
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-95"
-                 class="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <div class="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
                 <h2 class="text-lg font-semibold text-slate-900">{{ __('admin.roles.delete.title') }}</h2>
                 <p class="mt-2 text-sm text-slate-600">{{ __('admin.roles.delete.subtitle') }}</p>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button @click="deleteOpen = false" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
+                    <button type="button" wire:click="$set('showDeleteModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
                         {{ __('admin.roles.actions.cancel') }}
                     </button>
                     <button wire:click="delete" class="rounded-xl bg-rose-600 px-4 py-2 text-white hover:bg-rose-700">
@@ -196,5 +168,5 @@
                 </div>
             </div>
         </div>
-    </template>
+    @endif
 </div>

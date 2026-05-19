@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
+<div class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.courses.page_title') }}"
         subtitle="{{ __('admin.courses.page_subtitle') }}"
@@ -136,18 +136,15 @@
         <div>{{ $rows->links() }}</div>
     </section>
 
-    <template x-teleport="body">
+    @if($showModal)
         <div
-            x-show="open"
-            x-cloak
-            x-transition
-            @click.self="open = false; $wire.set('showModal', false)"
+            wire:click.self="$set('showModal', false)"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         >
             <div @click.stop class="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                 <div class="flex shrink-0 items-center justify-between border-b bg-white p-6">
                     <h2 class="text-lg font-semibold">{{ $editingId ? __('admin.courses.modal.edit_title') : __('admin.courses.modal.create_title') }}</h2>
-                    <button @click="open = false; $wire.set('showModal', false)" class="text-slate-500 hover:text-black">✕</button>
+                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-black">✕</button>
                 </div>
 
                 <div class="flex-1 space-y-4 overflow-y-auto p-6">
@@ -193,7 +190,7 @@
                 </div>
 
                 <div class="flex shrink-0 justify-end gap-2 border-t bg-slate-50 p-6">
-                    <button @click="open = false; $wire.set('showModal', false)" class="rounded-xl border px-4 py-2">
+                    <button type="button" wire:click="$set('showModal', false)" class="rounded-xl border px-4 py-2">
                         {{ __('admin.courses.actions.cancel') }}
                     </button>
                     <button wire:click="save" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
@@ -202,5 +199,5 @@
                 </div>
             </div>
         </div>
-    </template>
+    @endif
 </div>

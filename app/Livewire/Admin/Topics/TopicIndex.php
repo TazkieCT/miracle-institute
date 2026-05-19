@@ -42,6 +42,8 @@ class TopicIndex extends Component
 
     public function mount(?string $courseFilter = null): void
     {
+        $this->showModal = false;
+
         if ($courseFilter) {
             $this->selectedCourse = Course::find($courseFilter);
         }

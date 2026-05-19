@@ -41,6 +41,7 @@ class VideoSessionIndex extends Component
 
     public function mount(?string $topicFilter = null): void
     {
+        $this->showModal = false;
         $this->topicFilter = $topicFilter ?? '';
     }
 

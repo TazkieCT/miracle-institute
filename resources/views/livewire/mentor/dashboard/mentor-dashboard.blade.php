@@ -67,7 +67,7 @@
                                     {{ $course?->title ?? __('mentor.dashboard.managed_courses.no_course') }}
                                 </div>
                                 <div class="mt-1 text-xs text-[#004777]/60">
-                                    {{ $course?->studyProgram?->title ?? '-' }} · {{ __('mentor.dashboard.managed_courses.topic_count', ['count' => $courseTopics->count()]) }}
+                                    {{ $course?->studyProgram?->title ?? '-' }} · {{ trans_choice('mentor.dashboard.managed_courses.topic_count', $courseTopics->count(), ['count' => $courseTopics->count()]) }}
                                 </div>
                             </div>
 

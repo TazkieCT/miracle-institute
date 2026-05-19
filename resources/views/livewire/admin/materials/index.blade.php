@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
+<div class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.materials.page_title') }}"
         subtitle="{{ __('admin.materials.page_subtitle') }}"
@@ -75,18 +75,16 @@
         </div>
     @endif
 
-    <template x-teleport="body">
-        <div x-show="open"
-            x-cloak
-            x-transition
-            @click.self="open = false; $wire.set('showModal', false)"
+    @if($showModal)
+        <div
+            wire:click.self="$set('showModal', false)"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
 
             <div class="w-full max-w-lg space-y-4 rounded-2xl bg-white p-6 shadow-xl">
 
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold">{{ $editingId ? __('admin.materials.modal.edit_title') : __('admin.materials.modal.create_title') }}</h2>
-                    <button @click="open = false; $wire.set('showModal', false)" class="text-slate-500">✕</button>
+                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500">✕</button>
                 </div>
 
                 <div class="space-y-3">
@@ -165,7 +163,7 @@
                 @error('materialFile') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
 
                 <div class="flex justify-end gap-2 pt-3">
-                    <button @click="open = false; $wire.set('showModal', false)" class="rounded-xl border px-4 py-2">
+                    <button type="button" wire:click="$set('showModal', false)" class="rounded-xl border px-4 py-2">
                         {{ __('admin.materials.actions.cancel') }}
                     </button>
                     <button wire:click="save"
@@ -176,5 +174,5 @@
                 </div>
             </div>
         </div>
-    </template>
+    @endif
 </div>

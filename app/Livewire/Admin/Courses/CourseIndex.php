@@ -110,6 +110,8 @@ class CourseIndex extends Component
 
     public function mount(): void
     {
+        $this->showModal = false;
+
         $dir = public_path('images/thumbnail');
 
         if (File::exists($dir)) {

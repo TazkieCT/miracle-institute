@@ -20,6 +20,13 @@ class StudyProgramIndex extends Component
     public string $description = '';
     public string $status = 'active';
 
+    public function mount(): void
+    {
+        $this->showModal = false;
+        $this->showDeleteModal = false;
+        $this->deleteId = null;
+    }
+
     protected function rules(): array
     {
         return [

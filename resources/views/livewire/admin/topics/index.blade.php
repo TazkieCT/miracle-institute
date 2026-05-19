@@ -1,4 +1,4 @@
-<div x-data="{ open: @entangle('showModal').live }" class="space-y-6">
+<div class="space-y-6">
     <x-ui.page-header
         title="{{ __('admin.topics.page_title') }}"
         subtitle="{{ __('admin.topics.page_subtitle') }}"
@@ -144,12 +144,9 @@
         <div>{{ $rows->links() }}</div>
     </section>
 
-    <template x-teleport="body">
+    @if($showModal)
         <div
-            x-show="open"
-            x-cloak
-            x-transition
-            @click.self="open = false; $wire.set('showModal', false)"
+            wire:click.self="$set('showModal', false)"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         >
             <div class="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl">
@@ -159,7 +156,7 @@
                     </h2>
 
                     <button
-                        @click="open = false; $wire.set('showModal', false)"
+                        wire:click="$set('showModal', false)"
                         class="text-slate-500 hover:text-black"
                     >
                         ✕
@@ -205,7 +202,8 @@
                 <div class="flex items-center justify-between border-t bg-slate-50 p-5">
                     <div class="flex gap-2">
                         <button
-                            @click="open = false; $wire.set('showModal', false)"
+                            type="button"
+                            wire:click="$set('showModal', false)"
                             class="rounded-xl border px-4 py-2"
                         >
                             {{ __('admin.topics.actions.cancel') }}
@@ -221,5 +219,5 @@
                 </div>
             </div>
         </div>
-    </template>
+    @endif
 </div>
