@@ -171,15 +171,26 @@ return [
             'title' => 'Attendance',
             'subtitle' => 'Rekap kehadiran berdasarkan session topic.',
             'manager_badge' => 'Attendance Manager',
+            'filters' => [
+                'search_placeholder' => 'Cari student atau email...',
+                'all_status' => 'Semua status',
+            ],
             'stats' => [
                 'present' => 'Hadir :count',
                 'late' => 'Terlambat :count',
                 'absent' => 'Absen :count',
             ],
+            'status' => [
+                'present' => 'Hadir',
+                'late' => 'Terlambat',
+                'absent' => 'Absen',
+            ],
             'table' => [
+                'session' => 'Session',
                 'student' => 'Student',
                 'status' => 'Status',
                 'check_in' => 'Check In',
+                'check_out' => 'Check Out',
                 'empty_session' => 'Belum ada attendance.',
             ],
             'empty' => [

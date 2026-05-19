@@ -171,15 +171,26 @@ return [
             'title' => 'Attendances',
             'subtitle' => 'Attendance recap based on topic sessions.',
             'manager_badge' => 'Attendance Manager',
+            'filters' => [
+                'search_placeholder' => 'Search student or email...',
+                'all_status' => 'All statuses',
+            ],
             'stats' => [
                 'present' => 'Present :count',
                 'late' => 'Late :count',
                 'absent' => 'Absent :count',
             ],
+            'status' => [
+                'present' => 'Present',
+                'late' => 'Late',
+                'absent' => 'Absent',
+            ],
             'table' => [
+                'session' => 'Session',
                 'student' => 'Student',
                 'status' => 'Status',
                 'check_in' => 'Check In',
+                'check_out' => 'Check Out',
                 'empty_session' => 'No attendance yet.',
             ],
             'empty' => [
