@@ -124,7 +124,7 @@
                             class="w-full rounded-xl border px-4 py-2"
                             placeholder="{{ __('admin.materials.form.external_url_placeholder') }}">
                     @elseif(in_array($type, ['pdf', 'ppt'], true))
-                        <input type="file" wire:model="materialFile" class="w-full rounded-xl border px-4 py-2">
+                        <input type="file" wire:model="materialFile" accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" class="w-full rounded-xl border px-4 py-2">
                     @endif
 
                     <div class="grid grid-cols-2 gap-3">

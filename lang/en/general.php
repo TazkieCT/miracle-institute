@@ -546,6 +546,9 @@ return [
             'submit' => 'Submit',
             'cancel' => 'Cancel',
         ],
+        'validation' => [
+            'answer_all' => 'All questions must be answered before submitting the assessment.',
+        ],
         'navigator' => [
             'title' => 'Navigator',
             'note' => 'All answers are saved automatically. If the attempt does not pass, you can retake it from the beginning.',
@@ -587,6 +590,8 @@ return [
         ],
         'actions' => [
             'back_to_dashboard' => 'Back to Dashboard',
+            'back_to_learning' => 'Back to My Learning',
+            'back_to_course' => 'Back to Course Page',
             'retry' => 'Retry Assessment',
             'view_certificates' => 'View Certificates',
         ],

@@ -546,6 +546,9 @@ return [
             'submit' => 'Kirim',
             'cancel' => 'Batal',
         ],
+        'validation' => [
+            'answer_all' => 'Semua pertanyaan wajib dijawab sebelum assessment dikirim.',
+        ],
         'navigator' => [
             'title' => 'Navigator',
             'note' => 'Semua jawaban disimpan otomatis. Jika attempt belum lulus, Anda bisa mengulang dari awal.',
@@ -587,6 +590,8 @@ return [
         ],
         'actions' => [
             'back_to_dashboard' => 'Kembali ke Dashboard',
+            'back_to_learning' => 'Kembali ke My Learning',
+            'back_to_course' => 'Kembali ke Halaman Course',
             'retry' => 'Ulangi Assessment',
             'view_certificates' => 'Lihat Sertifikat',
         ],

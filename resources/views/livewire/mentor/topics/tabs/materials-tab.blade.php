@@ -151,7 +151,7 @@
                         @if(in_array($materialType, ['pdf', 'ppt'], true))
                             <div class="sm:col-span-2">
                                 <label class="text-xs font-medium">File</label>
-                                <input type="file" wire:model="materialFile" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                                <input type="file" wire:model="materialFile" accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
                             </div>
                         @endif
 
@@ -175,17 +175,19 @@
                     @error('materialExternalUrl') <p class="text-sm text-rose-600">{{ $message }}</p> @enderror
                     @error('materialSortOrder') <p class="text-sm text-rose-600">{{ $message }}</p> @enderror
 
-            <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
-                <button type="button" wire:click="closeMaterialModal"
-                        class="admin-neutral-button rounded-xl px-4 py-2 text-sm">
-                    {{ __('mentor.topic_tabs.materials.form.cancel') }}
-                </button>
-                <button type="submit"
-                        wire:loading.attr="disabled"
-                        class="admin-primary-button rounded-xl px-4 py-2 text-sm">
-                    {{ $editingMaterialId ? __('mentor.topic_tabs.materials.form.update') : __('mentor.topic_tabs.materials.form.save') }}
-                </button>
+                    <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
+                        <button type="button" wire:click="closeMaterialModal"
+                                class="admin-neutral-button rounded-xl px-4 py-2 text-sm">
+                            {{ __('mentor.topic_tabs.materials.form.cancel') }}
+                        </button>
+                        <button type="submit"
+                                wire:loading.attr="disabled"
+                                class="admin-primary-button rounded-xl px-4 py-2 text-sm">
+                            {{ $editingMaterialId ? __('mentor.topic_tabs.materials.form.update') : __('mentor.topic_tabs.materials.form.save') }}
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </x-ui.mentor.modal>
+        </div>
+    @endif
 </section>

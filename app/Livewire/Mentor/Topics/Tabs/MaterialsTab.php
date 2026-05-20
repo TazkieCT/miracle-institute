@@ -138,7 +138,7 @@ class MaterialsTab extends Component
             'materialStatus' => ['required', Rule::in(Material::STATUSES)],
             'materialSortOrder' => ['required', 'integer', 'min:0'],
             'materialExternalUrl' => ['nullable', 'url', 'max:2048'],
-            'materialFile' => ['nullable', 'file', 'max:51200'],
+            'materialFile' => ['nullable', 'file', 'mimes:pdf,ppt,pptx', 'max:51200'],
         ]);
 
         $existing = $this->editingMaterialId
@@ -371,6 +371,10 @@ class MaterialsTab extends Component
 
     private function hasUpload(mixed $file): bool
     {
+        if (is_array($file)) {
+            $file = $file[0] ?? null;
+        }
+
         return $file instanceof \Illuminate\Http\UploadedFile
             || $file instanceof TemporaryUploadedFile;
     }

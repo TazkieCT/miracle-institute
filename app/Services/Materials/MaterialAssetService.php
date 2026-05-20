@@ -20,8 +20,10 @@ class MaterialAssetService
         $type = strtolower(trim($type));
 
         if (in_array($type, ['pdf', 'ppt'], true)) {
-            if ($this->hasUpload($file)) {
-                $path = $this->drive->uploadDocument($file, $title);
+            $upload = $this->resolveUpload($file);
+
+            if ($upload) {
+                $path = $this->drive->uploadDocument($upload, $title);
                 $this->cleanupPrevious($material);
 
                 return [
@@ -43,8 +45,10 @@ class MaterialAssetService
         }
 
         if ($type === 'video') {
-            if ($this->hasUpload($file)) {
-                $url = $this->youtube->uploadVideo($file, $title);
+            $upload = $this->resolveUpload($file);
+
+            if ($upload) {
+                $url = $this->youtube->uploadVideo($upload, $title);
                 $this->cleanupPrevious($material);
 
                 return [
@@ -120,6 +124,27 @@ class MaterialAssetService
 
     private function hasUpload(mixed $file): bool
     {
-        return $file instanceof UploadedFile || $file instanceof TemporaryUploadedFile;
+        return $this->resolveUpload($file) !== null;
+    }
+
+    private function resolveUpload(mixed $file): UploadedFile|TemporaryUploadedFile|null
+    {
+        if (is_array($file)) {
+            $file = $file[0] ?? null;
+        }
+
+        if ($file instanceof UploadedFile || $file instanceof TemporaryUploadedFile) {
+            return $file;
+        }
+
+        if (
+            is_object($file)
+            && method_exists($file, 'getRealPath')
+            && method_exists($file, 'getClientOriginalExtension')
+        ) {
+            return $file;
+        }
+
+        return null;
     }
 }

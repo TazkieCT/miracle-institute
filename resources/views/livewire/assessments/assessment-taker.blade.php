@@ -1,75 +1,66 @@
 <div wire:key="assessment-{{ $attempt->id }}-{{ $currentIndex }}" class="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
 
     @if($showIntro)
-        <section class="space-y-4 rounded-3xl border bg-white p-6 shadow-sm">
+        <section class="space-y-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_40px_color-mix(in_oklab,#004777_10%,transparent)]">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                    <div class="text-xs uppercase tracking-wide text-slate-400">
+                    <div class="text-xs uppercase tracking-[0.18em] text-[color:color-mix(in_oklab,#004777_48%,white)]">
                         {{ $assessment->course?->title ?? __('general.assessment_taker.defaults.course_assessment') }}
                     </div>
 
-                    <h1 class="mt-1 text-2xl font-bold">
+                    <h1 class="mt-1 text-2xl font-bold text-mentor-primary">
                         {{ $assessment->title }}
                     </h1>
 
-                    <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
+                    <p class="mt-2 max-w-3xl text-sm leading-6 text-[color:color-mix(in_oklab,#004777_72%,white)]">
                         {{ __('general.assessment_taker.intro.description') }}
                     </p>
                 </div>
 
                 <div class="flex flex-wrap justify-end gap-2">
-                    <span class="rounded-full border bg-slate-50 px-3 py-1 text-xs text-slate-600">
+                    <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">
                         {{ __('general.assessment_taker.meta.attempt', ['no' => $attempt->attempt_no]) }}
                     </span>
-                    <span class="rounded-full border bg-slate-50 px-3 py-1 text-xs text-slate-600">
+                    <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">
                         {{ __('general.assessment_taker.meta.passing', ['grade' => $assessment->passing_grade]) }}
                     </span>
-                    <span class="rounded-full border bg-slate-50 px-3 py-1 text-xs text-slate-600">
+                    <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">
                         {{ $assessment->randomize_questions ? __('general.assessment_taker.meta.randomized') : __('general.assessment_taker.meta.fixed_order') }}
                     </span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.started') }}</div>
-                    <div class="mt-1 font-semibold">{{ $attempt->started_at?->format('d M Y, H:i') ?? '-' }}</div>
-                </div>
-
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.questions') }}</div>
-                    <div class="mt-1 font-semibold">{{ $attempt->total_questions }}</div>
-                </div>
-
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.state') }}</div>
-                    <div class="mt-1 font-semibold">{{ strtoupper($attempt->status) }}</div>
-                </div>
-
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.progress') }}</div>
-                    <div class="mt-1 font-semibold">{{ collect($answers)->filter()->count() }} {{ __('general.assessment_taker.metrics.saved') }}</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
-                <div class="rounded-2xl border bg-slate-50 p-5">
-                    <div class="mb-3 text-xs uppercase tracking-wide text-slate-400">
-                        {{ __('general.assessment_taker.instructions.title') }}
+            <div class="flex flex-col gap-4 border-t border-slate-200 pt-5 lg:flex-row lg:items-start lg:justify-between">
+                <div class="space-y-3">
+                    <div class="flex flex-wrap gap-3 text-sm text-slate-600">
+                        <div>
+                            <span class="text-slate-500">{{ __('general.assessment_taker.metrics.started') }}:</span>
+                            <span class="font-medium text-mentor-primary">{{ $attempt->started_at?->format('d M Y, H:i') ?? '-' }}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500">{{ __('general.assessment_taker.metrics.questions') }}:</span>
+                            <span class="font-medium text-mentor-primary">{{ $attempt->total_questions }}</span>
+                        </div>
                     </div>
 
-                    <ul class="list-disc space-y-2 pl-5 text-sm text-slate-700">
-                        <li>{{ __('general.assessment_taker.instructions.read_carefully') }}</li>
-                        <li>{{ __('general.assessment_taker.instructions.auto_save') }}</li>
-                        <li>{{ __('general.assessment_taker.instructions.submit_when_ready') }}</li>
-                    </ul>
+                    <div>
+                        <div class="mb-2 text-xs uppercase tracking-wide text-slate-400">
+                            {{ __('general.assessment_taker.instructions.title') }}
+                        </div>
+
+                        <ul class="list-disc space-y-2 pl-5 text-sm text-slate-700">
+                            <li>{{ __('general.assessment_taker.instructions.read_carefully') }}</li>
+                            <li>{{ __('general.assessment_taker.instructions.auto_save') }}</li>
+                            <li>{{ __('general.assessment_taker.instructions.submit_when_ready') }}</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap gap-3">
                     <button
                         type="button"
                         wire:click="beginQuiz"
-                        class="rounded-xl bg-[#004777] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#003560]"
+                        class="admin-primary-button rounded-xl px-5 py-3 text-sm"
                     >
                         {{ $hasExistingAttempt ? __('general.assessment_taker.actions.resume_test') : __('general.assessment_taker.actions.start_test') }}
                     </button>
@@ -78,18 +69,18 @@
         </section>
     @else
 
-        <section class="space-y-4 rounded-3xl border bg-white p-6 shadow-sm">
+        <section class="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_40px_color-mix(in_oklab,#004777_10%,transparent)]">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                    <div class="text-xs uppercase tracking-wide text-slate-400">
+                    <div class="text-xs uppercase tracking-[0.18em] text-[color:color-mix(in_oklab,#004777_48%,white)]">
                         {{ $assessment->course?->title ?? __('general.assessment_taker.defaults.course_assessment') }}
                     </div>
 
-                    <h1 class="mt-1 text-2xl font-bold">
+                    <h1 class="mt-1 text-2xl font-bold text-mentor-primary">
                         {{ $assessment->title }}
                     </h1>
 
-                    <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
+                    <p class="mt-2 max-w-3xl text-sm leading-6 text-[color:color-mix(in_oklab,#004777_72%,white)]">
                         {{ __('general.assessment_taker.intro.description') }}
                     </p>
                 </div>
@@ -107,35 +98,25 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.started') }}</div>
-                    <div class="mt-1 font-semibold">{{ $attempt->started_at?->format('d M Y, H:i') ?? '-' }}</div>
+            <div class="flex flex-wrap gap-x-5 gap-y-2 border-t border-slate-200 pt-4 text-sm text-slate-600">
+                <div>
+                    <span class="text-slate-500">{{ __('general.assessment_taker.metrics.started') }}:</span>
+                    <span class="font-medium text-mentor-primary">{{ $attempt->started_at?->format('d M Y, H:i') ?? '-' }}</span>
                 </div>
 
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.questions') }}</div>
-                    <div class="mt-1 font-semibold">{{ count($questions) }}</div>
-                </div>
-
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.answered') }}</div>
-                    <div class="mt-1 font-semibold">{{ collect($answers)->filter()->count() }} / {{ count($questions) }}</div>
-                </div>
-
-                <div class="rounded-xl border bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.state') }}</div>
-                    <div class="mt-1 font-semibold">{{ strtoupper($attempt->status) }}</div>
+                <div>
+                    <span class="text-slate-500">{{ __('general.assessment_taker.metrics.questions') }}:</span>
+                    <span class="font-medium text-mentor-primary">{{ count($questions) }}</span>
                 </div>
             </div>
         </section>
 
         <section class="grid grid-cols-1 gap-6 xl:grid-cols-[260px_1fr]">
-            <aside class="sticky top-24 h-fit rounded-3xl border bg-white p-5 shadow-sm">
+            <aside class="sticky top-24 h-fit rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_10px_25px_rgba(15,23,42,0.04)]">
                 <div class="mb-3 flex items-center justify-between">
                     <h2 class="font-semibold">{{ __('general.assessment_taker.navigator.title') }}</h2>
                     <span class="text-xs text-slate-500">
-                        {{ collect($answers)->filter()->count() }} / {{ count($questions) }}
+                        {{ $this->answeredCount }} / {{ count($questions) }}
                     </span>
                 </div>
 
@@ -150,7 +131,7 @@
                             wire:click="goTo({{ $i }})"
                             class="h-10 rounded-xl border text-sm font-medium transition
                             {{ $isActive
-                                ? 'border-black bg-black text-white'
+                                ? 'border-mentor-primary bg-mentor-primary text-white'
                                 : ($isAnswered
                                     ? 'border-emerald-300 bg-emerald-100 text-emerald-700'
                                     : 'bg-white hover:bg-slate-50') }}"
@@ -169,14 +150,14 @@
                 @php $q = $questions[$currentIndex] ?? null; @endphp
 
                 @if($q)
-                    <section wire:key="question-{{ $q['id'] }}" class="space-y-5 rounded-3xl border bg-white p-6 shadow-sm">
+                    <section wire:key="question-{{ $q['id'] }}" class="space-y-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_10px_25px_rgba(15,23,42,0.04)]">
                         <div class="flex items-start justify-between gap-4">
                             <div>
-                                <div class="text-xs uppercase tracking-wide text-slate-400">
+                                <div class="text-xs uppercase tracking-wide text-[color:color-mix(in_oklab,#004777_48%,white)]">
                                     {{ __('general.assessment_taker.question.label', ['current' => $currentIndex + 1, 'total' => count($questions)]) }}
                                 </div>
 
-                                <h2 class="mt-2 text-xl font-semibold">
+                                <h2 class="mt-2 text-xl font-semibold text-mentor-primary">
                                     {{ $q['question'] }}
                                 </h2>
                             </div>
@@ -193,7 +174,7 @@
                                     wire:click="selectOption('{{ $q['id'] }}', '{{ $opt['id'] }}')"
                                     class="flex w-full items-start gap-3 rounded-2xl border p-4 text-left transition
                                     {{ ($answers[$q['id']] ?? null) == $opt['id']
-                                        ? 'border-black bg-black text-white'
+                                        ? 'border-mentor-primary bg-mentor-primary text-white'
                                         : 'hover:bg-slate-50' }}">
                                     <div class="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border
                                         {{ ($answers[$q['id']] ?? null) == $opt['id'] ? 'border-white' : 'border-slate-300' }}">
@@ -229,11 +210,17 @@
                         <button
                             type="button"
                             wire:click="$set('openSubmit', true)"
-                            class="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white hover:bg-slate-800"
+                            class="admin-primary-button rounded-xl px-6 py-3 text-sm"
                         >
                             {{ __('general.assessment_taker.actions.submit_answers') }}
                         </button>
                     </section>
+
+                    @error('answers')
+                        <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 @endif
             </main>
         </section>
@@ -254,7 +241,7 @@
                     <div class="grid grid-cols-2 gap-3 text-sm">
                         <div class="rounded-2xl border bg-slate-50 p-4">
                             <div class="text-xs text-slate-500">{{ __('general.assessment_taker.metrics.answered') }}</div>
-                            <div class="mt-1 font-semibold">{{ collect($answers)->filter()->count() }} / {{ count($questions) }}</div>
+                            <div class="mt-1 font-semibold">{{ $this->answeredCount }} / {{ count($questions) }}</div>
                         </div>
                         <div class="rounded-2xl border bg-slate-50 p-4">
                             <div class="text-xs text-slate-500">{{ __('general.assessment_taker.meta.passing_label') }}</div>
@@ -266,7 +253,7 @@
                         <button
                             type="button"
                             wire:click="$set('openSubmit', false)"
-                            class="rounded-xl border px-4 py-2 text-sm hover:bg-slate-50"
+                            class="admin-neutral-button rounded-xl px-4 py-2 text-sm"
                         >
                             {{ __('general.assessment_taker.actions.cancel') }}
                         </button>
@@ -274,7 +261,8 @@
                         <button
                             type="button"
                             wire:click="submit"
-                            class="rounded-xl bg-black px-4 py-2 text-sm text-white hover:bg-slate-800"
+                            @disabled(! $this->allQuestionsAnswered)
+                            class="admin-primary-button rounded-xl px-4 py-2 text-sm disabled:opacity-50"
                         >
                             {{ __('general.assessment_taker.actions.submit') }}
                         </button>

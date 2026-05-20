@@ -25,6 +25,16 @@ class AssessmentTaker extends Component
     public bool $showIntro = true;
     public bool $hasExistingAttempt = false;
 
+    public function getAnsweredCountProperty(): int
+    {
+        return count(array_filter($this->answers));
+    }
+
+    public function getAllQuestionsAnsweredProperty(): bool
+    {
+        return count($this->questions) > 0 && $this->answeredCount === count($this->questions);
+    }
+
     public function mount(Assessment $assessment, AssessmentFlowService $flowService): void
     {
         abort_unless(Auth::check(), 403);
@@ -132,6 +142,12 @@ class AssessmentTaker extends Component
     {
         if ($this->attempt->submitted_at) {
             redirect()->route('assessments.result', $this->attempt->id);
+            return;
+        }
+
+        if (! $auto && ! $this->allQuestionsAnswered) {
+            $this->addError('answers', __('general.assessment_taker.validation.answer_all'));
+            $this->openSubmit = false;
             return;
         }
 

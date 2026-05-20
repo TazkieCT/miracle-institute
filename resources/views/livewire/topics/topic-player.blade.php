@@ -534,7 +534,14 @@
                         </div>
                     </template>
                 </div>
-            @endif
+            @empty
+                <div class="rounded-2xl border border-dashed bg-slate-50 p-6">
+                    <div class="font-semibold text-slate-900">{{ __('general.topic_player.sessions.empty.title') }}</div>
+                    <p class="mt-1 text-sm leading-6 text-slate-600">
+                        {{ __('general.topic_player.sessions.empty.description') }}
+                    </p>
+                </div>
+            @endforelse
         </section>
     @endif
 </div>
