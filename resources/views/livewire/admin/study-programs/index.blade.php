@@ -1,6 +1,6 @@
 <div class="space-y-6">
     <x-ui.page-header title="{{ __('admin.study_programs.page_title') }}" subtitle="{{ __('admin.study_programs.page_subtitle') }}">
-        <button wire:click="create" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+        <button wire:click="create" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
             {{ __('admin.study_programs.actions.create') }}
         </button>
     </x-ui.page-header>
@@ -21,7 +21,7 @@
         <div class="overflow-hidden rounded-2xl border bg-white">
             <div class="overflow-x-auto">
                 <table class="min-w-full w-full text-sm">
-                    <thead class="bg-slate-50 text-left text-slate-600">
+                    <thead class="admin-table-head text-left text-slate-600">
                         <tr>
                             <th class="px-4 py-3 font-medium">{{ __('admin.study_programs.table.title') }}</th>
                             <th class="px-4 py-3 font-medium">{{ __('admin.study_programs.table.status') }}</th>
@@ -53,7 +53,7 @@
                                         <div class="relative group">
                                             <button
                                                 wire:click="edit('{{ $row->id }}')"
-                                                class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition hover:bg-blue-100"
+                                                class="admin-edit-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                                 title="{{ __('admin.study_programs.actions.edit') }}"
                                             >
                                                 <span class="sr-only">{{ __('admin.study_programs.actions.edit') }}</span>
@@ -69,7 +69,7 @@
                                         <div class="relative group">
                                             <button
                                                 wire:click="confirmDelete('{{ $row->id }}')"
-                                                class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                                                class="admin-delete-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                                 title="{{ __('admin.study_programs.actions.delete') }}"
                                             >
                                                 <span class="sr-only">{{ __('admin.study_programs.actions.delete') }}</span>
@@ -143,7 +143,7 @@
                         {{ __('admin.study_programs.actions.cancel') }}
                     </button>
 
-                    <button wire:click="save" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
+                    <button wire:click="save" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ __('admin.study_programs.actions.save') }}
                     </button>
                 </div>
@@ -168,7 +168,7 @@
                         {{ __('admin.study_programs.actions.cancel') }}
                     </button>
 
-                    <button wire:click="delete" class="rounded-xl bg-rose-600 px-4 py-2 text-white hover:bg-rose-700">
+                    <button wire:click="delete" class="admin-delete-button rounded-xl px-4 py-2">
                         {{ __('admin.study_programs.actions.delete') }}
                     </button>
                 </div>

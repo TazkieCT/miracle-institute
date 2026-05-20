@@ -11,9 +11,22 @@
 
     --color-brand: #35A7FF;
     --color-brand-dark: #004777;
+    --color-mentor-primary: #004777;
+    --color-mentor-primary-soft: color-mix(in oklab, #004777 12%, white);
+    --color-mentor-primary-soft-2: color-mix(in oklab, #004777 7%, white);
+    --color-mentor-secondary: color-mix(in oklab, #3B82F6 70%, transparent);
+    --color-mentor-secondary-solid: color-mix(in oklab, #3B82F6 70%, white);
 }
 
 @layer base {
+    :root {
+        --mentor-primary: var(--color-mentor-primary);
+        --mentor-primary-soft: var(--color-mentor-primary-soft);
+        --mentor-primary-soft-2: var(--color-mentor-primary-soft-2);
+        --mentor-secondary: var(--color-mentor-secondary);
+        --mentor-secondary-solid: var(--color-mentor-secondary-solid);
+    }
+
     *,
     ::before,
     ::after,
@@ -25,5 +38,79 @@
     body {
         background-color: #f4faff;
         color: #004777;
+    }
+
+    button:not(:disabled),
+    [role='button']:not(:disabled),
+    [wire\:click]:not(:disabled),
+    [wire\:click\.prevent]:not(:disabled),
+    [wire\:click\.stop]:not(:disabled),
+    a[href] {
+        cursor: pointer;
+    }
+
+    button:disabled,
+    [role='button']:disabled,
+    [wire\:click]:disabled,
+    [wire\:click\.prevent]:disabled,
+    [wire\:click\.stop]:disabled {
+        cursor: not-allowed;
+    }
+}
+
+@layer components {
+    .admin-table-head,
+    .admin-table-head th {
+        background-color: var(--color-mentor-primary) !important;
+        color: white !important;
+        font-weight: 700 !important;
+    }
+
+    .admin-primary-button {
+        background-color: var(--color-mentor-primary) !important;
+        color: white !important;
+        font-weight: 700;
+        transition: opacity 0.2s ease;
+    }
+
+    .admin-primary-button:hover {
+        opacity: 0.88;
+    }
+
+    .admin-primary-button:focus-visible {
+        outline: 2px solid var(--color-mentor-secondary-solid);
+        outline-offset: 2px;
+    }
+
+    .admin-edit-button {
+        background-color: #2563eb !important;
+        color: white !important;
+        font-weight: 700;
+        transition: opacity 0.2s ease;
+    }
+
+    .admin-edit-button:hover {
+        opacity: 0.88;
+    }
+
+    .admin-edit-button:focus-visible {
+        outline: 2px solid color-mix(in oklab, #2563eb 35%, white);
+        outline-offset: 2px;
+    }
+
+    .admin-delete-button {
+        background-color: #dc2626 !important;
+        color: white !important;
+        font-weight: 700;
+        transition: opacity 0.2s ease;
+    }
+
+    .admin-delete-button:hover {
+        opacity: 0.88;
+    }
+
+    .admin-delete-button:focus-visible {
+        outline: 2px solid color-mix(in oklab, #dc2626 35%, white);
+        outline-offset: 2px;
     }
 }

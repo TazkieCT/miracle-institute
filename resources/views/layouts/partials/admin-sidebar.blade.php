@@ -2,7 +2,18 @@
     $mainMenus = [
         ['label' => __('admin.sidebar.dashboard'), 'route' => 'admin.dashboard'],
         ['label' => __('admin.sidebar.study_programs'), 'route' => 'admin.study-programs.index'],
-        ['label' => __('admin.sidebar.courses'), 'route' => 'admin.courses.index'],
+        [
+            'label' => __('admin.sidebar.courses'),
+            'route' => 'admin.courses.index',
+            'active_routes' => [
+                'admin.courses.index',
+                'admin.topics.index',
+                'admin.materials.index',
+                'admin.sessions.index',
+                'admin.assessments.index',
+                'admin.certificates.index',
+            ],
+        ],
 
         ['label' => __('admin.sidebar.users'), 'route' => 'admin.users.index'],
         ['label' => __('admin.sidebar.roles'), 'route' => 'admin.roles.index'],
@@ -33,9 +44,21 @@
         return ! $ability || (auth()->check() && auth()->user()->can($ability));
     });
 
-    $activeClass = fn ($route) => request()->routeIs($route)
-        ? 'block rounded-xl px-4 py-2 text-sm font-semibold bg-[#004777]/10 text-[#004777]'
-        : 'block rounded-xl px-4 py-2 text-sm text-slate-700 hover:bg-[#004777]/10 hover:text-[#004777]';
+    $isMenuActive = function (array $item): bool {
+        $routes = $item['active_routes'] ?? [$item['route']];
+
+        foreach ($routes as $route) {
+            if (request()->routeIs($route)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    $activeClass = fn (array $item) => $isMenuActive($item)
+        ? 'block rounded-xl bg-mentor-primary px-4 py-2 text-sm font-semibold text-white shadow-sm'
+        : 'block rounded-xl px-4 py-2 text-sm text-slate-700 hover:bg-mentor-primary-soft-2 hover:text-mentor-primary';
 
 @endphp
 
@@ -53,7 +76,7 @@
 
     <nav class="flex-1 space-y-1 overflow-y-auto p-4">
         @foreach($visibleMain as $item)
-            <a href="{{ localized_route($item['route']) }}" class="{{ $activeClass($item['route']) }}">
+            <a href="{{ localized_route($item['route']) }}" class="{{ $activeClass($item) }}">
                 {{ $item['label'] }}
             </a>
 

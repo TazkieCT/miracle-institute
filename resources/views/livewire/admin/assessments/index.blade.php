@@ -13,17 +13,17 @@
 
             @if($selectedAssessment)
                 <button wire:click="edit('{{ $selectedAssessment->id }}')"
-                    class="rounded-xl border px-4 py-2 text-sm">
+                    class="admin-edit-button rounded-xl border px-4 py-2 text-sm">
                     {{ __('admin.assessments.actions.edit') }}
                 </button>
 
                 <button wire:click="createQuestion"
-                    class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                    class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                     {{ __('admin.question_manager.actions.create') }}
                 </button>
             @else
                 <button wire:click="create"
-                    class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                    class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                     {{ __('admin.assessments.actions.create') }}
                 </button>
             @endif
@@ -59,7 +59,7 @@
 
                 <x-ui.table-shell class="table-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-slate-50 text-left">
+                        <thead class="admin-table-head text-left">
                             <tr>
                                 <th class="p-4">Question</th>
                                 <th class="p-4">Options</th>
@@ -86,7 +86,7 @@
                                         <div class="flex flex-wrap gap-2">
                                             <div class="relative group">
                                                 <button wire:click="editQuestion('{{ $question->id }}')"
-                                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition hover:bg-blue-100"
+                                                    class="admin-edit-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                                     title="{{ __('admin.question_manager.actions.edit') }}">
                                                     <span class="sr-only">{{ __('admin.question_manager.actions.edit') }}</span>
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
@@ -100,7 +100,7 @@
 
                                             <div class="relative group">
                                                 <button wire:click="deleteQuestion('{{ $question->id }}')"
-                                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                                                    class="admin-delete-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                                     title="{{ __('admin.question_manager.actions.delete') }}">
                                                     <span class="sr-only">{{ __('admin.question_manager.actions.delete') }}</span>
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
@@ -202,7 +202,7 @@
                     </button>
 
                     <button wire:click="save"
-                        class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
+                        class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ __('admin.assessments.actions.save') }}
                     </button>
                 </div>
@@ -257,7 +257,7 @@
 
                     <x-ui.table-shell class="table-auto">
                         <table class="w-full text-sm">
-                            <thead class="bg-slate-50">
+                            <thead class="admin-table-head">
                                 <tr>
                                     <th class="p-4 text-left">{{ __('admin.question_manager.table.question') }}</th>
                                     <th class="p-4 text-left">{{ __('admin.question_manager.table.options') }}</th>
@@ -288,12 +288,12 @@
                                             <td class="p-4">
                                                 <div class="flex justify-center gap-2">
                                                     <button wire:click="editQuestion('{{ $q->id }}')"
-                                                        class="rounded-lg bg-blue-100 px-3 py-1.5 text-xs text-blue-700 hover:bg-blue-200">
+                                                        class="admin-edit-button rounded-lg px-3 py-1.5 text-xs">
                                                         {{ __('admin.question_manager.actions.edit') }}
                                                     </button>
 
                                                     <button wire:click="deleteQuestion('{{ $q->id }}')"
-                                                        class="rounded-lg bg-red-100 px-3 py-1.5 text-xs text-red-700 hover:bg-red-200">
+                                                        class="admin-delete-button rounded-lg px-3 py-1.5 text-xs">
                                                         {{ __('admin.question_manager.actions.delete') }}
                                                     </button>
                                                 </div>
@@ -352,7 +352,7 @@
                     </button>
 
                     <button wire:click="saveQuestion"
-                        class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
+                        class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ __('admin.question_manager.actions.save') }}
                     </button>
                 </div>

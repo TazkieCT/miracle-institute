@@ -12,18 +12,18 @@
 
                 @if($selectedFilterSession)
                     <button wire:click="edit('{{ $selectedFilterSession->id }}')"
-                        class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                        class="admin-edit-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                         {{ __('admin.sessions.actions.edit') }}
                     </button>
                 @else
                     <button wire:click="create"
-                        class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                        class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                         {{ __('admin.sessions.actions.create') }}
                     </button>
                 @endif
             @else
                 <button wire:click="create"
-                    class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                    class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                     {{ __('admin.sessions.actions.create') }}
                 </button>
             @endif
@@ -50,43 +50,41 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-2xl border bg-white">
-                    <div class="border-b bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                <div class="space-y-3">
+                    <div class="text-sm font-semibold text-slate-700">
                         Session Attendance
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="border-b bg-white text-left">
-                                <tr>
-                                    <th class="px-4 py-3 font-medium text-slate-600">User</th>
-                                    <th class="px-4 py-3 font-medium text-slate-600">Status</th>
-                                    <th class="px-4 py-3 font-medium text-slate-600">Check In</th>
-                                    <th class="px-4 py-3 font-medium text-slate-600">IP</th>
+                    <x-ui.table-shell class="table-auto">
+                        <thead class="admin-table-head text-left">
+                            <tr>
+                                <th class="px-4 py-3 font-medium text-slate-600">User</th>
+                                <th class="px-4 py-3 font-medium text-slate-600">Status</th>
+                                <th class="px-4 py-3 font-medium text-slate-600">Check In</th>
+                                <th class="px-4 py-3 font-medium text-slate-600">IP</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            @forelse($selectedFilterSession->attendances as $attendance)
+                                <tr class="align-top">
+                                    <td class="px-4 py-3">
+                                        <div class="font-medium text-slate-900">{{ $attendance->user?->full_name }}</div>
+                                        <div class="text-xs text-slate-500">{{ $attendance->user?->email }}</div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-4 py-3">
+                                        <span class="rounded-full bg-slate-100 px-2 py-1 text-xs">
+                                            {{ __('admin.attendances.status.' . $attendance->status, [], $attendance->status) }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-4 py-3">{{ $attendance->check_in_at?->format('d M Y H:i') ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-xs text-slate-500">{{ $attendance->ip_address ?? '-' }}</td>
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 bg-white">
-                                @forelse($selectedFilterSession->attendances as $attendance)
-                                    <tr>
-                                        <td class="px-4 py-3">
-                                            <div class="font-medium text-slate-900">{{ $attendance->user?->full_name }}</div>
-                                            <div class="text-xs text-slate-500">{{ $attendance->user?->email }}</div>
-                                        </td>
-                                        <td class="whitespace-nowrap px-4 py-3">
-                                            <span class="rounded-full bg-slate-100 px-2 py-1 text-xs">
-                                                {{ __('admin.attendances.status.' . $attendance->status, [], $attendance->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="whitespace-nowrap px-4 py-3">{{ $attendance->check_in_at?->format('d M Y H:i') ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-xs text-slate-500">{{ $attendance->ip_address ?? '-' }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-4 py-6 text-center text-slate-500">No attendance yet.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-4 py-6 text-center text-slate-500">No attendance yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </x-ui.table-shell>
                 </div>
             @else
                 <div class="rounded-2xl border bg-white p-6 text-center text-slate-500">
@@ -129,7 +127,7 @@
             </div>
 
             <x-ui.table-shell class="table-auto">
-                <thead class="bg-slate-50 text-left">
+                <thead class="admin-table-head text-left">
                     <tr>
                         <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.sessions.table.course') }}</th>
                         <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.sessions.table.title') }}</th>
@@ -164,7 +162,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap gap-2">
                                     <a href="{{ localized_route('admin.sessions.index', ['topicFilter' => $row->topic_id]) }}"
-                                       class="rounded-md bg-slate-100 px-2 py-1 text-xs hover:bg-slate-200">
+                                       class="admin-primary-button rounded-md px-2 py-1 text-xs">
                                         Open
                                     </a>
 
@@ -172,7 +170,7 @@
 
                                     <div class="relative group">
                                         <button wire:click="edit('{{ $row->id }}')"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition hover:bg-blue-100"
+                                            class="admin-edit-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                             title="{{ __('admin.sessions.actions.edit') }}">
                                             <span class="sr-only">{{ __('admin.sessions.actions.edit') }}</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
@@ -186,7 +184,7 @@
 
                                     <div class="relative group">
                                         <button wire:click="delete('{{ $row->id }}')"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                                            class="admin-delete-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                             title="{{ __('admin.sessions.actions.delete') }}">
                                             <span class="sr-only">{{ __('admin.sessions.actions.delete') }}</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
@@ -337,7 +335,7 @@
                     </button>
 
                     <button wire:click="save"
-                        class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
+                        class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ __('admin.sessions.actions.save') }}
                     </button>
                 </div>

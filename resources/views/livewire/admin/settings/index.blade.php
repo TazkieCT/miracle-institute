@@ -22,7 +22,7 @@
             <input wire:model="whatsapp" class="rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.whatsapp') }}">
         </div>
 
-        <button wire:click="save" class="rounded-xl border border-brand-dark/20 bg-transparent px-5 py-3 text-brand-dark transition hover:bg-brand/10">
+        <button wire:click="save" class="admin-primary-button rounded-xl border border-brand-dark/20 px-5 py-3 transition">
             {{ __('admin.settings.actions.save') }}
         </button>
     </div>

@@ -5,7 +5,7 @@
     >
         <div class="flex gap-2">
             <a href="{{ localized_route('admin.articles.create') }}"
-               class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+               class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                 {{ __('admin.articles.actions.create') }}
             </a>
         </div>
@@ -58,7 +58,7 @@
 
     <div class="overflow-hidden rounded-2xl border bg-white">
         <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-left">
+            <thead class="admin-table-head text-left">
                 <tr>
                     <th class="p-4">{{ __('admin.articles.table.thumbnail') }}</th>
                     <th class="p-4">{{ __('admin.articles.table.title') }}</th>
@@ -111,7 +111,7 @@
                         <td class="p-4">
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ localized_route('admin.articles.edit', $row->id) }}"
-                                   class="rounded-lg bg-blue-100 px-3 py-1.5 text-xs text-blue-700 transition hover:bg-blue-200">
+                                   class="admin-edit-button rounded-lg px-3 py-1.5 text-xs transition">
                                     {{ __('admin.articles.actions.edit') }}
                                 </a>
 
@@ -126,7 +126,7 @@
 
                                 <button
                                     wire:click="delete('{{ $row->id }}')"
-                                    class="rounded-lg bg-red-100 px-3 py-1.5 text-xs text-red-700 transition hover:bg-red-200"
+                                    class="admin-delete-button rounded-lg px-3 py-1.5 text-xs transition"
                                 >
                                     {{ __('admin.articles.actions.delete') }}
                                 </button>

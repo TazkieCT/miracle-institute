@@ -6,13 +6,40 @@
         : now();
 
     $certificateNumber = $certificateNumber ?? ('CERT-CRS-' . now()->format('Ymd') . '-0001');
-    $participantName = strtoupper($user->full_name ?? $user->name ?? '-');
-    $signatureName = 'Ali Sutiyono';
+    $participantName = $user->full_name ?? $user->name ?? '-';
 
-    // Placeholders: can be replaced by actual storage paths/base64 later.
-    $background = $background ?? null;
-    $backgroundBack = $backgroundBack ?? null;
-    $signature = $signature ?? null;
+    $toDataUri = static function (?string $path): ?string {
+        if (!$path || !file_exists($path)) {
+            return null;
+        }
+
+        $mime = mime_content_type($path) ?: 'image/png';
+
+        return 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path));
+    };
+
+    $background = $background ?? $toDataUri(public_path('images/certificate/front-bg.png'));
+    $backgroundBack = $backgroundBack ?? $toDataUri(public_path('images/certificate/back-bg.png'));
+    $logo = $logo ?? $toDataUri(public_path('images/logo.png'));
+    $beatrixAntiquaFontPath = public_path('font/beatrix-antiqua.regular.ttf');
+    $faithFontPath = public_path('font/faith.ttf');
+    $toFileUri = static function (string $path): string {
+        return 'file:///' . ltrim(str_replace('\\', '/', $path), '/');
+    };
+    $signature1 = $signature1 ?? $toDataUri(public_path('images/certificate/sign1.jpeg'));
+    $signature2 = $signature2 ?? $toDataUri(public_path('images/certificate/sign2.jpeg'));
+    $signatures = $signatures ?? [
+        [
+            'name' => 'Dr. Timotius Hardono',
+            'title' => 'Gembala GBI MS CK5',
+            'image' => $signature1,
+        ],
+        [
+            'name' => 'Dr. Indrawati Kabul',
+            'title' => 'Miracle Institute',
+            'image' => $signature2,
+        ],
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -23,10 +50,28 @@
         @page { margin: 0; size: 297mm 210mm; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        @if(file_exists($beatrixAntiquaFontPath))
+        @font-face {
+            font-family: 'beatrix antiqua';
+            src: url('{{ $toFileUri($beatrixAntiquaFontPath) }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @endif
+
+        @if(file_exists($faithFontPath))
+        @font-face {
+            font-family: 'faith';
+            src: url('{{ $toFileUri($faithFontPath) }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @endif
+
         html,
         body {
             width: 297mm;
-            font-family: 'Times New Roman', serif;
+            font-family: 'Poppins', Arial, Helvetica, sans-serif;
         }
 
         .page {
@@ -69,6 +114,46 @@
 
         .page-break {
             page-break-before: always;
+        }
+
+        .participant-name {
+            font-family: 'faith', 'Brush Script MT', 'Lucida Handwriting', cursive;
+            font-size: 70px;
+            color: #1f5684;
+            font-weight: normal;
+            font-style: normal;
+            line-height: 0.64;
+            text-shadow:
+                -1px -1px 0 #f5cd72,
+                1px -1px 0 #f5cd72,
+                -1px 1px 0 #f5cd72,
+                1px 1px 0 #f5cd72;
+            border-bottom: 1px solid #041321;
+            display: inline-block;
+            margin-top: -4px;
+            padding-bottom: 4px;
+            min-width: 520px;
+        }
+
+        .certificate-logo {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .certificate-logo img {
+            width: 50mm;
+            height: auto;
+        }
+
+        .certificate-title {
+            font-family: 'beatrix antiqua', 'Times New Roman', serif;
+            font-size: 46px;
+            color: #0d3b66;
+            line-height: 0.64;
+            font-weight: normal;
+            font-style: normal;
+            letter-spacing: 3px;
+            margin: 5px 0;
         }
 
         .second-content {
@@ -122,14 +207,72 @@
         }
 
         .material-table td.topic {
-            width: 70%;
+            width: 60%;
         }
 
-        .signature-right-bottom {
+        .signatures-grid {
+            width: 60%;
+            max-width: 180mm;
+            margin: 16px auto 0 auto;
             text-align: center;
-            margin-left: auto;
-            width: 70mm;
-            margin-top: 16px;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .signatures-grid.bottom {
+            position: absolute;
+            left: 50%;
+            bottom: 16mm;
+            transform: translateX(-50%);
+        }
+
+        .signature-item {
+            width: 50%;
+            vertical-align: top;
+            padding: 0 5mm;
+            font-size: 16px;
+        }
+
+        .signature-date {
+            font-size: 20px;
+            color: #000;
+            margin: 0 0 6px 0;
+            font-weight: bold;
+        }
+        
+        .signature-image {
+            height: 16mm;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .signature-image.has-signature {
+            height: 16mm;
+        }
+
+        .signature-image.no-signature {
+            height: 10mm;
+            padding-top: 0;
+            margin-bottom: 2px;
+        }
+
+        .signature-image img {
+            width: 200px;
+            height: auto;
+        }
+
+        .signature-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0d3b66;
+            margin: 0;
+            line-height: 42px;
+        }
+
+        .signature-title {
+            font-size: 18px;
+            color: #000;
+            margin: 0;
         }
     </style>
 </head>
@@ -143,32 +286,42 @@
 
         <div class="wrapper">
             <div class="content">
-                <h1 style="font-size: 24px; color: #0000c7; font-weight: bold;">
-                    KSP <span style="color: #c20000;">CU</span> BEREROD GRATIA
-                </h1>
-                <h2 style="font-size: 46px; color: #000; font-weight: 900; letter-spacing: 3px; margin: 5px 0;">SERTIFIKAT</h2>
-                <p style="font-size: 20px; color: #000; font-weight: bold; font-style: italic;">No. {{ $certificateNumber }}</p>
-                <p style="font-size: 24px; color: #000; margin: 15px 0 5px 0;">Diberikan kepada:</p>
-                <div style="font-size: 28px; color: #000; font-weight: bold; border-bottom: 3px solid #000; display: inline-block; padding: 8px 30px;">
+                <div class="certificate-logo">
+                    @if($logo)
+                        <img src="{{ $logo }}" alt="Miracle Institute Logo">
+                    @endif
+                </div>
+                <h2 class="certificate-title">CERTIFICATE</h2>
+                <p style="font-size: 20px; color: #1f5684; letter-spacing: 3px;">OF ACCOMPLISHMENT</p>
+                <p style="font-size: 16px; color: #000; font-weight: bold; margin: 6px 0;">No. {{ $certificateNumber }}</p>
+                <p style="font-size: 16px; color: #000;">This certificate is proudly presented to</p>
+                <div class="participant-name">
                     {{ $participantName }}
                 </div>
-                <p style="font-size: 24px; color: #000; margin: 5px 0 0 0;">Telah mengikuti dan menyelesaikan :</p>
-                <div style="font-size: 28px; color: #000; font-weight: bold; margin: 0 0 5px 0;">{{ $course->title ?? '-' }}</div>
-                <div style="font-size: 22px; color: #000; margin: 10px 0;">
-                    Sebagai <strong>Peserta</strong> yang diselenggarakan KSP CU Bererod Gratia di Kantor Pusat.
+                <div style="font-size: 18px; color: #000; margin: 10px 0; max-width: 80%; margin-left: auto; margin-right: auto;">
+                    Has attended and completed <strong>{{ $course->title ?? '-' }}</strong>
+                    As a <strong>Participant</strong> of the MIRACLE INSTITUTE online discipleship program.
                 </div>
                 <p style="font-size: 20px; color: #000; margin: 20px 0 0 0;">
                     <strong>{{ $issuedAt->locale('id')->isoFormat('D MMMM Y') }}</strong>
                 </p>
-                @if($signature)
-                    <div>
-                        <img src="{{ $signature }}" alt="Signature" style="width: 150px; height: auto;">
-                    </div>
-                @endif
-                <div style="border-bottom: 2px solid #000; width: 250px; margin: 0 auto;">
-                    <p style="font-size: 26px; font-weight: bold; color: #000;">{{ $signatureName }}</p>
-                </div>
-                <p style="font-size: 16px; color: #000; margin: 3px 0 0 0;">WAKIL KETUA PENGURUS</p>
+                <table class="signatures-grid">
+                    <tr>
+                        @foreach($signatures as $signer)
+                            <td class="signature-item">
+                                <div class="signature-image {{ !empty($signer['image']) ? 'has-signature' : 'no-signature' }}">
+                                    @if(!empty($signer['image']))
+                                        <img src="{{ $signer['image'] }}" alt="Signature">
+                                    @endif
+                                </div>
+                                <div class="signature-line">
+                                    <p class="signature-name">{{ $signer['name'] ?? '-' }}</p>
+                                </div>
+                                <p class="signature-title">{{ $signer['title'] ?? '-' }}</p>
+                            </td>
+                        @endforeach
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
@@ -212,21 +365,25 @@
                         @endforelse
                     </tbody>
                 </table>
-
-                <div class="signature-right-bottom">
-                    <p style="font-size: 20px; color: #000; margin: 0;">
-                        <strong>{{ $issuedAt->locale('id')->isoFormat('D MMMM Y') }}</strong>
-                    </p>
-                    @if($signature)
-                        <div>
-                            <img src="{{ $signature }}" alt="Signature" style="width: 150px; height: auto;">
-                        </div>
-                    @endif
-                    <div style="border-bottom: 2px solid #000; width: 250px; margin: 0 auto;">
-                        <p style="font-size: 26px; font-weight: bold; color: #000;">{{ $signatureName }}</p>
-                    </div>
-                    <p style="font-size: 16px; color: #000; margin: 3px 0 0 0;">WAKIL KETUA PENGURUS</p>
-                </div>
+                
+                <table class="signatures-grid bottom">
+                    <tr>
+                        @foreach($signatures as $signer)
+                            <td class="signature-item">
+                                <p class="signature-date">{{ $issuedAt->locale('id')->isoFormat('D MMMM Y') }}</p>
+                                <div class="signature-image {{ !empty($signer['image']) ? 'has-signature' : 'no-signature' }}">
+                                    @if(!empty($signer['image']))
+                                        <img src="{{ $signer['image'] }}" alt="Signature">
+                                    @endif
+                                </div>
+                                <div class="signature-line">
+                                    <p class="signature-name">{{ $signer['name'] ?? '-' }}</p>
+                                </div>
+                                <p class="signature-title">{{ $signer['title'] ?? '-' }}</p>
+                            </td>
+                        @endforeach
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

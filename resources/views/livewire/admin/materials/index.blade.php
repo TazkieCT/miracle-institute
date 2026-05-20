@@ -24,7 +24,7 @@
                                 <span class="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">MAX 5</span>
                             </button>
                         @else
-                            <button wire:click="create('{{ $selectedTopic->id }}')" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                            <button wire:click="create('{{ $selectedTopic->id }}')" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                                 {{ __('admin.materials.actions.add') }}
                             </button>
                         @endif
@@ -32,46 +32,46 @@
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-2xl border bg-white">
-                <div class="p-4">
-                    <table class="w-full text-sm">
-                        <thead class="border-b bg-white">
-                            <tr>
-                                <th class="p-4 text-left">{{ __('admin.materials.table.name') }}</th>
-                                <th class="p-4">{{ __('admin.materials.table.type') }}</th>
-                                <th class="p-4">{{ __('admin.materials.table.source') }}</th>
-                                <th class="p-4">{{ __('admin.materials.table.visibility') }}</th>
-                                <th class="p-4">{{ __('admin.materials.table.status') }}</th>
-                                <th class="p-4">{{ __('admin.materials.table.action') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($selectedTopic->materials as $row)
-                                <tr class="border-t hover:bg-slate-50">
-                                    <td class="p-4">
-                                        <div class="font-medium">{{ $row->name }}</div>
-                                        <div class="text-xs text-slate-500">{{ __('admin.materials.sort_order', ['count' => $row->sort_order]) }}</div>
-                                    </td>
-                                    <td class="p-4">{{ strtoupper($row->type) }}</td>
-                                    <td class="break-all p-4 text-xs text-slate-500">{{ $row->path ?: $row->external_url }}</td>
-                                    <td class="p-4">{{ __('admin.materials.visibility.' . $row->visibility, [], $row->visibility) }}</td>
-                                    <td class="p-4">{{ __('admin.materials.status.' . $row->status, [], $row->status) }}</td>
-                                    <td class="p-4">
-                                        <div class="flex gap-3">
-                                            <button wire:click="edit('{{ $row->id }}')" class="text-sm text-blue-600">{{ __('admin.materials.actions.edit') }}</button>
-                                                <button wire:click="delete('{{ $row->id }}')" wire:confirm="Delete this material?" class="text-sm text-rose-600">{{ __('admin.materials.actions.delete') }}</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="p-6 text-center text-slate-500">{{ __('admin.materials.empty_materials') }}</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <x-ui.table-shell class="table-auto">
+                <thead class="admin-table-head text-left">
+                    <tr>
+                        <th class="px-4 py-3 font-medium">{{ __('admin.materials.table.name') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('admin.materials.table.type') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('admin.materials.table.source') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('admin.materials.table.visibility') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('admin.materials.table.status') }}</th>
+                        <th class="px-4 py-3 font-medium">{{ __('admin.materials.table.action') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @forelse($selectedTopic->materials as $row)
+                        <tr class="align-top hover:bg-slate-50/60">
+                            <td class="px-4 py-3">
+                                <div class="font-medium text-slate-900">{{ $row->name }}</div>
+                                <div class="text-xs text-slate-500">{{ __('admin.materials.sort_order', ['count' => $row->sort_order]) }}</div>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ strtoupper($row->type) }}</td>
+                            <td class="px-4 py-3 break-all text-xs text-slate-500">{{ $row->path ?: $row->external_url }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ __('admin.materials.visibility.' . $row->visibility, [], $row->visibility) }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ __('admin.materials.status.' . $row->status, [], $row->status) }}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex flex-wrap gap-2">
+                                    <button wire:click="edit('{{ $row->id }}')" class="admin-edit-button rounded-lg px-3 py-1.5 text-xs">
+                                        {{ __('admin.materials.actions.edit') }}
+                                    </button>
+                                    <button wire:click="delete('{{ $row->id }}')" wire:confirm="Delete this material?" class="admin-delete-button rounded-lg px-3 py-1.5 text-xs">
+                                        {{ __('admin.materials.actions.delete') }}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-4 py-6 text-center text-slate-500">{{ __('admin.materials.empty_materials') }}</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </x-ui.table-shell>
         </div>
     @endif
 
@@ -168,7 +168,7 @@
                     </button>
                     <button wire:click="save"
                             wire:loading.attr="disabled"
-                            class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
+                            class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ $uploading ? __('admin.materials.actions.uploading') : __('admin.materials.actions.save') }}
                     </button>
                 </div>

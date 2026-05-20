@@ -25,7 +25,7 @@
     </div>
 
     <x-ui.table-shell class="table-auto">
-        <thead class="bg-slate-50 text-left">
+        <thead class="admin-table-head text-left">
             <tr>
                 <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.certificates.table.certificate') }}</th>
                 <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.certificates.table.issued') }}</th>
@@ -55,7 +55,7 @@
                     <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2">
                             <a href="{{ localized_route('certificates.download', $row->id) }}"
-                                class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
+                                class="admin-primary-button rounded-lg px-3 py-1.5 text-xs">
                                 {{ __('admin.certificates.actions.download') }}
                             </a>
                         </div>

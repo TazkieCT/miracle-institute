@@ -25,7 +25,7 @@
     <div class="overflow-hidden rounded-2xl border bg-white">
         <div class="overflow-x-auto">
             <table class="table-fixed w-full min-w-full text-sm">
-                <thead class="bg-slate-50 text-left text-slate-600">
+                <thead class="admin-table-head text-left text-slate-600">
                     <tr>
                         <th class="w-1/4 px-4 py-3 font-medium">{{ __('admin.users.table.name') }}</th>
                         <th class="w-1/4 px-4 py-3 font-medium">{{ __('admin.users.table.email') }}</th>
@@ -58,7 +58,7 @@
                             </td>
 
                             <td class="px-4 py-3 text-right">
-                                <a href="{{ localized_route('admin.users.roles', $row->id) }}" class="inline-flex items-center rounded-lg border border-brand-dark/20 bg-transparent px-3 py-2 text-xs font-medium text-brand-dark transition hover:bg-brand/10">
+                                <a href="{{ localized_route('admin.users.roles', $row->id) }}" class="admin-primary-button inline-flex items-center rounded-lg border border-brand-dark/20 px-3 py-2 text-xs font-medium transition">
                                     {{ __('admin.users.actions.manage_roles') }}
                                 </a>
                             </td>

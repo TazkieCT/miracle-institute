@@ -5,7 +5,7 @@
     >
         <div>
             <button wire:click="create"
-                class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                 {{ __('admin.attendances.actions.create') }}
             </button>
         </div>
@@ -69,7 +69,7 @@
     </div>
 
     <x-ui.table-shell class="table-auto">
-        <thead class="bg-slate-50 text-left">
+        <thead class="admin-table-head text-left">
             <tr>
                 <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.attendances.table.session') }}</th>
                 <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.attendances.table.topic') }}</th>
@@ -113,12 +113,12 @@
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2 whitespace-nowrap">
                             <button wire:click="edit('{{ $row->id }}')"
-                                class="rounded-lg bg-blue-100 px-3 py-1.5 text-xs text-blue-700 hover:bg-blue-200">
+                                class="admin-edit-button rounded-lg px-3 py-1.5 text-xs">
                                 {{ __('admin.attendances.actions.edit') }}
                             </button>
 
                             <button wire:click="delete('{{ $row->id }}')"
-                                class="rounded-lg bg-red-100 px-3 py-1.5 text-xs text-red-700 hover:bg-red-200">
+                                class="admin-delete-button rounded-lg px-3 py-1.5 text-xs">
                                 {{ __('admin.attendances.actions.delete') }}
                             </button>
                         </div>
@@ -187,7 +187,7 @@
                     </button>
 
                     <button wire:click="save"
-                        class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
+                        class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ __('admin.attendances.actions.save') }}
                     </button>
                 </div>

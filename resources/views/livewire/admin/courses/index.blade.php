@@ -5,7 +5,7 @@
     >
         <div>
             <button wire:click="create"
-                class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                 {{ __('admin.courses.actions.create') }}
             </button>
         </div>
@@ -43,13 +43,11 @@
         </div>
 
         <x-ui.table-shell class="table-auto">
-            <thead class="bg-slate-50 text-left">
+            <thead class="admin-table-head text-left">
                 <tr>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.courses.table.course') }}</th>
-                    <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.courses.table.program') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.courses.table.topics') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.courses.table.enrollments') }}</th>
-                    <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.courses.table.certificates') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.courses.table.status') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.courses.table.action') }}</th>
                 </tr>
@@ -60,13 +58,12 @@
                     <tr class="align-top">
                         <td class="px-4 py-3">
                             <div class="font-medium text-slate-900">{{ $row->title }}</div>
+                            <div class="text-xs text-slate-500">{{ $row->studyProgram?->title ?? '-' }}</div>
                             <div class="text-xs text-slate-500">{{ $row->slug }}</div>
                         </td>
 
-                        <td class="whitespace-nowrap px-4 py-3">{{ $row->studyProgram?->title }}</td>
                         <td class="whitespace-nowrap px-4 py-3">{{ $row->topics_count }}</td>
                         <td class="whitespace-nowrap px-4 py-3">{{ $row->enrollments_count }}</td>
-                        <td class="whitespace-nowrap px-4 py-3">{{ $row->certificates_count }}</td>
 
                         <td class="whitespace-nowrap px-4 py-3">
                             @php $s = $row->status; @endphp
@@ -78,17 +75,17 @@
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ localized_route('admin.topics.index', ['courseFilter' => $row->id]) }}"
-                                   class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
+                                   class="admin-primary-button rounded-lg px-3 py-1.5 text-xs">
                                     {{ __('admin.courses.actions.topics') }}
                                 </a>
 
                                 <a href="{{ localized_route('admin.assessments.index', ['courseFilter' => $row->id]) }}"
-                                   class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
+                                   class="admin-primary-button rounded-lg px-3 py-1.5 text-xs">
                                     {{ __('admin.courses.actions.assessments') }}
                                 </a>
 
                                 <a href="{{ localized_route('admin.certificates.index', ['courseFilter' => $row->id]) }}"
-                                   class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
+                                   class="admin-primary-button rounded-lg px-3 py-1.5 text-xs">
                                     {{ __('admin.courses.actions.certificates') }}
                                 </a>
 
@@ -96,7 +93,7 @@
 
                                 <div class="relative group">
                                     <button wire:click="edit('{{ $row->id }}')" title="{{ __('admin.courses.actions.edit') }}"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition hover:bg-blue-100">
+                                            class="admin-edit-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition">
                                         <span class="sr-only">{{ __('admin.courses.actions.edit') }}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182L10.582 17.13a4.5 4.5 0 0 1-1.897 1.13L6 19l.74-2.685a4.5 4.5 0 0 1 1.13-1.897L16.862 4.487ZM16.862 4.487 19.5 7.125" />
@@ -110,7 +107,7 @@
                                 <div class="relative group">
                                     <button wire:click="delete('{{ $row->id }}')" title="{{ __('admin.courses.actions.delete') }}"
                                             onclick="confirm('{{ __('admin.courses.confirm_delete') }}') || event.stopImmediatePropagation()"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                            class="admin-delete-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition">
                                         <span class="sr-only">{{ __('admin.courses.actions.delete') }}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.245-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -125,7 +122,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-6 text-center text-slate-500">
+                        <td colspan="5" class="px-4 py-6 text-center text-slate-500">
                             {{ __('admin.courses.empty') }}
                         </td>
                     </tr>
@@ -193,7 +190,7 @@
                     <button type="button" wire:click="$set('showModal', false)" class="rounded-xl border px-4 py-2">
                         {{ __('admin.courses.actions.cancel') }}
                     </button>
-                    <button wire:click="save" class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10">
+                    <button wire:click="save" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ __('admin.courses.actions.save') }}
                     </button>
                 </div>

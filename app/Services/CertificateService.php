@@ -82,6 +82,8 @@ class CertificateService
         Certificate $certificate,
         string $filename
     ) {
+        $this->ensureDompdfFontDirectory();
+
         $course = $certificate->course()->with([
             'topics.videoSessions'
         ])->firstOrFail();
@@ -113,6 +115,15 @@ class CertificateService
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download($filename);
+    }
+
+    private function ensureDompdfFontDirectory(): void
+    {
+        $fontPath = storage_path('fonts');
+
+        if (!is_dir($fontPath)) {
+            mkdir($fontPath, 0755, true);
+        }
     }
 
     

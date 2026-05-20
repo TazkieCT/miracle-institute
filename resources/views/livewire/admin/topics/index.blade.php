@@ -12,7 +12,7 @@
             @endif
 
             <button wire:click="create"
-                class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-sm text-brand-dark transition hover:bg-brand/10">
+                class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                 {{ __('admin.topics.actions.create') }}
             </button>
         </div>
@@ -51,7 +51,7 @@
         </div>
 
         <x-ui.table-shell class="table-auto">
-            <thead class="bg-slate-50 text-left">
+            <thead class="admin-table-head text-left">
                 <tr>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.topics.table.topic') }}</th>
                     <th class="whitespace-nowrap px-4 py-3 font-medium text-slate-600">{{ __('admin.topics.table.teacher') }}</th>
@@ -88,12 +88,12 @@
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ localized_route('admin.materials.index', ['topicFilter' => $row->id]) }}"
-                                   class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
+                                   class="admin-primary-button rounded-lg px-3 py-1.5 text-xs">
                                     {{ __('admin.topics.actions.materials') }}
                                 </a>
 
                                 <a href="{{ localized_route('admin.sessions.index', ['topicFilter' => $row->id]) }}"
-                                   class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs hover:bg-slate-200">
+                                   class="admin-primary-button rounded-lg px-3 py-1.5 text-xs">
                                     {{ __('admin.topics.actions.sessions') }}
                                 </a>
 
@@ -103,7 +103,7 @@
 
                                 <div class="relative group">
                                     <button wire:click="edit('{{ $row->id }}')"
-                                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition hover:bg-blue-100"
+                                        class="admin-edit-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                         title="{{ __('admin.topics.actions.edit') }}">
                                         <span class="sr-only">{{ __('admin.topics.actions.edit') }}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
@@ -117,7 +117,7 @@
 
                                 <div class="relative group">
                                     <button wire:click="delete('{{ $row->id }}')"
-                                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                                        class="admin-delete-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
                                         title="{{ __('admin.topics.actions.delete') }}">
                                         <span class="sr-only">{{ __('admin.topics.actions.delete') }}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
@@ -211,7 +211,7 @@
 
                         <button
                             wire:click="save"
-                            class="rounded-xl border border-brand-dark/20 bg-transparent px-4 py-2 text-brand-dark transition hover:bg-brand/10"
+                            class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition"
                         >
                             {{ __('admin.topics.actions.save') }}
                         </button>
