@@ -36,118 +36,43 @@
 
     <div class="relative z-10 space-y-6">
     <section class="overflow-hidden rounded-3xl bg-[#004777] text-white origin-top">
-        @if($isGuest || $isMentor)
-            <div x-data="slider()" x-init="init()" class="relative">
-                <div class="relative h-[340px] overflow-hidden sm:h-[380px]">
-                    <template x-for="(slide, index) in slides" :key="index">
-                        <img
-                            x-show="active === index"
-                            x-transition
-                            :src="slide"
-                            class="absolute inset-0 h-full w-full object-cover"
-                        >
-                    </template>
+        <div class="relative">
+            <div class="relative h-[340px] overflow-hidden sm:h-[380px]">
+                <img
+                    src="{{ asset('images/decor/banner.png') }}"
+                    alt="{{ __('general.explore_dashboard.hero.guest.title') }}"
+                    class="absolute inset-0 h-full w-full object-cover object-right"
+                >
 
-                    <div class="absolute inset-0 bg-black/50"></div>
+                <div class="absolute inset-0 bg-black/50 block md:hidden"></div>
 
-                    <div class="relative z-10 flex h-full items-center px-6 sm:px-8 lg:px-10">
-                        <div class="max-w-xl space-y-3">
-                            <h1 class="text-3xl font-bold leading-tight sm:text-4xl">
-                                {{ __('general.explore_dashboard.hero.guest.title') }}
-                            </h1>
+                <div class="relative z-10 flex h-full items-center px-6 sm:px-8 lg:px-10">
+                    <div class="max-w-xl space-y-3">
+                        <h1 class="text-3xl font-bold leading-tight sm:text-4xl">
+                            {{ __('general.explore_dashboard.hero.guest.title') }}
+                        </h1>
 
-                            <p class="text-sm leading-relaxed text-slate-300 sm:text-base">
-                                {{ __('general.explore_dashboard.hero.guest.description') }}
-                            </p>
-
-                            <div class="flex flex-wrap gap-2.5 pt-1">
-                                <a href="{{ localized_route('courses.index') }}"
-                                   class="rounded-xl bg-[#3B82F6] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3B82F6]/90">
-                                    {{ __('general.explore_dashboard.hero.guest.explore_journey') }}
-                                </a>
-
-                                @guest
-                                    <a href="{{ localized_route('login') }}"
-                                       class="rounded-xl border border-white/30 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/10">
-                                        {{ __('general.explore_dashboard.hero.guest.login') }}
-                                    </a>
-                                @endguest
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @else
-            <div x-data="slider()" x-init="init()" class="relative">
-                <div class="grid grid-cols-1 xl:grid-cols-2">
-                    <div class="flex flex-col justify-center space-y-5 p-6 sm:p-8 xl:p-10">
-                        <div class="space-y-2">
-                            <div class="text-[11px] uppercase tracking-[0.2em] text-white/70">
-                                {{ __('general.explore_dashboard.hero.member.welcome_back') }}
-                            </div>
-
-                            <h1 class="text-3xl font-bold leading-tight sm:text-4xl xl:text-5xl">
-                                {{ auth()->user()->name ?? __('general.explore_dashboard.defaults.learner') }},
-                                {{ __('general.explore_dashboard.hero.member.keep_growing') }}
-                            </h1>
-
-                            <p class="max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
-                                {{ __('general.explore_dashboard.hero.member.description') }}
-                            </p>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-2.5 pt-1">
-                            <div class="rounded-xl bg-white/10 p-3.5">
-                                <div class="text-[11px] text-white/70">{{ __('general.explore_dashboard.hero.member.courses') }}</div>
-                                <div class="text-lg font-bold sm:text-xl">{{ $stats['courses'] ?? 0 }}</div>
-                            </div>
-
-                            <div class="rounded-xl bg-white/10 p-3.5">
-                                <div class="text-[11px] text-white/70">{{ __('general.explore_dashboard.hero.member.completed') }}</div>
-                                <div class="text-lg font-bold sm:text-xl">{{ $stats['completed_topics'] ?? 0 }}</div>
-                            </div>
-
-                            <div class="rounded-xl bg-white/10 p-3.5">
-                                <div class="text-[11px] text-white/70">{{ __('general.explore_dashboard.hero.member.progress') }}</div>
-                                <div class="text-lg font-bold sm:text-xl">{{ $stats['in_progress'] ?? 0 }}</div>
-                            </div>
-                        </div>
+                        <p class="text-sm leading-relaxed text-slate-300 sm:text-base">
+                            {{ __('general.explore_dashboard.hero.guest.description') }}
+                        </p>
 
                         <div class="flex flex-wrap gap-2.5 pt-1">
                             <a href="{{ localized_route('courses.index') }}"
-                               class="rounded-xl bg-[#3B82F6] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3B82F6]/90">
-                                {{ __('general.explore_dashboard.hero.member.explore_classes') }}
+                               class="rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-white/90">
+                                {{ __('general.explore_dashboard.hero.guest.explore_journey') }}
                             </a>
 
-                            <a href="{{ localized_route('learning.dashboard') }}"
-                               class="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/10">
-                                {{ __('general.explore_dashboard.hero.member.my_journey') }}
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="relative h-[280px] overflow-hidden sm:h-[340px] xl:h-full">
-                        <template x-for="(slide, index) in slides" :key="index">
-                            <img
-                                x-show="active === index"
-                                x-transition
-                                :src="slide"
-                                class="absolute inset-0 h-full w-full object-cover"
-                            >
-                        </template>
-
-                        <div class="absolute inset-0 bg-black/30"></div>
-
-                        <div class="absolute bottom-5 left-5 right-5 text-white">
-                            <div class="text-xs text-white/70">{{ __('general.explore_dashboard.hero.member.featured_program') }}</div>
-                            <div class="mt-1 text-base font-semibold leading-snug sm:text-lg">
-                                {{ __('general.explore_dashboard.hero.member.featured_program_description') }}
-                            </div>
+                            @guest
+                                <a href="{{ localized_route('login') }}"
+                                   class="rounded-xl border border-white/30 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/10">
+                                    {{ __('general.explore_dashboard.hero.guest.login') }}
+                                </a>
+                            @endguest
                         </div>
                     </div>
                 </div>
             </div>
-        @endif
+        </div>
     </section>
 
     @if(!$isGuest && !$isMentor && count($continueCourses))
@@ -450,25 +375,6 @@
     </section>
     </div>
 </div>
-
-<script>
-function slider() {
-    return {
-        active: 0,
-        slides: [
-            'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600',
-            'https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1600',
-            'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600'
-        ],
-
-        init() {
-            setInterval(() => {
-                this.active = (this.active + 1) % this.slides.length;
-            }, 10000);
-        }
-    }
-}
-</script>
 
 @push('scripts')
 <script>

@@ -356,6 +356,7 @@ return [
         'page_subtitle' => 'Main course page. Topic details, materials, sessions, assessments, and certificates are opened from here.',
         'actions' => [
             'create' => '+ New Course',
+            'manage_thumbnails' => 'Manage Thumbnails',
             'topics' => 'Topics',
             'materials' => 'Materials',
             'sessions' => 'Sessions',
@@ -397,7 +398,37 @@ return [
             'poster_preview' => 'Poster preview',
             'no_poster' => 'No poster selected',
             'choose_thumbnail' => 'Choose from thumbnails',
+            'open_thumbnail_manager' => 'Open thumbnail manager',
+            'no_thumbnail_templates' => 'No thumbnail templates available yet.',
             'description_placeholder' => 'Description',
+        ],
+    ],
+
+    'course_thumbnails' => [
+        'page_title' => 'Course Thumbnails',
+        'page_subtitle' => 'Upload and manage reusable thumbnail templates for courses.',
+        'confirm_delete' => 'Delete this thumbnail template?',
+        'empty' => 'No thumbnail templates available yet.',
+        'actions' => [
+            'back_to_courses' => 'Back to Courses',
+            'upload' => 'Upload Thumbnail',
+            'uploading' => 'Uploading...',
+            'delete' => 'Delete',
+        ],
+        'stats' => [
+            'total' => 'Total templates',
+            'used' => 'Used by courses',
+            'unused' => 'Ready to clean',
+        ],
+        'upload' => [
+            'title' => 'Upload New Thumbnail',
+            'subtitle' => 'Images uploaded here will be saved to the shared course thumbnail library.',
+        ],
+        'library' => [
+            'title' => 'Thumbnail Library',
+            'subtitle' => 'Templates from this library can be selected in the course form.',
+            'used_by' => '{0} Not used yet|{1} Used by :count course|[2,*] Used by :count courses',
+            'in_use' => 'In use',
         ],
     ],
 

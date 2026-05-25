@@ -111,13 +111,7 @@ class CourseIndex extends Component
     public function mount(): void
     {
         $this->showModal = false;
-
-        $dir = public_path('images/thumbnail');
-
-        if (File::exists($dir)) {
-            $files = File::files($dir);
-            $this->thumbnails = array_map(fn ($f) => 'images/thumbnail/' . $f->getFilename(), $files);
-        }
+        $this->loadThumbnails();
     }
 
     public function selectThumbnail(string $path): void
@@ -162,5 +156,25 @@ class CourseIndex extends Component
         ]);
 
         $this->status = 'active';
+        $this->resetValidation();
+    }
+
+    private function loadThumbnails(): void
+    {
+        $dir = public_path('images/thumbnail');
+
+        if (!File::exists($dir)) {
+            $this->thumbnails = [];
+            return;
+        }
+
+        $files = collect(File::files($dir))
+            ->filter(fn ($file) => in_array(Str::lower($file->getExtension()), ['jpg', 'jpeg', 'png', 'webp'], true))
+            ->sortByDesc(fn ($file) => $file->getMTime())
+            ->values();
+
+        $this->thumbnails = $files
+            ->map(fn ($file) => 'images/thumbnail/' . $file->getFilename())
+            ->all();
     }
 }

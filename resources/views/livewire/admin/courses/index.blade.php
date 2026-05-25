@@ -3,7 +3,13 @@
         title="{{ __('admin.courses.page_title') }}"
         subtitle="{{ __('admin.courses.page_subtitle') }}"
     >
-        <div>
+        <div class="flex flex-wrap gap-2">
+            <a
+                href="{{ localized_route('admin.courses.thumbnails') }}"
+                class="rounded-xl border border-slate-300 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+            >
+                {{ __('admin.courses.actions.manage_thumbnails') }}
+            </a>
             <button wire:click="create"
                 class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
                 {{ __('admin.courses.actions.create') }}
@@ -166,14 +172,29 @@
                             </div>
                         </div>
 
-                        <div>
-                            <label class="mb-1 block text-xs text-slate-500">{{ __('admin.courses.form.choose_thumbnail') }}</label>
-                            <div id="file:thumbnail" class="grid max-h-40 grid-cols-4 gap-2 overflow-auto rounded-lg border p-1">
+                        <div class="md:col-span-2">
+                            <div class="mb-2 flex items-center justify-between gap-3">
+                                <label class="block text-xs text-slate-500">{{ __('admin.courses.form.choose_thumbnail') }}</label>
+                                <a
+                                    href="{{ localized_route('admin.courses.thumbnails') }}"
+                                    class="text-xs font-medium text-[#004777] underline"
+                                >
+                                    {{ __('admin.courses.form.open_thumbnail_manager') }}
+                                </a>
+                            </div>
+
+                            <div id="file:thumbnail" class="grid max-h-64 grid-cols-2 gap-2 overflow-auto rounded-lg border p-2 sm:grid-cols-3 lg:grid-cols-4">
                                 @foreach($thumbnails as $t)
                                     <button type="button" wire:click="selectThumbnail('{{ $t }}')" class="overflow-hidden rounded-md border p-0 {{ $poster === $t ? 'ring-2 ring-slate-900' : '' }}">
-                                        <img src="{{ asset($t) }}" class="h-16 w-full object-cover" alt="thumb">
+                                        <img src="{{ asset($t) }}" class="h-20 w-full object-cover" alt="thumb">
                                     </button>
                                 @endforeach
+
+                                @if(empty($thumbnails))
+                                    <div class="col-span-full rounded-lg border border-dashed px-4 py-6 text-center text-sm text-slate-500">
+                                        {{ __('admin.courses.form.no_thumbnail_templates') }}
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

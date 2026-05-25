@@ -13,6 +13,7 @@ use App\Http\Controllers\VideoSessionJoinController;
 use App\Livewire\Admin\Assessments\AssessmentIndex as AdminAssessmentIndex;
 use App\Livewire\Admin\Certificates\CertificateIndex;
 use App\Livewire\Admin\Courses\CourseIndex;
+use App\Livewire\Admin\Courses\ThumbnailIndex as AdminCourseThumbnailIndex;
 use App\Livewire\Admin\Dashboard\DashboardIndex;
 use App\Livewire\Admin\Materials\MaterialIndex;
 use App\Livewire\Admin\Permissions\PermissionIndex;
@@ -370,6 +371,10 @@ Route::prefix('{locale}')
                     Route::get('/courses', CourseIndex::class)
                         ->middleware('permission:manage_courses')
                         ->name('courses.index');
+
+                    Route::get('/courses/thumbnails', AdminCourseThumbnailIndex::class)
+                        ->middleware('permission:manage_courses')
+                        ->name('courses.thumbnails');
 
                     Route::get('/topics', function () {
                         $courseFilter = request()->query('courseFilter');

@@ -357,6 +357,7 @@ return [
         'page_subtitle' => 'Halaman utama course. Detail topik, materi, sesi, assessment, dan sertifikat dibuka dari sini.',
         'actions' => [
             'create' => '+ Course Baru',
+            'manage_thumbnails' => 'Kelola Thumbnail',
             'topics' => 'Topik',
             'materials' => 'Materi',
             'sessions' => 'Sesi',
@@ -398,7 +399,37 @@ return [
             'poster_preview' => 'Pratinjau poster',
             'no_poster' => 'Belum ada poster',
             'choose_thumbnail' => 'Pilih dari thumbnail',
+            'open_thumbnail_manager' => 'Buka pengelola thumbnail',
+            'no_thumbnail_templates' => 'Belum ada template thumbnail.',
             'description_placeholder' => 'Deskripsi',
+        ],
+    ],
+
+    'course_thumbnails' => [
+        'page_title' => 'Thumbnail Course',
+        'page_subtitle' => 'Upload dan kelola template thumbnail reusable untuk course.',
+        'confirm_delete' => 'Hapus template thumbnail ini?',
+        'empty' => 'Belum ada template thumbnail.',
+        'actions' => [
+            'back_to_courses' => 'Kembali ke Course',
+            'upload' => 'Upload Thumbnail',
+            'uploading' => 'Mengunggah...',
+            'delete' => 'Hapus',
+        ],
+        'stats' => [
+            'total' => 'Total template',
+            'used' => 'Dipakai course',
+            'unused' => 'Siap dibersihkan',
+        ],
+        'upload' => [
+            'title' => 'Upload Thumbnail Baru',
+            'subtitle' => 'Gambar yang diupload di sini akan disimpan ke library thumbnail course bersama.',
+        ],
+        'library' => [
+            'title' => 'Library Thumbnail',
+            'subtitle' => 'Template dari library ini bisa dipilih di form course.',
+            'used_by' => '{0} Belum dipakai|{1} Dipakai oleh :count course|[2,*] Dipakai oleh :count course',
+            'in_use' => 'Sedang dipakai',
         ],
     ],
 
