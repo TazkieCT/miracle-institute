@@ -60,6 +60,7 @@
                                 <th class="px-4 py-3 font-medium text-slate-600">User</th>
                                 <th class="px-4 py-3 font-medium text-slate-600">Status</th>
                                 <th class="px-4 py-3 font-medium text-slate-600">Check In</th>
+                                <th class="px-4 py-3 font-medium text-slate-600">Check Out</th>
                                 <th class="px-4 py-3 font-medium text-slate-600">IP</th>
                             </tr>
                         </thead>
@@ -76,11 +77,12 @@
                                         </span>
                                     </td>
                                     <td class="whitespace-nowrap px-4 py-3">{{ $attendance->check_in_at?->format('d M Y H:i') ?? '-' }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3">{{ $attendance->clock_out_at?->format('d M Y H:i') ?? '-' }}</td>
                                     <td class="px-4 py-3 text-xs text-slate-500">{{ $attendance->ip_address ?? '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-4 py-6 text-center text-slate-500">No attendance yet.</td>
+                                    <td colspan="5" class="px-4 py-6 text-center text-slate-500">No attendance yet.</td>
                                 </tr>
                             @endforelse
                         </tbody>
