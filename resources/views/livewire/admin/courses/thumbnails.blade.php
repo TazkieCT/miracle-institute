@@ -1,4 +1,10 @@
 <div class="space-y-6">
+    @if(session('success'))
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <x-ui.page-header
         title="{{ __('admin.course_thumbnails.page_title') }}"
         subtitle="{{ __('admin.course_thumbnails.page_subtitle') }}"
@@ -50,14 +56,21 @@
             </div>
 
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-                <div class="space-y-3">
+                <form
+                    action="{{ localized_route('admin.courses.thumbnails.store') }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    class="space-y-3"
+                >
+                    @csrf
+
                     <label class="block text-sm font-medium text-slate-700">
                         {{ __('admin.course_thumbnails.actions.upload') }}
                     </label>
 
                     <input
                         type="file"
-                        wire:model="thumbnailUpload"
+                        name="thumbnail"
                         accept=".jpg,.jpeg,.png,.webp"
                         class="block w-full rounded-xl border border-slate-200 bg-white text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium"
                     >
@@ -66,27 +79,19 @@
                         Pilih gambar thumbnail baru untuk ditambahkan ke library template course.
                     </p>
 
-                    @error('thumbnailUpload')
+                    @error('thumbnail')
                         <p class="text-sm text-rose-600">{{ $message }}</p>
                     @enderror
 
                     <div class="flex justify-end pt-1">
                         <button
-                            type="button"
-                            wire:click="upload"
-                            wire:loading.attr="disabled"
-                            wire:target="thumbnailUpload,upload"
+                            type="submit"
                             class="admin-primary-button rounded-xl px-4 py-2 text-sm"
                         >
-                            <span wire:loading.remove wire:target="thumbnailUpload,upload">
-                                {{ __('admin.course_thumbnails.actions.upload') }}
-                            </span>
-                            <span wire:loading wire:target="thumbnailUpload,upload">
-                                {{ __('admin.course_thumbnails.actions.uploading') }}
-                            </span>
+                            {{ __('admin.course_thumbnails.actions.upload') }}
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </section>
@@ -120,18 +125,22 @@
                             </div>
 
                             @if($thumbnail['usage_count'] > 0)
-                                <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
-                                    {{ __('admin.course_thumbnails.library.in_use') }}
-                                </span>
+                                <div class="flex flex-wrap items-center justify-end gap-2">
+                                    <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
+                                        {{ __('admin.course_thumbnails.library.in_use') }}
+                                    </span>
+                                </div>
                             @else
-                                <button
-                                    type="button"
-                                    wire:click="delete('{{ $thumbnail['path'] }}')"
-                                    onclick="confirm('{{ __('admin.course_thumbnails.confirm_delete') }}') || event.stopImmediatePropagation()"
-                                    class="rounded-lg px-3 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
-                                >
-                                    {{ __('admin.course_thumbnails.actions.delete') }}
-                                </button>
+                                <div class="flex flex-wrap items-center justify-end gap-2">
+                                    <button
+                                        type="button"
+                                        wire:click="delete('{{ $thumbnail['path'] }}')"
+                                        onclick="confirm('{{ __('admin.course_thumbnails.confirm_delete') }}') || event.stopImmediatePropagation()"
+                                        class="rounded-lg px-3 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+                                    >
+                                        {{ __('admin.course_thumbnails.actions.delete') }}
+                                    </button>
+                                </div>
                             @endif
                         </div>
                     </div>

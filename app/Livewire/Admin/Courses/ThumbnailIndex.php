@@ -6,45 +6,9 @@ use App\Models\Course;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Livewire\Component;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Livewire\WithFileUploads;
 
 class ThumbnailIndex extends Component
 {
-    use WithFileUploads;
-
-    public ?TemporaryUploadedFile $thumbnailUpload = null;
-
-    protected function rules(): array
-    {
-        return [
-            'thumbnailUpload' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-        ];
-    }
-
-    public function upload(): void
-    {
-        $this->validate();
-
-        if (! $this->thumbnailUpload) {
-            return;
-        }
-
-        $dir = public_path('images/thumbnail');
-        File::ensureDirectoryExists($dir);
-
-        $originalName = pathinfo($this->thumbnailUpload->getClientOriginalName(), PATHINFO_FILENAME);
-        $extension = $this->thumbnailUpload->getClientOriginalExtension();
-        $filename = Str::slug($originalName) . '-' . Str::lower(Str::random(6)) . '.' . $extension;
-
-        $this->thumbnailUpload->move($dir, $filename);
-
-        $this->thumbnailUpload = null;
-        $this->resetValidation();
-
-        $this->dispatch('toast', type: 'success', message: 'Thumbnail berhasil diupload dan siap dipakai.');
-    }
-
     public function delete(string $path): void
     {
         if (! Str::startsWith($path, 'images/thumbnail/')) {

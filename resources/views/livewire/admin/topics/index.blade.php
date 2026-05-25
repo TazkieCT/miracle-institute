@@ -80,7 +80,16 @@
                         </td>
 
                         <td class="whitespace-nowrap px-4 py-3">
-                            <span class="rounded-full bg-slate-100 px-2 py-1 text-xs">
+                            @php
+                                $statusClass = match ($row->status) {
+                                    'published' => 'bg-emerald-100 text-emerald-700',
+                                    'archived' => 'bg-amber-100 text-amber-700',
+                                    'draft' => 'bg-slate-100 text-slate-700',
+                                    default => 'bg-slate-100 text-slate-700',
+                                };
+                            @endphp
+
+                            <span class="rounded-full px-2 py-1 text-xs {{ $statusClass }}">
                                 {{ __('admin.topics.status.' . $row->status, [], $row->status) }}
                             </span>
                         </td>

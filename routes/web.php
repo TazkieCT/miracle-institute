@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\GoogleIntegrationController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CourseThumbnailController;
 use App\Http\Controllers\VideoSessionJoinController;
 
 
@@ -375,6 +376,10 @@ Route::prefix('{locale}')
                     Route::get('/courses/thumbnails', AdminCourseThumbnailIndex::class)
                         ->middleware('permission:manage_courses')
                         ->name('courses.thumbnails');
+
+                    Route::post('/courses/thumbnails', [CourseThumbnailController::class, 'store'])
+                        ->middleware('permission:manage_courses')
+                        ->name('courses.thumbnails.store');
 
                     Route::get('/topics', function () {
                         $courseFilter = request()->query('courseFilter');
