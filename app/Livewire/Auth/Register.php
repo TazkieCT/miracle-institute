@@ -41,7 +41,6 @@ class Register extends Component
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
-            'email_verified_at' => now(),
         ]);
 
         $studentRole = Role::where('name', 'student')->firstOrFail();
@@ -52,15 +51,11 @@ class Register extends Component
         }
 
         Auth::login($user);
-
-        if ($user->hasVerifiedEmail()) {
-            return redirect()->route('dashboard');
-        }
-
         $user->sendEmailVerificationNotification();
 
-        session()->flash('status', 'Silakan verifikasi email Anda.');
-        return redirect()->route('verification.notice');
+        session()->flash('status', __('auth.verification_email_sent'));
+
+        return redirect()->to(localized_route('verification.notice'));
     }
 
     public function render()

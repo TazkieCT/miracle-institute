@@ -9,13 +9,12 @@ class VerifyEmailNotice extends Component
     public function resend()
     {
         if (auth()->user()->hasVerifiedEmail()) {
-            return redirect()->route('dashboard');
+            return redirect()->to(localized_route('dashboard'));
         }
 
-        
         auth()->user()->sendEmailVerificationNotification();
 
-        session()->flash('status', 'Link verifikasi sudah dikirim ulang.');
+        session()->flash('status', __('auth.verification_link_resent'));
     }
 
     public function render()

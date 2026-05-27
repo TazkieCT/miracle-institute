@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
 class Login extends Component
@@ -33,30 +35,26 @@ class Login extends Component
     {
         $this->validate();
 
-        if (!Auth::attempt([
-            'email' => $this->email,
-            'password' => $this->password,
-        ], $this->remember)) {
+        $user = User::where('email', $this->email)->first();
+
+        if (! $user || ! Hash::check($this->password, $user->password)) {
             $this->addError('email', 'Email atau password salah.');
+
             return;
         }
 
-        request()->session()->regenerate();
-
-        $user = Auth::user();
-
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             $user->sendEmailVerificationNotification();
 
-            Auth::logout();
-            request()->session()->invalidate();
-            request()->session()->regenerateToken();
+            session()->flash('status', __('auth.verification_required'));
 
-            session()->flash('status', 'Kami sudah mengirim link verifikasi email.');
-            return redirect()->route('verification.notice');
+            return redirect()->to(localized_route('login'));
         }
 
-        return redirect()->intended(route('dashboard'));
+        Auth::login($user, $this->remember);
+        request()->session()->regenerate();
+
+        return redirect()->intended(localized_route('dashboard'));
     }
 
     public function render()

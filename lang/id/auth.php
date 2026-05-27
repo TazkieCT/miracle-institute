@@ -49,4 +49,10 @@ return [
         'subtitle' => 'Cek inbox email kamu. Jika belum menerima, kirim ulang link verifikasi.',
         'submit' => 'Kirim ulang email verifikasi',
     ],
+
+    'verification_email_sent' => 'Kami sudah mengirim email verifikasi. Silakan cek inbox Anda.',
+    'verification_required' => 'Akun Anda belum terverifikasi. Kami sudah mengirim ulang link verifikasi.',
+    'verification_link_resent' => 'Link verifikasi sudah dikirim ulang.',
+    'email_already_verified' => 'Email Anda sudah terverifikasi.',
+    'email_verified_success' => 'Email berhasil diverifikasi. Anda sekarang bisa melanjutkan login.',
 ];
