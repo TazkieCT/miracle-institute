@@ -109,9 +109,16 @@ class CertificateService
             });
         }
 
-        $course = $certificate->course()->with([
-            'topics.videoSessions'
-        ])->firstOrFail();
+        $course = $certificate->resolvedCourse();
+
+        if (! $course) {
+            abort(404);
+        }
+
+        $course->loadMissing([
+            'topics.videoSessions',
+            'studyProgram',
+        ]);
 
         $user = $certificate->user()->firstOrFail();
 

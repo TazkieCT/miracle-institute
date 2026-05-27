@@ -79,10 +79,6 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale($locale);
 
     
-        URL::defaults([
-            'locale' => $locale,
-        ]);
-
         /*
         |--------------------------------------------------------------------------
         | Model Policies

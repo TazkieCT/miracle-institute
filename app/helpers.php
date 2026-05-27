@@ -120,10 +120,33 @@ if (! function_exists('localized_route')) {
             $parameters = [$parameters];
         }
 
-        if (! array_key_exists('locale', $parameters)) {
-            $parameters = ['locale' => $locale] + $parameters;
+        unset($parameters['locale']);
+
+        $url = route($routeName, $parameters, $absolute);
+
+        if ($locale !== 'en') {
+            return $url;
         }
 
-        return route($routeName, $parameters, $absolute);
+        $parts = parse_url($url);
+
+        if ($parts === false) {
+            return $url;
+        }
+
+        $path = $parts['path'] ?? '/';
+        $path = $path === '/' ? '/en' : '/en' . $path;
+
+        if (! $absolute) {
+            return $path . (isset($parts['query']) ? '?' . $parts['query'] : '');
+        }
+
+        $scheme = $parts['scheme'] ?? 'http';
+        $host = $parts['host'] ?? '';
+        $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+        $query = isset($parts['query']) ? '?' . $parts['query'] : '';
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+        return $scheme . '://' . $host . $port . $path . $query . $fragment;
     }
 }

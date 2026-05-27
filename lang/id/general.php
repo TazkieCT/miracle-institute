@@ -38,7 +38,7 @@ return [
         ],
 
         'study_programs' => [
-            'title' => 'Bertumbuh dalam iman dan temukan tujuan Allah bagi hidup Anda',
+            'title' => 'Bertumbuh dalam iman dan menemukan tujuan Tuhan bagi hidupmu',
             'description' => 'Jelajahi program pemuridan, pengajaran Alkitab, dan jalur pertumbuhan rohani yang dirancang untuk memperkuat hubungan Anda dengan Tuhan.',
             'scroll_left' => 'Geser kategori ke kiri',
             'scroll_right' => 'Geser kategori ke kanan',

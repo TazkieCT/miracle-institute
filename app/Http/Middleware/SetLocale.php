@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SetLocale
 {
     private const SUPPORTED_LOCALES = ['en', 'id'];
+    private const DEFAULT_LOCALE = 'id';
 
     /**
      * Handle an incoming request.
@@ -23,20 +24,20 @@ class SetLocale
         $locale = (string) (
             $request->route('locale')
             ?? session('locale')
-            ?? config('app.locale', config('app.fallback_locale', 'en'))
+            ?? config('app.locale', self::DEFAULT_LOCALE)
         );
 
         if (! in_array($locale, self::SUPPORTED_LOCALES, true)) {
-            $locale = config('app.fallback_locale', 'en');
+            $locale = self::DEFAULT_LOCALE;
         }
 
         session()->put('locale', $locale);
         App::setLocale($locale);
         Carbon::setLocale($locale);
 
-        URL::defaults([
-            'locale' => $locale,
-        ]);
+        URL::defaults($locale === self::DEFAULT_LOCALE
+            ? []
+            : ['locale' => $locale]);
 
         return $next($request);
     }

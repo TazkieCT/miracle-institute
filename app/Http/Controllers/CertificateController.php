@@ -9,8 +9,13 @@ use Illuminate\Support\Str;
 
 class CertificateController extends Controller
 {
-    public function claimCourse(string $locale, Course $course, CertificateService $service)
+    public function claimCourse(mixed $localeOrCourse, mixed $courseOrService, ?CertificateService $service = null)
     {
+        $course = $localeOrCourse instanceof Course ? $localeOrCourse : $courseOrService;
+        $service = $courseOrService instanceof CertificateService ? $courseOrService : $service;
+
+        abort_unless($course instanceof Course && $service instanceof CertificateService, 404);
+
         abort_unless(auth()->check(), 401);
 
         try {
@@ -24,8 +29,13 @@ class CertificateController extends Controller
         }
     }
 
-    public function download(string $locale, Certificate $certificate, CertificateService $service)
+    public function download(mixed $localeOrCertificate, mixed $certificateOrService, ?CertificateService $service = null)
     {
+        $certificate = $localeOrCertificate instanceof Certificate ? $localeOrCertificate : $certificateOrService;
+        $service = $certificateOrService instanceof CertificateService ? $certificateOrService : $service;
+
+        abort_unless($certificate instanceof Certificate && $service instanceof CertificateService, 404);
+
         abort_unless(auth()->check(), 401);
 
         abort_unless(

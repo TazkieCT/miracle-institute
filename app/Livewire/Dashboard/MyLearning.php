@@ -101,7 +101,7 @@ class MyLearning extends Component
             ->take(5)
             ->get();
 
-        $certificates = Certificate::with('course')
+        $certificates = Certificate::with(['course', 'user.courseEnrollments.course'])
             ->where('user_id', $user->id)
             ->when(filled($this->searchCertificate), function ($query) {
                 $query->where(function ($certificateQuery) {

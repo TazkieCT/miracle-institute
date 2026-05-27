@@ -17,7 +17,7 @@ class CertificatePanel extends Component
 
     public function render()
     {
-        $certificates = Certificate::with('course')
+        $certificates = Certificate::with(['course', 'user.courseEnrollments.course'])
             ->where('user_id', auth()->id())
             ->when(
                 $this->search,

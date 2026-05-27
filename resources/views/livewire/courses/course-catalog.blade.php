@@ -5,7 +5,7 @@
 @endphp
 
 <div class="space-y-6 origin-top lg:px-20 2xl:px-28">
-    <section class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_14px_35px_color-mix(in_oklab,#004777_8%,transparent)]">
+    <section class="rounded-[2rem] border border-slate-200 bg-white p-5">
         <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
                 <div class="text-xs uppercase tracking-[0.18em] text-[color:color-mix(in_oklab,#004777_48%,white)]">
@@ -70,7 +70,7 @@
                 }
             @endphp
 
-            <article class="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_10px_25px_rgba(15,23,42,0.04)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_18px_35px_rgba(15,23,42,0.08)]">
+            <article class="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white transition hover:border-slate-300">
                 <div class="p-3">
                     <div class="relative overflow-hidden rounded-2xl">
                         @if($courseImageSrc)

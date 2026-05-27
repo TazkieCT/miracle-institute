@@ -8,7 +8,7 @@
     >
     </x-ui.page-header>
 
-    <div class="rounded-[28px] border border-[#d7dcef] bg-white px-6 pt-6 shadow-sm sm:px-8">
+    <div class="rounded-[28px] border border-[#d7dcef] bg-white px-6 pt-6 sm:px-8">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div class="max-w-xl">
                 <p class="text-lg font-semibold tracking-tight text-[#2c314b]">{{ __('general.my_learning.overview_title') }}</p>
@@ -205,7 +205,7 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     @forelse($certificates as $certificate)
                         @php
-                            $course = $certificate->course;
+                            $course = $certificate->resolvedCourse();
                             $courseImage = $course?->poster ?? null;
                             $courseImageSrc = null;
 

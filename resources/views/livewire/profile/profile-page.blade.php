@@ -13,7 +13,7 @@
 <div class="space-y-6 px-4 pb-6 pt-6 sm:px-6 lg:px-12 xl:px-36">
     <x-ui.page-header title="{{ __('general.profile.hero.title') }}" />
 
-    <div class="rounded-[28px] border border-[#d7dcef] bg-white px-6 py-6 shadow-sm sm:px-8">
+    <div class="rounded-[28px] border border-[#d7dcef] bg-white px-6 py-6 sm:px-8">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div class="max-w-2xl">
                 <p class="text-lg font-semibold tracking-tight text-[#2c314b]">{{ __('general.profile.form.title') }}</p>
@@ -40,7 +40,7 @@
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <section class="rounded-[28px] border border-[#d7dcef] bg-white px-6 py-6 shadow-sm sm:px-8">
+        <section class="rounded-[28px] border border-[#d7dcef] bg-white px-6 py-6 sm:px-8">
             <h2 class="text-lg font-semibold text-[#2c314b]">{{ __('general.profile.summary.title') }}</h2>
 
             <dl class="mt-5 space-y-4">
@@ -81,7 +81,7 @@
             </dl>
         </section>
 
-        <section class="rounded-[28px] border border-[#d7dcef] bg-white px-6 py-6 shadow-sm sm:px-8">
+        <section class="rounded-[28px] border border-[#d7dcef] bg-white px-6 py-6 sm:px-8">
             <form wire:submit.prevent="save" class="space-y-5">
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-[#2c314b]">{{ __('general.profile.fields.name') }}</label>
