@@ -11,7 +11,6 @@ use App\Models\TopicUser;
 use App\Models\VideoSession;
 use App\Services\ProgressService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class TopicPlayer extends Component
@@ -246,34 +245,67 @@ class TopicPlayer extends Component
         abort_unless($this->sessionPhase($session) === 'live', 403);
 
         $user = auth()->user();
-        $now = now();
 
         if (! $user->hasRole('student') && session('active_role') !== 'student') {
-            return redirect()->away($session->zoom_link);
+            return redirect()->to(localized_route('sessions.join', [
+                'videoSession' => $session->id,
+            ]));
         }
 
-        $status = $now->lte($session->start_at->copy()->addMinutes(45))
-            ? 'present'
-            : 'late';
+        return redirect()->to(localized_route('sessions.join', [
+            'videoSession' => $session->id,
+        ]));
+    }
 
-        $lock = Cache::lock("attendance:join:{$session->id}:{$user->id}", 10);
+    public function clockOutSession(string $sessionId): void
+    {
+        abort_unless(auth()->check(), 403);
 
-        return $lock->block(3, function () use ($session, $user, $now, $status) {
-            Attendance::firstOrCreate(
-                [
-                    'video_session_id' => $session->id,
-                    'user_id' => $user->id,
-                ],
-                [
-                    'status' => $status,
-                    'check_in_at' => $now,
-                    'clock_out_at' => null,
-                    'ip_address' => request()->ip(),
-                ]
-            );
+        $session = VideoSession::query()
+            ->where('topic_id', $this->topic->id)
+            ->findOrFail($sessionId);
 
-            return redirect()->away($session->zoom_link);
-        });
+        $attendance = Attendance::query()
+            ->where('video_session_id', $session->id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (! $attendance) {
+            session()->flash('error', 'Attendance belum tercatat.');
+
+            return;
+        }
+
+        if ($attendance->clock_out_at) {
+            session()->flash('info', 'Anda sudah melakukan clock out.');
+
+            return;
+        }
+
+        if (! $this->canClockOut($session, $attendance)) {
+            session()->flash('error', 'Clock out hanya bisa dilakukan saat session masih aktif.');
+
+            return;
+        }
+
+        $lockedAttendance = Attendance::query()
+            ->whereKey($attendance->id)
+            ->lockForUpdate()
+            ->first();
+
+        if (! $lockedAttendance) {
+            session()->flash('error', 'Attendance tidak ditemukan.');
+
+            return;
+        }
+
+        if (! $lockedAttendance->clock_out_at) {
+            $lockedAttendance->update([
+                'clock_out_at' => now(),
+            ]);
+        }
+
+        session()->flash('success', 'Clock out berhasil dicatat.');
     }
 
     public function render()
@@ -672,5 +704,18 @@ class TopicPlayer extends Component
         );
 
         return implode(' ', $parts);
+    }
+
+    protected function canClockOut(VideoSession $session, ?Attendance $attendance): bool
+    {
+        if (! $attendance || $attendance->clock_out_at) {
+            return false;
+        }
+
+        if (! $session->start_at || ! $session->end_at) {
+            return false;
+        }
+
+        return now()->betweenIncluded($session->start_at, $session->end_at);
     }
 }

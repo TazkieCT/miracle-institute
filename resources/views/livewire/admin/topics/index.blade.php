@@ -81,7 +81,8 @@
 
                         <td class="whitespace-nowrap px-4 py-3">
                             @php
-                                $statusClass = match ($row->status) {
+                                $displayStatus = $row->status === 'active' ? 'published' : $row->status;
+                                $statusClass = match ($displayStatus) {
                                     'published' => 'bg-emerald-100 text-emerald-700',
                                     'archived' => 'bg-amber-100 text-amber-700',
                                     'draft' => 'bg-slate-100 text-slate-700',
@@ -90,7 +91,7 @@
                             @endphp
 
                             <span class="rounded-full px-2 py-1 text-xs {{ $statusClass }}">
-                                {{ __('admin.topics.status.' . $row->status, [], $row->status) }}
+                                {{ __('admin.topics.status.' . $displayStatus, [], $displayStatus) }}
                             </span>
                         </td>
 

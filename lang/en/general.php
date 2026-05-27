@@ -343,6 +343,10 @@ return [
                 'title' => 'Select a material to view details',
                 'description' => 'Click one of the material cards above to open the preview or related file.',
             ],
+            'empty' => [
+                'title' => 'No materials available yet',
+                'description' => 'The mentor has not prepared materials for this topic yet.',
+            ],
             'no_materials' => [
                 'title' => 'No materials available yet',
                 'description' => 'The mentor has not prepared materials for this topic yet.',
@@ -375,15 +379,18 @@ return [
             ],
             'countdown' => 'Countdown',
             'clock_in_deadline' => 'Clock-in deadline: :time',
-            'join_and_log' => 'Join &amp; Log Attendance',
+            'join_and_log' => 'Join & Log Attendance',
             'empty' => [
                 'title' => 'No sessions scheduled yet',
                 'description' => 'The mentor has not scheduled any session for this topic yet.',
             ],
             'states' => [
+                'upcoming' => 'Scheduled',
                 'scheduled' => 'Scheduled',
                 'live' => 'Live',
+                'ended' => 'Completed',
                 'completed' => 'Completed',
+                'invalid' => 'Unavailable',
                 'unavailable' => 'Unavailable',
             ],
             'actions' => [
@@ -685,6 +692,10 @@ return [
                 'title' => 'Select a material to view details',
                 'description' => 'Click one of the material cards above to open the preview or related file.',
             ],
+            'empty' => [
+                'title' => 'No materials available yet',
+                'description' => 'The mentor has not prepared materials for this topic yet.',
+            ],
             'no_materials' => [
                 'title' => 'No materials available yet',
                 'description' => 'The mentor has not prepared materials for this topic yet.',
@@ -716,15 +727,18 @@ return [
             ],
             'countdown' => 'Countdown',
             'clock_in_deadline' => 'Clock-in deadline: :time',
-            'join_and_log' => 'Join &amp; Log Attendance',
+            'join_and_log' => 'Join & Log Attendance',
             'empty' => [
                 'title' => 'No sessions scheduled yet',
                 'description' => 'The mentor has not scheduled any session for this topic yet.',
             ],
             'states' => [
+                'upcoming' => 'Scheduled',
                 'scheduled' => 'Scheduled',
                 'live' => 'Live',
+                'ended' => 'Completed',
                 'completed' => 'Completed',
+                'invalid' => 'Unavailable',
                 'unavailable' => 'Unavailable',
             ],
             'actions' => [
@@ -732,6 +746,11 @@ return [
                 'join_session' => 'Join Session',
                 'completed' => 'Completed',
                 'unavailable' => 'Unavailable',
+            ],
+            'duration' => [
+                'hours' => '{1} :count hour|[2,*] :count hours',
+                'minutes' => '{1} :count minute|[2,*] :count minutes',
+                'seconds' => '{1} :count second|[2,*] :count seconds',
             ],
             'countdown_invalid' => 'Session schedule is incomplete.',
             'completed_label' => 'Session completed',

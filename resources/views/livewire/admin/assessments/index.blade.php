@@ -5,9 +5,9 @@
     >
         <div class="flex items-center gap-2">
             @if($selectedCourse)
-                <a href="{{ localized_route('admin.topics.index', ['courseFilter' => $selectedCourse->id]) }}"
+                <a href="{{ localized_route('admin.courses.index') }}"
                    class="rounded-xl border px-4 py-2 text-sm">
-                    Back
+                    {{ __('admin.course_thumbnails.actions.back_to_courses') }}
                 </a>
             @endif
 

@@ -344,6 +344,10 @@ return [
                 'title' => 'Pilih materi untuk melihat detail',
                 'description' => 'Klik salah satu card materi di atas untuk membuka preview atau file terkait.',
             ],
+            'empty' => [
+                'title' => 'Belum ada materi tersedia',
+                'description' => 'Mentor belum menyiapkan materi untuk topik ini.',
+            ],
             'no_materials' => [
                 'title' => 'Belum ada materi tersedia',
                 'description' => 'Mentor belum menyiapkan materi untuk topik ini.',
@@ -376,15 +380,18 @@ return [
             ],
             'countdown' => 'Hitung mundur',
             'clock_in_deadline' => 'Batas clock-in: :time',
-            'join_and_log' => 'Gabung &amp; Catat Kehadiran',
+            'join_and_log' => 'Gabung & Catat Kehadiran',
             'empty' => [
                 'title' => 'Belum ada sesi terjadwal',
                 'description' => 'Mentor belum menjadwalkan sesi untuk topik ini.',
             ],
             'states' => [
+                'upcoming' => 'Terjadwal',
                 'scheduled' => 'Terjadwal',
                 'live' => 'Aktif',
+                'ended' => 'Selesai',
                 'completed' => 'Selesai',
+                'invalid' => 'Tidak Tersedia',
                 'unavailable' => 'Tidak Tersedia',
             ],
             'actions' => [
@@ -685,6 +692,10 @@ return [
                 'title' => 'Pilih materi untuk melihat detail',
                 'description' => 'Klik salah satu card materi di atas untuk membuka preview atau file terkait.',
             ],
+            'empty' => [
+                'title' => 'Belum ada materi tersedia',
+                'description' => 'Mentor belum menyiapkan materi untuk topik ini.',
+            ],
             'no_materials' => [
                 'title' => 'Belum ada materi tersedia',
                 'description' => 'Mentor belum menyiapkan materi untuk topik ini.',
@@ -716,15 +727,18 @@ return [
             ],
             'countdown' => 'Hitung mundur',
             'clock_in_deadline' => 'Batas clock-in: :time',
-            'join_and_log' => 'Gabung &amp; Catat Kehadiran',
+            'join_and_log' => 'Gabung & Catat Kehadiran',
             'empty' => [
                 'title' => 'Belum ada sesi terjadwal',
                 'description' => 'Mentor belum menjadwalkan sesi untuk topik ini.',
             ],
             'states' => [
+                'upcoming' => 'Terjadwal',
                 'scheduled' => 'Terjadwal',
                 'live' => 'Aktif',
+                'ended' => 'Selesai',
                 'completed' => 'Selesai',
+                'invalid' => 'Tidak Tersedia',
                 'unavailable' => 'Tidak Tersedia',
             ],
             'actions' => [
@@ -732,6 +746,11 @@ return [
                 'join_session' => 'Gabung Sesi',
                 'completed' => 'Selesai',
                 'unavailable' => 'Tidak Tersedia',
+            ],
+            'duration' => [
+                'hours' => ':count jam',
+                'minutes' => ':count menit',
+                'seconds' => ':count detik',
             ],
             'countdown_invalid' => 'Jadwal sesi belum lengkap.',
             'completed_label' => 'Sesi selesai',

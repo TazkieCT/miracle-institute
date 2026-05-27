@@ -25,7 +25,7 @@ class TopicIndex extends Component
     public string $name = '';
     public string $description = '';
     public string $visibility = 'Public';
-    public string $status = 'active';
+    public string $status = 'draft';
     public int $sort_order = 0;
 
     public string $teacherFilter = '';
@@ -87,7 +87,7 @@ class TopicIndex extends Component
         $this->name = $row->name;
         $this->description = $row->description;
         $this->visibility = $row->visibility;
-        $this->status = $row->status;
+        $this->status = $row->status === 'active' ? 'published' : $row->status;
         $this->sort_order = (int) ($row->sort_order ?? 0);
 
         $this->showModal = true;
@@ -186,7 +186,7 @@ class TopicIndex extends Component
         ]);
 
         $this->visibility = 'Public';
-        $this->status = 'active';
+        $this->status = 'draft';
         $this->sort_order = 0;
     }
 }

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class VideoSessionJoinController extends Controller
 {
-    public function join(Request $request, VideoSession $videoSession)
+    public function join(Request $request, string $locale, VideoSession $videoSession)
     {
         $user = $request->user();
         $now = now();
