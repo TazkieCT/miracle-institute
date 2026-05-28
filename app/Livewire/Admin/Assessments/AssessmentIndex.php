@@ -16,6 +16,38 @@ class AssessmentIndex extends Component
 {
     use WithAdminTableState;
 
+    protected array $validationAttributes = [
+        'course_id' => 'course',
+        'title' => 'judul assessment',
+        'passing_grade' => 'nilai kelulusan',
+        'question_limit' => 'batas pertanyaan',
+        'status' => 'status',
+        'question_text' => 'pertanyaan',
+        'question_correctIndex' => 'jawaban benar',
+        'question_sort_order' => 'urutan soal',
+        'question_options.0.option_text' => 'opsi jawaban 1',
+        'question_options.1.option_text' => 'opsi jawaban 2',
+        'question_options.2.option_text' => 'opsi jawaban 3',
+        'question_options.3.option_text' => 'opsi jawaban 4',
+    ];
+
+    protected function messages(): array
+    {
+        return [
+            'question_text.required' => 'Pertanyaan wajib diisi.',
+            'question_text.min' => 'Pertanyaan minimal :min karakter.',
+            'question_options.required' => 'Opsi jawaban wajib diisi.',
+            'question_options.array' => 'Opsi jawaban tidak valid.',
+            'question_options.size' => 'Opsi jawaban harus berjumlah :size.',
+            'question_options.*.option_text.required' => ':attribute wajib diisi.',
+            'question_options.*.option_text.min' => ':attribute minimal :min karakter.',
+            'question_correctIndex.required' => 'Pilih satu jawaban yang benar.',
+            'question_correctIndex.integer' => 'Jawaban benar tidak valid.',
+            'question_sort_order.integer' => 'Urutan soal harus berupa angka.',
+            'question_sort_order.min' => 'Urutan soal minimal :min.',
+        ];
+    }
+
     public bool $showModal = false;
 
     public ?string $editingId = null;
@@ -95,6 +127,7 @@ class AssessmentIndex extends Component
         }
 
         $this->resetForm();
+        $this->course_id = $this->courseFilter;
         $this->showModal = true;
     }
 
@@ -137,7 +170,18 @@ class AssessmentIndex extends Component
 
     public function createQuestion(): void
     {
+        $this->questionAssessment = $this->currentAssessment();
         $this->resetQuestionForm();
+        $assessment = $this->questionAssessment;
+
+        if ($assessment) {
+            $nextSort = Question::query()
+                ->where('assessment_id', $assessment->id)
+                ->max('sort_order');
+
+            $this->question_sort_order = $nextSort ? ((int) $nextSort + 1) : 1;
+        }
+
         $this->questionModalOpen = true;
     }
 
@@ -175,6 +219,9 @@ class AssessmentIndex extends Component
 
         $nextSort = Question::where('assessment_id', $assessment->id)->max('sort_order');
         $nextSort = $nextSort ? $nextSort + 1 : 1;
+        $sortOrder = $this->questionEditingId
+            ? $this->question_sort_order
+            : (($this->question_sort_order ?? 0) > 0 ? $this->question_sort_order : $nextSort);
 
         $question = Question::updateOrCreate(
             ['id' => $this->questionEditingId],
@@ -182,7 +229,7 @@ class AssessmentIndex extends Component
                 'assessment_id' => $assessment->id,
                 'question_type' => 'mcq',
                 'question' => $this->question_text,
-                'sort_order' => $this->questionEditingId ? $this->question_sort_order : $nextSort,
+                'sort_order' => $sortOrder,
             ]
         );
 
@@ -199,6 +246,7 @@ class AssessmentIndex extends Component
         }
 
         $this->resetQuestionForm();
+        $this->questionAssessment = $this->currentAssessment();
         $this->questionModalOpen = false;
         session()->flash('success', 'Question berhasil disimpan.');
     }
@@ -206,6 +254,7 @@ class AssessmentIndex extends Component
     public function deleteQuestion(string $id): void
     {
         Question::findOrFail($id)->delete();
+        $this->questionAssessment = $this->currentAssessment();
         session()->flash('success', 'Question berhasil dihapus.');
     }
 
@@ -234,6 +283,10 @@ class AssessmentIndex extends Component
 
     public function save(): void
     {
+        if ($this->courseFilter !== '' && $this->course_id === '') {
+            $this->course_id = $this->courseFilter;
+        }
+
         $this->validate();
 
         if (!$this->editingId) {
@@ -272,6 +325,8 @@ class AssessmentIndex extends Component
     public function render()
     {
         $selectedAssessment = $this->currentAssessment();
+        $selectedCourse = $this->courseFilter ? Course::find($this->courseFilter) : null;
+        $isMentorContext = request()->routeIs('mentor.*');
 
         if ($selectedAssessment) {
             $this->questionAssessment = $selectedAssessment;
@@ -279,10 +334,11 @@ class AssessmentIndex extends Component
 
         return view('livewire.admin.assessments.index', [
             'courses' => Course::orderBy('title')->get(),
-            'selectedCourse' => $this->courseFilter ? Course::find($this->courseFilter) : null,
+            'selectedCourse' => $selectedCourse,
             'selectedAssessment' => $selectedAssessment,
             'selectedCourseHasAssessment' => (bool) $selectedAssessment,
-        ])->layout('layouts.admin');
+            'isMentorContext' => $isMentorContext,
+        ])->layout($isMentorContext ? 'layouts.learning' : 'layouts.admin');
     }
 
     private function resetForm(): void

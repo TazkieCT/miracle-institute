@@ -281,6 +281,7 @@ return [
         ],
 
         'workspace' => 'Workspace',
+        'manage_assessment' => 'Kelola Assessment',
 
         'assessment_modal' => [
             'title' => 'Detail Assessment',

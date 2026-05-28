@@ -1,8 +1,8 @@
 <div class="space-y-6">
     <x-ui.page-header title="{{ __('admin.permissions.page_title') }}" subtitle="{{ __('admin.permissions.page_subtitle') }}">
-        <button wire:click="create" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
+        {{-- <button wire:click="create" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
             {{ __('admin.permissions.actions.create') }}
-        </button>
+        </button> --}}
     </x-ui.page-header>
 
     <section class="space-y-4">
@@ -33,7 +33,7 @@
                                 <td class="px-4 py-3 font-medium text-slate-900">{{ $row->name }}</td>
 
                                 <td class="px-4 py-3">
-                                    <div class="flex justify-end gap-2">
+                                    {{-- <div class="flex justify-end gap-2">
                                         <div class="relative group">
                                             <button wire:click="edit('{{ $row->id }}')" class="admin-edit-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition" title="{{ __('admin.permissions.actions.edit') }}">
                                                 <span class="sr-only">{{ __('admin.permissions.actions.edit') }}</span>
@@ -57,7 +57,7 @@
                                                 {{ __('admin.permissions.actions.delete') }}
                                             </span>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </td>
                             </tr>
                         @empty
@@ -97,12 +97,12 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button type="button" wire:click="$set('showModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
+                    {{-- <button type="button" wire:click="$set('showModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
                         {{ __('admin.permissions.actions.cancel') }}
                     </button>
                     <button wire:click="save" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
                         {{ __('admin.permissions.actions.save') }}
-                    </button>
+                    </button> --}}
                 </div>
             </div>
         </div>
@@ -121,12 +121,12 @@
                 </p>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button type="button" wire:click="$set('showDeleteModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
+                    {{-- <button type="button" wire:click="$set('showDeleteModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
                         {{ __('admin.permissions.actions.cancel') }}
                     </button>
                     <button wire:click="delete" class="admin-delete-button rounded-xl px-4 py-2">
                         {{ __('admin.permissions.actions.delete') }}
-                    </button>
+                    </button> --}}
                 </div>
             </div>
         </div>

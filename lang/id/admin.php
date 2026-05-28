@@ -760,6 +760,9 @@ return [
         ],
         'course_centered_note' => 'Assessment berbasis course',
         'empty' => 'Tidak ada assessment ditemukan.',
+        'summary' => [
+            'question_count' => 'Akan menampilkan :count pertanyaan',
+        ],
         'modal' => [
             'create_title' => 'Assessment Baru',
             'edit_title' => 'Edit Assessment',

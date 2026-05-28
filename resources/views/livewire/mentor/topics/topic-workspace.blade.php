@@ -1,9 +1,9 @@
 <div class="space-y-6 lg:px-36">
-    <section class="rounded-2xl border border-slate-200 bg-white px-6 pt-6 shadow-[0_18px_40px_color-mix(in_oklab,#004777_10%,transparent)]">
+    <section class="rounded-2xl border border-slate-200 bg-white px-6 pt-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="space-y-2">
                 <div class="text-xs uppercase tracking-[0.18em] text-[color:color-mix(in_oklab,#004777_45%,white)]">
-                    {{ __('mentor.topic_workspace.header') }} · {{ $topic->course?->title }}
+                    {{ $topic->course?->title }}
                 </div>
                 <h1 class="text-2xl font-bold text-mentor-primary">
                     {{ $topic->name }}

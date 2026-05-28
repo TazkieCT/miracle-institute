@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Courses;
 
+use App\Livewire\Concerns\InteractsWithMentorTopic;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Certificate;
@@ -18,6 +19,7 @@ use Livewire\Component;
 class CourseShow extends Component
 {
     use AuthorizesRequests;
+    use InteractsWithMentorTopic;
 
     public Course $course;
 
@@ -134,6 +136,7 @@ class CourseShow extends Component
             ->filter(fn (Topic $topic) => (string) $topic->teacher_id === (string) $userId)
             ->map(function (Topic $topic) {
                 $topic->setAttribute('mentor_role', 'owner');
+                $topic->setAttribute('can_manage_assessment', true);
 
                 return $topic;
             });
@@ -150,6 +153,7 @@ class CourseShow extends Component
             ->filter(fn (Topic $topic) => in_array($topic->id, $collaboratorTopicIds, true) && (string) $topic->teacher_id !== (string) $userId)
             ->map(function (Topic $topic) {
                 $topic->setAttribute('mentor_role', 'collaborator');
+                $topic->setAttribute('can_manage_assessment', $this->hasWorkspacePermission($topic, 'manage_assessments'));
 
                 return $topic;
             });

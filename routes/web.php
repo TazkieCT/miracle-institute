@@ -275,12 +275,12 @@ $registerLocalizedRoutes = function (bool $named): void {
             |--------------------------------------------------------------------------
             */
 
-        $nameRoute(Route::get('/courses/{course}/claim-certificate', [
+        $nameRoute(Route::get('/courses/{courseId}/claim-certificate', [
             CertificateController::class,
             'claimCourse',
         ]), 'certificates.course.claim');
 
-        $nameRoute(Route::get('/certificates/{certificate}/download', [
+        $nameRoute(Route::get('/certificates/{certificateId}/download', [
             CertificateController::class,
             'download',
         ]), 'certificates.download');
@@ -305,6 +305,13 @@ $registerLocalizedRoutes = function (bool $named): void {
                 Route::get('/dashboard', MentorDashboard::class)
                     ->middleware('permission:manage_topics'),
                 'dashboard'
+            );
+
+            $nameRoute(
+                Route::get('/assessments/{courseFilter}', AdminAssessmentIndex::class)
+                    ->whereUuid('courseFilter')
+                    ->middleware('permission:manage_assessments'),
+                'assessments.index'
             );
 
             $nameRoute(
@@ -539,7 +546,7 @@ $registerLocalizedRoutes = function (bool $named): void {
 
                     $nameRoute(
                         Route::get('/permissions', PermissionIndex::class)
-                            ->middleware('permission:view_reports'),
+                            ->middleware('permission:manage_users'),
                         'permissions.index'
                     );
                 });

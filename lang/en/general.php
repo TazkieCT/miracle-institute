@@ -281,6 +281,7 @@ return [
         ],
 
         'workspace' => 'Workspace',
+        'manage_assessment' => 'Manage Assessment',
 
         'assessment_modal' => [
             'title' => 'Assessment Details',

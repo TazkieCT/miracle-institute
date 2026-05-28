@@ -4,18 +4,14 @@
         'late' => $attendance['late'],
         'absent' => $attendance['absent'],
     ];
-@endphp
 
-@php
-    $calendarSessions = $upcomingSessions->map(function ($s) {
+    $calendarSessions = $upcomingSessions->map(function ($session) {
         return [
-            'date' => $s->start_at->format('Y-m-d'),
-            'title' => $s->title,
+            'date' => $session->start_at->format('Y-m-d'),
+            'title' => $session->title,
         ];
     });
-@endphp
 
-@php
     $calendarWeekdays = __('admin.dashboard.calendar.weekdays');
     $calendarMonths = __('admin.dashboard.calendar.months');
 @endphp
@@ -113,48 +109,21 @@
         </div>
     </section>
 
-    <section class="space-y-4 rounded-2xl border bg-white p-5">
-        <h2 class="text-lg font-semibold">
-            {{ __('admin.dashboard.problem_sessions.title') }}
-        </h2>
-
-        @forelse($problemSessions as $session)
-            <div class="flex justify-between rounded-xl border p-4">
-                <div>
-                    <div class="font-medium">{{ $session->title }}</div>
-                    <div class="text-xs text-slate-500">
-                        {{ $session->topic?->name }} • {{ $session->topic?->course?->title }}
-                    </div>
-                </div>
-
-                <div class="font-semibold text-red-600 text-sm">
-                    {{ __('admin.dashboard.problem_sessions.absent_count', ['count' => number_format($session->absent_count, 0, ',', '.')]) }}
-                </div>
-            </div>
-        @empty
-            <div class="text-sm text-slate-500">
-                {{ __('admin.dashboard.problem_sessions.empty') }}
-            </div>
-        @endforelse
-    </section>
-
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <section class="space-y-4 rounded-2xl border bg-white p-5">
-            <h2 class="text-lg font-semibold">{{ __('admin.dashboard.recent_sessions.title') }}</h2>
+            <h2 class="text-lg font-semibold">{{ __('admin.dashboard.upcoming_calendar.title') }}</h2>
 
-            @forelse($recentSessions as $session)
+            @forelse($upcomingSessions as $session)
                 <div class="flex items-start justify-between rounded-xl border p-4">
                     <div>
                         <div class="font-medium">{{ $session->title }}</div>
-
                         <div class="text-xs text-slate-500">
                             {{ $session->topic?->name ?? __('admin.dashboard.common.no_topic') }}
                             •
                             {{ $session->topic?->course?->title ?? __('admin.dashboard.common.no_course') }}
                         </div>
-
                         <div class="mt-1 text-xs text-slate-400">
-                            {{ $session->start_at->format('d M Y H:i') }}
+                            {{ $session->start_at?->format('d M Y H:i') }}
                         </div>
                     </div>
 
@@ -164,7 +133,7 @@
                 </div>
             @empty
                 <div class="text-sm text-slate-500">
-                    {{ __('admin.dashboard.recent_sessions.empty') }}
+                    Belum ada session mendatang
                 </div>
             @endforelse
         </section>
@@ -242,7 +211,7 @@
 
                 hasSession(day) {
                     const dateStr = this.formatDate(day);
-                    return this.sessions.some(s => s.date === dateStr);
+                    return this.sessions.some(session => session.date === dateStr);
                 },
 
                 formatDate(day) {

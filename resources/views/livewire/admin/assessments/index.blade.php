@@ -33,30 +33,33 @@
     @if($selectedCourse)
         <div class="rounded-2xl border bg-white p-5 space-y-4">
             <div>
-                <div class="text-xs uppercase tracking-wide text-slate-500">Course</div>
+                <div class="text-xs uppercase tracking-wide text-slate-500">{{ __('admin.assessments.table.course') }}</div>
                 <div class="text-xl font-semibold text-slate-900">{{ $selectedCourse->title }}</div>
             </div>
 
             @if($selectedAssessment)
                 <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
                     <div class="rounded-2xl border bg-slate-50 p-4">
-                        <div class="text-xs text-slate-500">Assessment</div>
+                        <div class="text-xs text-slate-500">{{ __('admin.assessments.table.assessment') }}</div>
                         <div class="mt-1 font-semibold">{{ $selectedAssessment->title }}</div>
                     </div>
                     <div class="rounded-2xl border bg-slate-50 p-4">
-                        <div class="text-xs text-slate-500">Passing Grade</div>
+                        <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.passing_grade') }}</div>
                         <div class="mt-1 font-semibold">{{ $selectedAssessment->passing_grade }}</div>
                     </div>
                     <div class="rounded-2xl border bg-slate-50 p-4">
-                        <div class="text-xs text-slate-500">Bank Questions</div>
+                        <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.questions') }}</div>
                         <div class="mt-1 font-semibold">{{ $selectedAssessment->questions->count() }}</div>
                         <div class="mt-1 text-xs text-slate-500">
-                            Will show {{ $selectedAssessment->question_limit ? min($selectedAssessment->question_limit, $selectedAssessment->questions->count()) : $selectedAssessment->questions->count() }}
-                            question{{ (($selectedAssessment->question_limit ? min($selectedAssessment->question_limit, $selectedAssessment->questions->count()) : $selectedAssessment->questions->count()) === 1) ? '' : 's' }}
+                            {{ __('admin.assessments.summary.question_count', [
+                                'count' => $selectedAssessment->question_limit
+                                    ? min($selectedAssessment->question_limit, $selectedAssessment->questions->count())
+                                    : $selectedAssessment->questions->count(),
+                            ]) }}
                         </div>
                     </div>
                     <div class="rounded-2xl border bg-slate-50 p-4">
-                        <div class="text-xs text-slate-500">Attempts</div>
+                        <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.attempts') }}</div>
                         <div class="mt-1 font-semibold">{{ $selectedAssessment->attempts_count ?? 0 }}</div>
                     </div>
                 </div>
@@ -65,15 +68,16 @@
                     <table class="w-full text-sm">
                         <thead class="admin-table-head text-left">
                             <tr>
+                                <th class="p-4">Order</th>
                                 <th class="p-4">Question</th>
                                 <th class="p-4">Options</th>
-                                <th class="p-4">Order</th>
                                 <th class="p-4">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($selectedAssessment->questions as $question)
                                 <tr class="border-t align-top">
+                                    <td class="p-4 text-center">{{ $question->sort_order }}</td>
                                     <td class="p-4">
                                         <div class="font-medium text-slate-900">{{ $question->question }}</div>
                                         <div class="text-xs text-slate-500">{{ $question->question_type }}</div>
@@ -148,7 +152,7 @@
                         {{ $editingId ? __('admin.assessments.modal.edit_title') : __('admin.assessments.modal.create_title') }}
                     </h2>
 
-                    <button @click="assessmentOpen = false" class="text-slate-500 hover:text-black">
+                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-black">
                         ✕
                     </button>
                 </div>
@@ -160,28 +164,51 @@
                             disabled
                             class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600"
                         >
+                        @error('course_id')
+                            <p class="text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
                     @else
-                        <select wire:model="course_id" class="w-full rounded-xl border px-4 py-2">
+                        <div class="space-y-1">
+                            <select wire:model="course_id" class="w-full rounded-xl border px-4 py-2">
                             <option value="">{{ __('admin.assessments.form.select_course') }}</option>
                             @foreach($courses as $course)
                                 <option value="{{ $course->id }}" @disabled(!$editingId && $course->assessment)>
                                     {{ $course->title }}</option>
                             @endforeach
-                        </select>
+                            </select>
+                            @error('course_id')
+                                <p class="text-sm text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     @endif
 
-                    <input wire:model="title"
-                        class="w-full rounded-xl border px-4 py-2"
-                        placeholder="{{ __('admin.assessments.form.title_placeholder') }}">
+                    <div class="space-y-1">
+                        <input wire:model="title"
+                            class="w-full rounded-xl border px-4 py-2"
+                            placeholder="{{ __('admin.assessments.form.title_placeholder') }}">
+                        @error('title')
+                            <p class="text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <input wire:model="passing_grade" type="number"
-                            class="w-full rounded-xl border px-4 py-2"
-                            placeholder="{{ __('admin.assessments.form.passing_grade_placeholder') }}">
+                        <div class="space-y-1">
+                            <input wire:model="passing_grade" type="number"
+                                class="w-full rounded-xl border px-4 py-2"
+                                placeholder="{{ __('admin.assessments.form.passing_grade_placeholder') }}">
+                            @error('passing_grade')
+                                <p class="text-sm text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                        <input wire:model="question_limit" type="number"
-                            class="w-full rounded-xl border px-4 py-2"
-                            placeholder="{{ __('admin.assessments.form.question_limit_placeholder') }}">
+                        <div class="space-y-1">
+                            <input wire:model="question_limit" type="number"
+                                class="w-full rounded-xl border px-4 py-2"
+                                placeholder="{{ __('admin.assessments.form.question_limit_placeholder') }}">
+                            @error('question_limit')
+                                <p class="text-sm text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <label class="flex items-center gap-2 text-sm">
@@ -189,12 +216,17 @@
                         {{ __('admin.assessments.form.randomize_questions') }}
                     </label>
 
-                    <select wire:model="status"
-                        class="w-full rounded-xl border px-4 py-2">
-                        <option value="active">{{ __('admin.assessments.status.active') }}</option>
-                        <option value="inactive">{{ __('admin.assessments.status.inactive') }}</option>
-                        <option value="draft">{{ __('admin.assessments.status.draft') }}</option>
-                    </select>
+                    <div class="space-y-1">
+                        <select wire:model="status"
+                            class="w-full rounded-xl border px-4 py-2">
+                            <option value="active">{{ __('admin.assessments.status.active') }}</option>
+                            <option value="inactive">{{ __('admin.assessments.status.inactive') }}</option>
+                            <option value="draft">{{ __('admin.assessments.status.draft') }}</option>
+                        </select>
+                        @error('status')
+                            <p class="text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-2 border-t bg-slate-50 p-5">
@@ -227,7 +259,7 @@
                         {{ $questionEditingId ? __('admin.question_manager.modal.edit_title') : __('admin.question_manager.modal.create_title') }}
                     </h2>
 
-                    <button @click="open = false" class="text-slate-500 hover:text-black">
+                    <button type="button" wire:click="$set('questionModalOpen', false)" class="text-slate-500 hover:text-black">
                         ✕
                     </button>
                 </div>
@@ -237,35 +269,14 @@
                         <div class="rounded-xl border px-4 py-2 bg-slate-50 text-sm">{{ $selectedCourse?->title }} · {{ $selectedAssessment->title }}</div>
                     @endif
 
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
-                        <div class="rounded-2xl border bg-white p-5">
-                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.course') }}</div>
-                            <div class="mt-1 text-lg font-bold">{{ $selectedCourse?->title ?? '-' }}</div>
-                        </div>
-
-                        <div class="rounded-2xl border bg-white p-5">
-                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.questions') }}</div>
-                            <div class="mt-1 text-2xl font-bold">{{ number_format($selectedAssessment?->questions->count() ?? 0) }}</div>
-                        </div>
-
-                        <div class="rounded-2xl border bg-white p-5">
-                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.attempts') }}</div>
-                            <div class="mt-1 text-2xl font-bold">{{ number_format($selectedAssessment ? \App\Models\AssessmentAttempt::where('assessment_id', $selectedAssessment->id)->count() : 0) }}</div>
-                        </div>
-
-                        <div class="rounded-2xl border bg-white p-5">
-                            <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.passing_grade') }}</div>
-                            <div class="mt-1 text-2xl font-bold">{{ $selectedAssessment?->passing_grade ?? '-' }}</div>
-                        </div>
-                    </div>
-
+                    @if($questionEditingId)
                     <x-ui.table-shell class="table-auto">
                         <table class="w-full text-sm">
                             <thead class="admin-table-head">
                                 <tr>
+                                    <th class="p-4">{{ __('admin.question_manager.table.order') }}</th>
                                     <th class="p-4 text-left">{{ __('admin.question_manager.table.question') }}</th>
                                     <th class="p-4 text-left">{{ __('admin.question_manager.table.options') }}</th>
-                                    <th class="p-4">{{ __('admin.question_manager.table.order') }}</th>
                                     <th class="p-4">{{ __('admin.question_manager.table.action') }}</th>
                                 </tr>
                             </thead>
@@ -274,6 +285,7 @@
                                 @if($selectedAssessment)
                                     @forelse($selectedAssessment->questions as $q)
                                         <tr class="align-top border-t">
+                                            <td class="p-4 text-center">{{ $q->sort_order }}</td>
                                             <td class="p-4">
                                                 <div class="font-medium">{{ $q->question }}</div>
                                                 <div class="text-xs text-slate-500">{{ $q->question_type }}</div>
@@ -286,8 +298,6 @@
                                                     </div>
                                                 @endforeach
                                             </td>
-
-                                            <td class="p-4 text-center">{{ $q->sort_order }}</td>
 
                                             <td class="p-4">
                                                 <div class="flex justify-center gap-2">
@@ -314,12 +324,16 @@
                             </tbody>
                         </table>
                     </x-ui.table-shell>
+                    @endif
 
                     <div class="space-y-4">
                         <textarea wire:model="question_text"
                             rows="4"
                             class="w-full rounded-xl border px-4 py-2"
                             placeholder="{{ __('admin.question_manager.form.question_placeholder') }}"></textarea>
+                        @error('question_text')
+                            <p class="text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
 
                         <div class="space-y-3">
                             <div class="text-sm font-medium">{{ __('admin.question_manager.form.options_title') }}</div>
@@ -339,6 +353,9 @@
                                         class="w-full rounded-lg border px-3 py-2"
                                         placeholder="{{ __('admin.question_manager.form.option_placeholder', ['number' => $i + 1]) }}">
                                 </div>
+                                @error('question_options.' . $i . '.option_text')
+                                    <p class="text-sm text-rose-600">{{ $message }}</p>
+                                @enderror
                             @endforeach
                         </div>
 
@@ -346,6 +363,9 @@
                             type="number"
                             class="w-full rounded-xl border px-4 py-2"
                             placeholder="{{ __('admin.question_manager.form.sort_order_placeholder') }}">
+                        @error('question_sort_order')
+                            <p class="text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 

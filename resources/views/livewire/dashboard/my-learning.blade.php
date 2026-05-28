@@ -166,12 +166,21 @@
                                     </div>
                                 </div>
                             @else
-                                <x-ui.empty-state
-                                    :title="__('general.my_learning.courses.empty.no_courses_title')"
-                                    :description="__('general.my_learning.courses.empty.no_courses_description')"
-                                    :button-label="__('general.my_learning.courses.browse_courses')"
-                                    :button-href="localized_route('courses.index')"
-                                />
+                                <div class="rounded-2xl border border-dashed border-[#d7dcef] bg-white px-6 py-12 text-center">
+                                    <h3 class="text-base font-semibold text-[#004777]">
+                                        {{ __('general.my_learning.courses.empty.no_courses_title') }}
+                                    </h3>
+                                    <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-[#5f6785]">
+                                        {{ __('general.my_learning.courses.empty.no_courses_description') }}
+                                    </p>
+
+                                    <div class="mt-5 flex flex-wrap justify-center gap-3">
+                                        <a href="{{ localized_route('courses.index') }}"
+                                           class="inline-flex items-center rounded-xl bg-[#004777] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#003a5f]">
+                                            {{ __('general.my_learning.courses.browse_courses') }}
+                                        </a>
+                                    </div>
+                                </div>
                             @endif
                         </div>
                     @endforelse

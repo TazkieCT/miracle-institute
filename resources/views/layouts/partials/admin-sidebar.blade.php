@@ -38,11 +38,6 @@
             'active_routes' => ['admin.permissions.*'],
         ],
         [
-            'label' => __('admin.sidebar.articles'),
-            'route' => 'admin.articles.index',
-            'active_routes' => ['admin.articles.*'],
-        ],
-        [
             'label' => __('admin.sidebar.settings'),
             'route' => 'admin.settings.index',
             'active_routes' => ['admin.settings.*'],
@@ -61,7 +56,6 @@
         'admin.users.index' => 'manage_users',
         'admin.roles.index' => 'manage_users',
         'admin.permissions.index' => 'manage_users',
-        'admin.articles.index' => 'view_reports',
         'admin.audit.index' => 'view_reports',
         'admin.settings.index' => 'view_reports',
     ];

@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Services\CertificateService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CertificateController extends Controller
 {
-    public function claimCourse(mixed $localeOrCourse, mixed $courseOrService, ?CertificateService $service = null)
+    public function claimCourse(Request $request, CertificateService $service)
     {
-        $course = $localeOrCourse instanceof Course ? $localeOrCourse : $courseOrService;
-        $service = $courseOrService instanceof CertificateService ? $courseOrService : $service;
+        $courseId = (string) $request->route('courseId', '');
+        $course = Course::query()
+            ->whereKey($courseId)
+            ->first();
 
-        abort_unless($course instanceof Course && $service instanceof CertificateService, 404);
+        abort_unless($course instanceof Course, 404);
 
         abort_unless(auth()->check(), 401);
 
@@ -29,12 +32,14 @@ class CertificateController extends Controller
         }
     }
 
-    public function download(mixed $localeOrCertificate, mixed $certificateOrService, ?CertificateService $service = null)
+    public function download(Request $request, CertificateService $service)
     {
-        $certificate = $localeOrCertificate instanceof Certificate ? $localeOrCertificate : $certificateOrService;
-        $service = $certificateOrService instanceof CertificateService ? $certificateOrService : $service;
+        $certificateId = (string) $request->route('certificateId', '');
+        $certificate = Certificate::query()
+            ->whereKey($certificateId)
+            ->first();
 
-        abort_unless($certificate instanceof Certificate && $service instanceof CertificateService, 404);
+        abort_unless($certificate instanceof Certificate, 404);
 
         abort_unless(auth()->check(), 401);
 

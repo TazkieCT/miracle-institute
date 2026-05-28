@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Dashboard;
 use App\Models\Course;
 use App\Models\Topic;
 use App\Models\User;
-use App\Models\VideoSession;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\StudyProgram;
@@ -25,20 +24,13 @@ class DashboardIndex extends Component
     {
         $now = now();
         $startDate = $now->copy()->subWeeks($this->weeks)->startOfWeek();
-
-        $recentSessions = VideoSession::with('topic.course')
-            ->where('start_at', '<=', $now)
-            ->latest('start_at')
-            ->take(5)
-            ->get();
-
-        $upcomingSessions = VideoSession::with('topic.course')
+        $upcomingSessions = \App\Models\VideoSession::with('topic.course')
             ->where('start_at', '>', $now)
             ->orderBy('start_at')
             ->take(5)
             ->get();
 
-        $sessionsInRange = VideoSession::whereBetween('start_at', [$startDate, $now])->pluck('id');
+        $sessionsInRange = \App\Models\VideoSession::whereBetween('start_at', [$startDate, $now])->pluck('id');
 
         $attendanceStats = Attendance::whereIn('video_session_id', $sessionsInRange)
             ->selectRaw("status, COUNT(*) as total")
@@ -57,17 +49,6 @@ class DashboardIndex extends Component
             'absent_pct' => $total ? round(($attendanceStats['absent'] ?? 0) / $total * 100, 2) : 0,
         ];
 
-        $problemSessions = VideoSession::with('topic.course')
-            ->withCount([
-                'attendances as total_attendance',
-                'attendances as absent_count' => fn ($q) => $q->where('status', 'absent')
-            ])
-            ->whereBetween('start_at', [$startDate, $now])
-            ->having('absent_count', '>', 0)
-            ->latest()
-            ->take(5)
-            ->get();
-
         return view('livewire.admin.dashboard.index', [
             'usersCount' => User::count(),
             'studyProgramsCount' => StudyProgram::count(),
@@ -83,9 +64,7 @@ class DashboardIndex extends Component
                 ->latest()->take(5)->get(),
 
             'attendance' => $attendance,
-            'recentSessions' => $recentSessions,
             'upcomingSessions' => $upcomingSessions,
-            'problemSessions' => $problemSessions,
         ])->layout('layouts.admin');
     }
 }

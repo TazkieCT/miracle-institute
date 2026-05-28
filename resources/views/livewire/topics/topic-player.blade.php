@@ -394,7 +394,7 @@
 
                     <div class="flex flex-wrap gap-2">
                         @if($isStudent)
-                            @if($attendance && ! $attendance->clock_out_at && $phase === 'live')
+                            @if($attendance && ! $attendance->clock_out_at && $this->canClockOut($session, $attendance))
                                 <button
                                     type="button"
                                     wire:click="clockOutSession('{{ $session->id }}')"
@@ -407,6 +407,10 @@
                             @elseif($attendance && $attendance->clock_out_at)
                                 <span class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-medium text-emerald-700">
                                     {{ __('general.session_join_button.attendance_completed') }}
+                                </span>
+                            @elseif($attendance && $phase === 'live')
+                                <span class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-medium text-amber-700">
+                                    Clock out tersedia 15 menit sebelum sesi berakhir
                                 </span>
                             @else
                                 <button

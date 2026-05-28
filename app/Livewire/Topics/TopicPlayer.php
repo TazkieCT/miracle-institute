@@ -45,10 +45,11 @@ class TopicPlayer extends Component
         $this->authorize('access', $this->topic);
 
         $user = auth()->user();
+        $activeRole = (string) session('active_role', '');
 
-        $this->isMentor = $user ? $user->hasRole('disciples') : false;
+        $this->isMentor = $user && $activeRole === 'disciples' && $user->hasRole('disciples');
         $this->canOpenMentorWorkspace = $this->isMentor && $this->canOpenMentorWorkspaceForTopic();
-        $this->canStudentInteract = auth()->check() && ! $this->canOpenMentorWorkspace;
+        $this->canStudentInteract = auth()->check() && $activeRole === 'student';
 
         $this->activeMaterialId = $this->materialsQuery()->value('id');
 
@@ -716,6 +717,8 @@ class TopicPlayer extends Component
             return false;
         }
 
-        return now()->betweenIncluded($session->start_at, $session->end_at);
+        $clockOutWindowStart = $session->end_at->copy()->subMinutes(15);
+
+        return now()->betweenIncluded($clockOutWindowStart, $session->end_at);
     }
 }

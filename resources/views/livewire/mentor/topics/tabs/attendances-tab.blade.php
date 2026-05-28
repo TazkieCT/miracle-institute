@@ -1,4 +1,4 @@
-<section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_14px_35px_color-mix(in_oklab,#004777_8%,transparent)] sm:p-6">
+<section class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h2 class="text-xl font-semibold tracking-tight text-[var(--mentor-primary)]">

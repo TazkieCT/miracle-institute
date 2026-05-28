@@ -107,8 +107,8 @@ class AttendanceButton extends Component
 
         $now = now();
 
-        if (!$this->canClockOut($now)) {
-            session()->flash('error', 'Clock-out hanya tersedia sampai 15 menit sebelum sesi berakhir.');
+        if (! $this->canClockOut($now)) {
+            session()->flash('error', 'Clock-out hanya tersedia dalam 15 menit terakhir sebelum sesi berakhir.');
             return;
         }
 
@@ -198,7 +198,7 @@ class AttendanceButton extends Component
             return false;
         }
 
-        return $moment->betweenIncluded($this->session->start_at, $this->clockOutDeadline);
+        return $moment->betweenIncluded($this->clockOutDeadline, $this->session->end_at);
     }
 
     public function render()

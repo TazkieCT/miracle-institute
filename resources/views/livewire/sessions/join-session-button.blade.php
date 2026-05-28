@@ -49,7 +49,7 @@
                     wire:loading.attr="disabled"
                     wire:target="joinSession,refreshAttendance"
                     @disabled(! $canJoin)
-                    class="rounded-xl bg-slate-900 px-4 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50">
+                    class="admin-primary-button rounded-xl px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">
                 {{ __('general.session_join_button.actions.join_session') }}
             </button>
         @elseif(! $attendance->clock_out_at)

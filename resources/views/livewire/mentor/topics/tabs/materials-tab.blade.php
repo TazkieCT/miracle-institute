@@ -1,5 +1,5 @@
 <section class="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-    <div class="flex h-full w-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_35px_color-mix(in_oklab,#004777_8%,transparent)] md:p-6">
+    <div class="flex h-full w-full flex-col rounded-2xl border border-slate-200 bg-white p-5 md:p-6">
         <div class="mb-6 flex flex-col items-center justify-between gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:text-left">
             <div class="text-center sm:text-left">
                 <h2 class="text-lg font-bold text-[var(--mentor-primary)] sm:text-xl">

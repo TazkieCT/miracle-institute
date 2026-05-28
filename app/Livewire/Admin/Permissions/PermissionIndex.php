@@ -4,8 +4,9 @@ namespace App\Livewire\Admin\Permissions;
 
 use App\Livewire\Concerns\WithAdminTableState;
 use App\Models\Permission;
-use Livewire\Component;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class PermissionIndex extends Component
 {
@@ -20,6 +21,8 @@ class PermissionIndex extends Component
 
     public function mount(): void
     {
+        abort_unless(auth()->check() && auth()->user()->can('manage_users'), 403);
+
         $this->showModal = false;
         $this->showDeleteModal = false;
         $this->deleteId = null;
@@ -52,13 +55,24 @@ class PermissionIndex extends Component
 
     public function save(): void
     {
-        $this->validate(['name' => 'required|string|max:255']);
+        abort_unless(auth()->check() && auth()->user()->can('manage_users'), 403);
+
+        $validated = $this->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('permissions', 'name')->ignore($this->editingId, 'id'),
+            ],
+        ]);
+
+        $name = trim($validated['name']);
 
         Permission::updateOrCreate(
             ['id' => $this->editingId],
             [
                 'id' => $this->editingId ?? (string) Str::uuid(),
-                'name' => $this->name,
+                'name' => $name,
             ]
         );
 
@@ -69,12 +83,25 @@ class PermissionIndex extends Component
 
     public function delete(): void
     {
+        abort_unless(auth()->check() && auth()->user()->can('manage_users'), 403);
+
         if (!$this->deleteId) {
             $this->toast('warning', 'Pilih permission yang akan dihapus.');
             return;
         }
 
-        Permission::findOrFail($this->deleteId)->delete();
+        $permission = Permission::query()
+            ->withCount('roles')
+            ->findOrFail($this->deleteId);
+
+        if ($permission->roles_count > 0) {
+            $this->toast('warning', 'Permission masih dipakai oleh role dan tidak bisa dihapus.');
+            $this->deleteId = null;
+            $this->showDeleteModal = false;
+            return;
+        }
+
+        $permission->delete();
 
         $this->deleteId = null;
         $this->showDeleteModal = false;

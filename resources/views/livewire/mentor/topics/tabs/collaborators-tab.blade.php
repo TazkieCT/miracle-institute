@@ -1,4 +1,4 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_35px_color-mix(in_oklab,#004777_8%,transparent)]">
+<section class="rounded-2xl border border-slate-200 bg-white p-5">
     <div class="flex items-center justify-between gap-4">
         <div>
             <h2 class="text-lg font-semibold text-[var(--mentor-primary)]">{{ __('mentor.topic_tabs.collaborators.title') }}</h2>

@@ -69,13 +69,14 @@ class JoinSessionButton extends Component
         }
 
         $this->clockInDeadlineLabel = $clockInDeadline->format('d M Y, H:i');
+        $clockOutWindowStart = $end->copy()->subMinutes(15);
 
         $this->canJoin = in_array($this->session->status, ['scheduled', 'ongoing'], true)
             && $now->betweenIncluded($start, $end);
 
         $this->canClockOut = (bool) $this->attendance
-            &&!$this->attendance->clock_out_at
-            && $now->betweenIncluded($start, $end);
+            && ! $this->attendance->clock_out_at
+            && $now->betweenIncluded($clockOutWindowStart, $end);
     }
 
     public function joinSession()
@@ -104,8 +105,8 @@ class JoinSessionButton extends Component
             return;
         }
 
-        if (!$this->canClockOut) {
-            session()->flash('error', 'Clock out hanya bisa dilakukan saat session masih aktif.');
+        if (! $this->canClockOut) {
+            session()->flash('error', 'Clock out hanya bisa dilakukan dalam 15 menit terakhir sebelum sesi berakhir.');
             return;
         }
 

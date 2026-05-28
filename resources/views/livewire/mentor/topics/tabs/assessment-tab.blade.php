@@ -1,4 +1,4 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_35px_color-mix(in_oklab,#004777_8%,transparent)]">
+<section class="rounded-2xl border border-slate-200 bg-white p-5">
     <h2 class="text-lg font-semibold text-[var(--mentor-primary)]">Assessment</h2>
     <p class="mt-1 text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">Ringkasan singkat assessment pada course ini.</p>
 

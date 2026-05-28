@@ -760,6 +760,9 @@ return [
         ],
         'course_centered_note' => 'Course-centered assessment',
         'empty' => 'No assessments found',
+        'summary' => [
+            'question_count' => 'Will show :count question(s)',
+        ],
         'modal' => [
             'create_title' => 'New Assessment',
             'edit_title' => 'Edit Assessment',
