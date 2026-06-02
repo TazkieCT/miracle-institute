@@ -8,16 +8,9 @@
     <section class="rounded-[2rem] border border-slate-200 bg-white p-5">
         <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="text-xs uppercase tracking-[0.18em] text-[color:color-mix(in_oklab,#004777_48%,white)]">
-                    {{ app()->getLocale() === 'id' ? 'Katalog pembelajaran' : 'Learning catalog' }}
-                </div>
                 <h2 class="mt-2 text-xl font-bold tracking-tight text-mentor-primary sm:text-2xl">
                     {{ app()->getLocale() === 'id' ? 'Temukan course yang tepat untuk langkah belajar berikutnya' : 'Find the right course for your next learning step' }}
                 </h2>
-            </div>
-
-            <div class="text-sm text-slate-500">
-                {{ $courses->total() }} {{ Str::plural(app()->getLocale() === 'id' ? 'course' : 'course', $courses->total()) }}
             </div>
         </div>
 
@@ -47,6 +40,10 @@
             </select>
         </div>
     </section>
+
+    <div class="text-sm text-slate-500">
+        {{ $courses->total() }} {{ Str::plural(app()->getLocale() === 'id' ? 'course' : 'course', $courses->total()) }}
+    </div>
 
     <section class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         @forelse($courses as $course)

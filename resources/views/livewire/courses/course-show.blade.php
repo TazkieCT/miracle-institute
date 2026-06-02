@@ -245,9 +245,6 @@
             <section class="space-y-5">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <div class="text-xs uppercase tracking-[0.18em] text-[#004777]/60">
-                            {{ __('general.course_show.course_overview') }}
-                        </div>
                         <h2 class="mt-2 text-xl font-bold tracking-tight text-[#004777] sm:text-2xl">
                             {{ __('general.course_show.course_topics') }}
                         </h2>
