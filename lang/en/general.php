@@ -327,7 +327,7 @@ return [
         ],
 
         'materials' => [
-            'title' => 'Material Library',
+            'title' => 'Materials',
             'subtitle' => 'All materials in this topic are collected in one place.',
             'thumbnail_alt' => 'Thumbnail :name',
             'doc_thumbnail_alt' => 'Document thumbnail',
@@ -676,7 +676,7 @@ return [
             'processing' => 'Processing...',
         ],
         'materials' => [
-            'title' => 'Material Library',
+            'title' => 'Materials',
             'subtitle' => 'All materials in this topic are collected in one place.',
             'thumbnail_alt' => 'Thumbnail :name',
             'doc_thumbnail_alt' => 'Document thumbnail',

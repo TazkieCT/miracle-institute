@@ -328,7 +328,7 @@ return [
         ],
 
         'materials' => [
-            'title' => 'Perpustakaan Materi',
+            'title' => 'Materi',
             'subtitle' => 'Semua materi dalam topik ini dikumpulkan di satu tempat.',
             'thumbnail_alt' => 'Thumbnail :name',
             'doc_thumbnail_alt' => 'Thumbnail dokumen',
@@ -676,7 +676,7 @@ return [
             'processing' => 'Memproses...',
         ],
         'materials' => [
-            'title' => 'Perpustakaan Materi',
+            'title' => 'Materi',
             'subtitle' => 'Semua materi dalam topik ini dikumpulkan di satu tempat.',
             'thumbnail_alt' => 'Thumbnail :name',
             'doc_thumbnail_alt' => 'Thumbnail dokumen',

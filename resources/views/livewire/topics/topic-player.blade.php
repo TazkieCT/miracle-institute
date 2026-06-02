@@ -63,9 +63,9 @@
                 <div class="flex items-end justify-between gap-4">
                     <div>
                         <h2 class="text-lg font-semibold">{{ __('general.topic_player.materials.title') }}</h2>
-                        <p class="text-sm text-slate-500">
+                        {{-- <p class="text-sm text-slate-500">
                             {{ __('general.topic_player.materials.subtitle') }}
-                        </p>
+                        </p> --}}
                     </div>
 
                     <div wire:loading wire:target="selectMaterial" class="text-xs text-slate-500">
