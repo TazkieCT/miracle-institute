@@ -589,6 +589,7 @@ return [
     'assessment_result' => [
         'title' => 'Assessment Result',
         'default_title' => 'Assessment',
+        'course' => 'Course: :course',
         'course_attempt' => 'Course: :course · Attempt #:no',
         'status' => [
             'passed' => 'PASSED',

@@ -155,12 +155,12 @@ class AssessmentTaker extends Component
 
         $this->openSubmit = false;
 
-        session()->flash(
-            'success',
-            $submitted->passed
-                ? 'Selamat, langkah ini telah tuntas! Sertifikat dan catatan progresmu sudah sinkron. Teruslah bertumbuh dan jadilah berkat bagi sesama dengan ilmu yang baru ini.'
-                : 'Assessment belum lulus. Anda dapat mengulang attempt berikutnya sampai mencapai passing grade.'
-        );
+        if (! $submitted->passed) {
+            session()->flash(
+                'success',
+                'Assessment belum lulus. Anda dapat mengulang attempt berikutnya sampai mencapai passing grade.'
+            );
+        }
 
         redirect()->route('assessments.result', $submitted->id);
     }

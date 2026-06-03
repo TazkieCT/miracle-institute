@@ -10,9 +10,8 @@
             </h1>
 
             <p class="mt-3 text-sm text-slate-500">
-                {{ __('general.assessment_result.course_attempt', [
+                {{ __('general.assessment_result.course', [
                     'course' => $assessment?->course?->title ?? '-',
-                    'no' => $attempt->attempt_no,
                 ]) }}
             </p>
 
@@ -58,9 +57,6 @@
                 <div class="text-xs uppercase tracking-wide text-slate-400">{{ __('general.assessment_result.certificate.title') }}</div>
                 <div class="mt-1 font-semibold text-mentor-primary">
                     {{ $certificate->certificate_number }}
-                </div>
-                <div class="mt-1 text-sm text-slate-600">
-                    {{ __('general.assessment_result.certificate.status', ['status' => strtoupper($certificate->status)]) }}
                 </div>
             </div>
         @endif
