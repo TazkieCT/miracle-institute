@@ -76,10 +76,10 @@
     </section>
 
     @if($activeTab === 'materials')
-        <section class="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
-            <aside class="space-y-5 rounded-[1.5rem] border border-slate-200 bg-white p-5 sm:p-6 lg:order-2 lg:sticky lg:top-6">
-                <div class="flex items-end justify-between gap-4">
-                    <div>
+        <section class="grid min-w-0 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <aside class="order-2 min-w-0 space-y-5 rounded-[1.5rem] border border-slate-200 bg-white p-4 sm:p-6 lg:sticky lg:top-6">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+                    <div class="min-w-0">
                         <h2 class="text-2xl font-bold text-[#004777] sm:text-3xl">{{ __('general.topic_player.materials.title') }}</h2>
                         <p class="mt-1 text-sm text-slate-500">
                             {{ __('general.topic_player.materials.subtitle') }}
@@ -93,7 +93,7 @@
 
                 @forelse($materials as $material)
                     @if($loop->first)
-                        <div class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory lg:max-h-[42rem] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:pr-1">
+                        <div class="flex min-w-0 flex-col gap-3 lg:max-h-[42rem] lg:overflow-y-auto lg:pr-1">
                     @endif
 
                     @php
@@ -106,7 +106,7 @@
                         wire:click="selectMaterial(@js($material->id))"
                         wire:loading.attr="disabled"
                         wire:target="selectMaterial"
-                        class="w-[280px] shrink-0 snap-start overflow-hidden rounded-xl border text-left transition disabled:opacity-70 lg:w-full
+                        class="w-full min-w-0 overflow-hidden rounded-xl border text-left transition disabled:opacity-70
                         {{ $isActive ? 'border-[#004777] bg-[#004777] text-white' : 'border-slate-200 bg-white hover:border-[#35A7FF]' }}"
                     >
                         <div class="px-4 py-3">
@@ -116,7 +116,7 @@
                                         {{ $loop->iteration }}
                                     </span>
 
-                                    <div class="truncate text-sm font-semibold">
+                                    <div class="min-w-0 break-words text-sm font-semibold">
                                         {{ $material->name }}
                                     </div>
 
@@ -144,7 +144,7 @@
             </aside>
 
             <div
-                class="min-w-0 space-y-5 rounded-[1.5rem] border border-slate-200 bg-white p-5 sm:p-6 lg:order-1"
+                class="order-1 min-w-0 space-y-5 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-4 sm:p-6"
                 @if($activeMaterial)
                     wire:key="active-material-panel-{{ $activeMaterial->id }}"
                 @endif
@@ -160,8 +160,8 @@
                     @endphp
 
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                            <h2 class="text-2xl font-bold text-[#004777]">
+                        <div class="min-w-0">
+                            <h2 class="break-words text-xl font-bold text-[#004777] sm:text-2xl">
                                 {{ $activeMaterial->name }}
                             </h2>
 
@@ -172,7 +172,7 @@
 
                         @if($canStudentInteract)
                             @if($activeMaterialProgress?->status === 'completed')
-                                <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs text-emerald-700">
+                                <span class="w-fit rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs text-emerald-700">
                                     {{ __('general.topic_player.materials.completed_badge') }}
                                 </span>
                             @else
@@ -182,7 +182,7 @@
                                     wire:loading.attr="disabled"
                                     wire:target="confirmMaterialCompletion"
                                     wire:confirm="{{ __('general.topic_player.materials.complete_modal.description', ['name' => $activeMaterial->name]) }}"
-                                    class="rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#003560]"
+                                    class="w-full rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#003560] sm:w-auto"
                                 >
                                     {{ __('general.topic_player.materials.mark_complete') }}
                                 </button>
@@ -194,7 +194,7 @@
                         @if($materialUrl)
                             @if($activeMaterial->type === 'video')
                                 <div class="space-y-4">
-                                    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950">
+                                    <div class="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-950 sm:rounded-2xl">
                                         @if($finalPreviewUrl)
                                             <iframe
                                                 wire:key="material-video-frame-{{ $activeMaterial->id }}"
@@ -216,12 +216,12 @@
                                 </div>
                             @else
                                 <div class="space-y-3">
-                                    <div class="overflow-hidden rounded-2xl border bg-slate-100">
+                                    <div class="min-w-0 overflow-hidden rounded-xl border bg-slate-100 sm:rounded-2xl">
                                         <iframe
                                             wire:key="material-document-frame-{{ $activeMaterial->id }}"
                                             src="{{ $finalPreviewUrl }}"
                                             title="{{ $activeMaterial->name }}"
-                                            class="h-[520px] w-full"
+                                            class="aspect-video w-full"
                                             loading="lazy"
                                         ></iframe>
                                     </div>
@@ -230,7 +230,7 @@
                                         <a
                                             href="{{ $finalDownloadUrl }}"
                                             download
-                                            class="inline-flex rounded-xl bg-[#004777] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#003560]"
+                                            class="inline-flex w-full items-center justify-center rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#003560] sm:w-auto"
                                         >
                                             {{ __('general.topic_player.materials.open_download') }}
                                         </a>
