@@ -640,15 +640,18 @@ return [
             'failed' => 'FAILED',
         ],
         'metrics' => [
+            'score' => 'Final Score',
+            'questions' => 'Total Questions',
             'correct' => 'Correct',
             'wrong' => 'Wrong',
             'unanswered' => 'Unanswered',
             'passing_grade' => 'Passing Grade',
+            'submitted_at' => 'Submitted At',
         ],
         'notice' => [
             'passed' => 'Assessment completion achieved.',
             'failed' => 'Assessment not yet passed.',
-            'passed_description' => 'If all course topics are completed, the certificate will be synchronized automatically by the backend.',
+            'passed_description' => 'Congratulations, you passed the assessment and completed this course. Your certificate is now available.',
             'failed_description' => 'You may retake the assessment until you pass. Remedial attempts are available without limits while the course remains active.',
         ],
         'certificate' => [

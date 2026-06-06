@@ -640,15 +640,18 @@ return [
             'failed' => 'TIDAK LULUS',
         ],
         'metrics' => [
+            'score' => 'Nilai Akhir',
+            'questions' => 'Total Soal',
             'correct' => 'Benar',
             'wrong' => 'Salah',
             'unanswered' => 'Belum Dijawab',
             'passing_grade' => 'Nilai Kelulusan',
+            'submitted_at' => 'Waktu Pengumpulan',
         ],
         'notice' => [
             'passed' => 'Kelulusan assessment tercapai.',
             'failed' => 'Assessment belum lulus.',
-            'passed_description' => 'Jika seluruh topik course sudah selesai, certificate akan disinkronkan otomatis oleh backend.',
+            'passed_description' => 'Selamat, Anda telah lulus assessment dan menyelesaikan course ini. Sertifikat Anda kini telah tersedia.',
             'failed_description' => 'Anda dapat mengulang assessment sampai lulus. Remedial attempt tersedia tanpa batas selama course masih aktif.',
         ],
         'certificate' => [
