@@ -30,6 +30,33 @@ return [
             ],
         ],
 
+        'journey_cards' => [
+            'begin' => [
+                'title' => 'Start your',
+                'highlight' => 'journey.',
+                'description' => 'Choose a path that speaks to you and take your first meaningful step toward deeper faith and growth.',
+                'image_alt' => 'Paper plane representing the start of a learning journey',
+            ],
+            'learn' => [
+                'title' => 'Learn with',
+                'highlight' => 'purpose.',
+                'description' => 'Explore thoughtful courses and practical teachings designed to turn knowledge into everyday wisdom.',
+                'image_alt' => 'Books and magnifying glass representing learning',
+            ],
+            'connect' => [
+                'title' => 'Join a session for',
+                'highlight' => 'every topic.',
+                'description' => 'Put learning into conversation through scheduled sessions that bring every topic to life.',
+                'image_alt' => 'Calendar representing scheduled topic sessions',
+            ],
+            'achieve' => [
+                'title' => 'Earn your',
+                'highlight' => 'certificate.',
+                'description' => 'Celebrate your commitment with a certificate that recognizes each course you complete.',
+                'image_alt' => 'Certificate representing course completion',
+            ],
+        ],
+
         'continue' => [
             'title' => 'Continue Your Journey',
             'description' => 'Continue where you left off in your discipleship journey.',

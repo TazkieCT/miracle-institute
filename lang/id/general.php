@@ -30,6 +30,33 @@ return [
             ],
         ],
 
+        'journey_cards' => [
+            'begin' => [
+                'title' => 'Mulai',
+                'highlight' => 'perjalanan Anda.',
+                'description' => 'Pilih jalur yang bermakna bagi Anda dan ambil langkah pertama menuju iman serta pertumbuhan yang lebih dalam.',
+                'image_alt' => 'Pesawat kertas yang melambangkan awal perjalanan belajar',
+            ],
+            'learn' => [
+                'title' => 'Belajar dengan',
+                'highlight' => 'tujuan.',
+                'description' => 'Jelajahi course dan pengajaran praktis yang dirancang untuk mengubah pengetahuan menjadi hikmat sehari-hari.',
+                'image_alt' => 'Buku dan kaca pembesar yang melambangkan pembelajaran',
+            ],
+            'connect' => [
+                'title' => 'Ikuti sesi untuk',
+                'highlight' => 'setiap topik.',
+                'description' => 'Hidupkan pembelajaran melalui sesi terjadwal yang membuka ruang percakapan untuk setiap topik.',
+                'image_alt' => 'Kalender yang melambangkan jadwal sesi topik',
+            ],
+            'achieve' => [
+                'title' => 'Dapatkan',
+                'highlight' => 'sertifikat Anda.',
+                'description' => 'Rayakan komitmen Anda dengan sertifikat yang mengakui setiap course yang berhasil diselesaikan.',
+                'image_alt' => 'Sertifikat yang melambangkan penyelesaian course',
+            ],
+        ],
+
         'continue' => [
             'title' => 'Lanjutkan Perjalanan Anda',
             'description' => 'Lanjutkan dari tempat terakhir Anda dalam perjalanan pemuridan.',
