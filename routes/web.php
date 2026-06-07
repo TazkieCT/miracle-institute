@@ -132,7 +132,7 @@ $registerLocalizedRoutes = function (bool $named): void {
 
     $nameRoute(
         Route::get('/courses/{slug}', CourseShow::class)
-            ->middleware('auth'),
+            ->middleware(['auth', 'set.active.role']),
         'courses.show'
     );
 

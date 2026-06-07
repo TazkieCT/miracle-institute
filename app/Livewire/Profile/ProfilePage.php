@@ -42,7 +42,14 @@ class ProfilePage extends Component
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'phone' => ['required', 'string', 'regex:/^62[0-9]{8,13}$/'],
             'gender' => ['required', Rule::in(['male', 'female'])],
-            'dob' => ['required', 'date', 'before_or_equal:today'],
+            'dob' => ['required', 'date', 'before_or_equal:' . now()->subYears(13)->format('Y-m-d')],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'dob.before_or_equal' => 'Tanggal lahir harus menunjukkan usia minimal 13 tahun.',
         ];
     }
 
