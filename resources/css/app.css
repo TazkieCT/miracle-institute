@@ -163,4 +163,94 @@
         color: white;
         opacity: 0.92;
     }
+
+    .mentor-workspace-panel {
+        border: 1px solid color-mix(in oklab, var(--color-mentor-primary) 12%, white);
+        border-radius: 1.5rem;
+        background-color: white;
+        padding: 1.25rem;
+        box-shadow: 0 18px 45px color-mix(in oklab, var(--color-mentor-primary) 7%, transparent);
+    }
+
+    .mentor-workspace-heading {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: var(--color-mentor-primary);
+    }
+
+    .mentor-workspace-subheading {
+        margin-top: 0.375rem;
+        max-width: 48rem;
+        font-size: 0.875rem;
+        line-height: 1.5rem;
+        color: color-mix(in oklab, var(--color-mentor-primary) 68%, white);
+    }
+
+    .mentor-workspace-card {
+        border: 1px solid color-mix(in oklab, var(--color-mentor-primary) 12%, white);
+        border-radius: 1rem;
+        background-color: var(--color-mentor-primary-soft-2);
+    }
+
+    .mentor-workspace-toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        border: 1px solid color-mix(in oklab, var(--color-mentor-primary) 10%, white);
+        border-radius: 1rem;
+        background-color: var(--color-mentor-primary-soft-2);
+        padding: 0.75rem;
+    }
+
+    .mentor-workspace-field {
+        width: 100%;
+        border: 1px solid color-mix(in oklab, var(--color-mentor-primary) 15%, white);
+        border-radius: 0.75rem;
+        background-color: white;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+        color: var(--color-mentor-primary);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .mentor-workspace-field:focus {
+        border-color: var(--color-mentor-primary);
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-mentor-secondary-solid) 45%, transparent);
+    }
+
+    .mentor-workspace-table {
+        overflow: hidden;
+        border: 1px solid color-mix(in oklab, var(--color-mentor-primary) 12%, white);
+        border-radius: 1rem;
+    }
+
+    .mentor-workspace-empty {
+        display: flex;
+        min-height: 10rem;
+        align-items: center;
+        justify-content: center;
+        border: 1px dashed color-mix(in oklab, var(--color-mentor-primary) 22%, white);
+        border-radius: 1rem;
+        background-color: var(--color-mentor-primary-soft-2);
+        padding: 1.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        line-height: 1.5rem;
+        color: color-mix(in oklab, var(--color-mentor-primary) 68%, white);
+    }
+
+    @media (min-width: 640px) {
+        .mentor-workspace-panel {
+            padding: 1.5rem;
+        }
+
+        .mentor-workspace-toolbar {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
 }

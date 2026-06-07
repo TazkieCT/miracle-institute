@@ -1,12 +1,12 @@
 <section class="space-y-5">
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+    <div class="mentor-workspace-panel">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-                <h2 class="text-xl font-semibold tracking-tight text-[var(--mentor-primary)]">
+                <h2 class="mentor-workspace-heading">
                     {{ __('mentor.topic_tabs.overview.title') }}
                 </h2>
 
-                <p class="mt-2 max-w-3xl text-sm leading-6 text-[color:color-mix(in_oklab,#004777_70%,white)]">
+                <p class="mentor-workspace-subheading">
                     {{ $topic->description ?: __('mentor.topic_tabs.overview.no_description') }}
                 </p>
             </div>
@@ -33,7 +33,7 @@
         </div>
 
         <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-2xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] p-4">
+            <div class="mentor-workspace-card p-4">
                 <div class="text-xs font-medium uppercase tracking-wide text-[color:color-mix(in_oklab,#004777_50%,white)]">
                     {{ __('mentor.topic_tabs.overview.cards.category') }}
                 </div>
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] p-4">
+            <div class="mentor-workspace-card p-4">
                 <div class="text-xs font-medium uppercase tracking-wide text-[color:color-mix(in_oklab,#004777_50%,white)]">
                     {{ __('mentor.topic_tabs.overview.cards.visibility') }}
                 </div>
@@ -53,7 +53,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] p-4">
+            <div class="mentor-workspace-card p-4">
                 <div class="text-xs font-medium uppercase tracking-wide text-[color:color-mix(in_oklab,#004777_50%,white)]">
                     {{ __('mentor.topic_tabs.overview.cards.materials') }}
                 </div>
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] p-4">
+            <div class="mentor-workspace-card p-4">
                 <div class="text-xs font-medium uppercase tracking-wide text-[color:color-mix(in_oklab,#004777_50%,white)]">
                     {{ __('mentor.topic_tabs.overview.cards.session_status') }}
                 </div>

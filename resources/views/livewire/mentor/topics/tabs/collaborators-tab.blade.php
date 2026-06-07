@@ -1,8 +1,8 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5">
-    <div class="flex items-center justify-between gap-4">
+<section class="mentor-workspace-panel">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-            <h2 class="text-lg font-semibold text-[var(--mentor-primary)]">{{ __('mentor.topic_tabs.collaborators.title') }}</h2>
-            <p class="text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">{{ __('mentor.topic_tabs.collaborators.subtitle') }}</p>
+            <h2 class="mentor-workspace-heading">{{ __('mentor.topic_tabs.collaborators.title') }}</h2>
+            <p class="mentor-workspace-subheading">{{ __('mentor.topic_tabs.collaborators.subtitle') }}</p>
         </div>
 
         <button type="button"
@@ -13,7 +13,7 @@
     </div>
 
     <div class="mt-5 grid gap-3">
-        <div class="rounded-2xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] p-4">
+        <div class="mentor-workspace-card p-4">
             <div class="flex items-center justify-between gap-3">
                 <div>
                     <div class="font-semibold text-[var(--mentor-primary)]">{{ $owner?->name }}</div>
@@ -27,7 +27,7 @@
         </div>
 
         @forelse($collaborators as $collaborator)
-            <div class="rounded-2xl border border-slate-200 bg-white p-4">
+            <div class="rounded-2xl border border-[color:color-mix(in_oklab,#004777_12%,white)] bg-white p-4 shadow-sm">
                 <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
@@ -66,7 +66,7 @@
                 </div>
             </div>
         @empty
-            <div class="rounded-xl border border-dashed border-slate-200 bg-[var(--mentor-primary-soft-2)] p-6 text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">
+            <div class="mentor-workspace-empty">
                 {{ __('mentor.topic_tabs.collaborators.empty') }}
             </div>
         @endforelse
@@ -83,12 +83,12 @@
                 @if(! $editingCollaboratorId)
                     <div>
                         <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.collaborators.form.search_user') }}</label>
-                        <input wire:model.live="collaboratorSearch" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2" placeholder="{{ __('mentor.topic_tabs.collaborators.form.search_placeholder') }}">
+                        <input wire:model.live="collaboratorSearch" class="mentor-workspace-field mt-1" placeholder="{{ __('mentor.topic_tabs.collaborators.form.search_placeholder') }}">
                     </div>
 
                     <div>
                         <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.collaborators.form.select_user') }}</label>
-                        <select wire:model.defer="collaboratorUserId" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                        <select wire:model.defer="collaboratorUserId" class="mentor-workspace-field mt-1">
                             <option value="">{{ __('mentor.topic_tabs.collaborators.form.select_placeholder') }}</option>
                             @foreach($eligibleUsers as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }} · {{ $user->email }}</option>
@@ -124,7 +124,7 @@
 
                 <div>
                     <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.collaborators.form.status') }}</label>
-                    <select wire:model.defer="collaboratorStatus" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                    <select wire:model.defer="collaboratorStatus" class="mentor-workspace-field mt-1">
                         <option value="active">{{ __('mentor.topic_tabs.collaborators.form.status_active') }}</option>
                         <option value="inactive">{{ __('mentor.topic_tabs.collaborators.form.status_inactive') }}</option>
                     </select>

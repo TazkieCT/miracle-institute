@@ -1,11 +1,11 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+<section class="mentor-workspace-panel">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-xl font-semibold tracking-tight text-[var(--mentor-primary)]">
+            <h2 class="mentor-workspace-heading">
                 {{ __('mentor.topic_tabs.students.title') }}
             </h2>
 
-            <p class="mt-1 text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">
+            <p class="mentor-workspace-subheading">
                 {{ __('mentor.topic_tabs.students.subtitle') }}
             </p>
         </div>
@@ -17,17 +17,17 @@
         @endif --}}
     </div>
 
-    <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="mentor-workspace-toolbar mt-5">
         <input
             type="search"
             wire:model.live.debounce.300ms="search"
-            class="w-full rounded-xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] px-4 py-2 text-sm text-[var(--mentor-primary)] focus:border-[var(--mentor-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--mentor-secondary-solid)] sm:max-w-sm"
+            class="mentor-workspace-field sm:max-w-sm"
             placeholder="Search student..."
         >
 
         <select
             wire:model.live="perPage"
-            class="w-full rounded-xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] px-4 py-2 text-sm text-[var(--mentor-primary)] focus:border-[var(--mentor-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--mentor-secondary-solid)] sm:w-36"
+            class="mentor-workspace-field sm:w-36"
         >
             <option value="5">5 / page</option>
             <option value="10">10 / page</option>
@@ -36,7 +36,7 @@
         </select>
     </div>
 
-    <div class="mt-6 overflow-hidden rounded-3xl border border-slate-200">
+    <div class="mentor-workspace-table mt-6">
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead class="bg-[var(--mentor-primary)]">

@@ -1,8 +1,8 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5">
-    <div class="flex items-center justify-between gap-4">
+<section class="mentor-workspace-panel">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-            <h2 class="text-lg font-semibold text-[var(--mentor-primary)]">{{ __('mentor.topic_tabs.sessions.title') }}</h2>
-            <p class="text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">{{ __('mentor.topic_tabs.sessions.subtitle') }}</p>
+            <h2 class="mentor-workspace-heading">{{ __('mentor.topic_tabs.sessions.title') }}</h2>
+            <p class="mentor-workspace-subheading">{{ __('mentor.topic_tabs.sessions.subtitle') }}</p>
         </div>
 
         @if($session)
@@ -22,7 +22,7 @@
 
     <div class="mt-5">
         @if($session)
-            <div class="rounded-2xl border border-slate-200 bg-[var(--mentor-primary-soft-2)] p-4">
+            <div class="mentor-workspace-card p-5">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <div class="text-sm font-semibold text-[var(--mentor-primary)]">{{ $session->title }}</div>
@@ -44,7 +44,7 @@
                 </div>
             </div>
         @else
-            <div class="rounded-xl border border-dashed border-slate-200 bg-[var(--mentor-primary-soft-2)] p-6 text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">
+            <div class="mentor-workspace-empty">
                 {{ __('mentor.topic_tabs.sessions.empty') }}
             </div>
         @endif
@@ -60,27 +60,27 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="sm:col-span-2">
                     <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.sessions.form.title') }}</label>
-                    <input wire:model.defer="sessionTitle" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2" placeholder="{{ __('mentor.topic_tabs.sessions.form.title_placeholder') }}">
+                    <input wire:model.defer="sessionTitle" class="mentor-workspace-field mt-1" placeholder="{{ __('mentor.topic_tabs.sessions.form.title_placeholder') }}">
                 </div>
 
                 <div>
                     <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.sessions.form.start_at') }}</label>
-                    <input wire:model.defer="sessionStartAt" type="datetime-local" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                    <input wire:model.defer="sessionStartAt" type="datetime-local" class="mentor-workspace-field mt-1">
                 </div>
 
                 <div>
                     <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.sessions.form.end_at') }}</label>
-                    <input wire:model.defer="sessionEndAt" type="datetime-local" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                    <input wire:model.defer="sessionEndAt" type="datetime-local" class="mentor-workspace-field mt-1">
                 </div>
 
                 <div class="sm:col-span-2">
                     <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.sessions.form.zoom_link') }}</label>
-                    <input wire:model.defer="sessionZoomLink" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2" placeholder="https://...">
+                    <input wire:model.defer="sessionZoomLink" class="mentor-workspace-field mt-1" placeholder="https://...">
                 </div>
 
                 <div class="sm:col-span-2">
                     <label class="text-xs font-medium text-[color:color-mix(in_oklab,#004777_60%,white)]">{{ __('mentor.topic_tabs.sessions.form.status') }}</label>
-                    <select wire:model.defer="sessionStatus" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                    <select wire:model.defer="sessionStatus" class="mentor-workspace-field mt-1">
                         <option value="scheduled">{{ __('mentor.topic_tabs.sessions.status.scheduled') }}</option>
                         <option value="ongoing">{{ __('mentor.topic_tabs.sessions.status.ongoing') }}</option>
                         <option value="completed">{{ __('mentor.topic_tabs.sessions.status.completed') }}</option>

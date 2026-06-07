@@ -1,11 +1,11 @@
 <section class="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-    <div class="flex h-full w-full flex-col rounded-2xl border border-slate-200 bg-white p-5 md:p-6">
+    <div class="mentor-workspace-panel flex h-full w-full flex-col">
         <div class="mb-6 flex flex-col items-center justify-between gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:text-left">
             <div class="text-center sm:text-left">
-                <h2 class="text-lg font-bold text-[var(--mentor-primary)] sm:text-xl">
+                <h2 class="mentor-workspace-heading">
                     {{ __('mentor.topic_tabs.materials.selected.title') }}
                 </h2>
-                <p class="mt-1.5 text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">
+                <p class="mentor-workspace-subheading">
                     {{ __('mentor.topic_tabs.materials.selected.subtitle') }}
                 </p>
             </div>
@@ -62,21 +62,21 @@
                         </div>
                     </div>
                 @else
-                    <div class="flex min-h-[250px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-[var(--mentor-primary-soft-2)] p-6 text-center">
+                    <div class="mentor-workspace-empty min-h-[250px]">
                         No preview
                     </div>
                 @endif
             @else
-                <div class="flex min-h-[300px] flex-grow flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-[var(--mentor-primary-soft-2)] p-6 text-center">
+                <div class="mentor-workspace-empty min-h-[300px] flex-grow">
                     Empty
                 </div>
             @endif
         </div>
     </div>
 
-    <aside class="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_35px_color-mix(in_oklab,#004777_8%,transparent)]">
+    <aside class="mentor-workspace-panel">
         <div class="flex items-center justify-between gap-3">
-            <h2 class="text-lg font-semibold text-[var(--mentor-primary)]">Materials</h2>
+            <h2 class="mentor-workspace-heading">Materials</h2>
 
             @if($canAddMaterial)
                 <button type="button"
@@ -92,7 +92,7 @@
                 <button type="button"
                         wire:key="material-{{ $material->id }}"
                         wire:click="selectMaterial(@js($material->id))"
-                        class="w-full rounded-xl border p-4 text-left transition {{ $selectedMaterial?->id === $material->id ? 'border-[var(--mentor-primary)] bg-[var(--mentor-primary)] text-white' : 'border-slate-200' }}">
+                        class="w-full rounded-xl border p-4 text-left transition {{ $selectedMaterial?->id === $material->id ? 'border-[var(--mentor-primary)] bg-[var(--mentor-primary)] text-white shadow-md' : 'border-slate-200 bg-[var(--mentor-primary-soft-2)] text-[var(--mentor-primary)] hover:border-[var(--mentor-primary)]' }}">
                     <div class="truncate text-sm font-medium">
                         #{{ $material->sort_order }} · {{ $material->name }}
                     </div>
@@ -101,7 +101,7 @@
                     </div>
                 </button>
             @empty
-                <div class="rounded-xl border border-dashed border-slate-200 p-5 text-sm">
+                <div class="mentor-workspace-empty min-h-0">
                     No materials
                 </div>
             @endforelse
@@ -128,12 +128,12 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div class="sm:col-span-2">
                             <label class="text-xs font-medium">Name</label>
-                            <input wire:model="materialName" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                            <input wire:model="materialName" class="mentor-workspace-field mt-1">
                         </div>
 
                         <div>
                             <label class="text-xs font-medium">Type</label>
-                            <select wire:model.live="materialType" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                            <select wire:model.live="materialType" class="mentor-workspace-field mt-1">
                                 @foreach($materialTypeOptions as $type)
                                     <option value="{{ $type }}">{{ strtoupper($type) }}</option>
                                 @endforeach
@@ -142,7 +142,7 @@
 
                         <div>
                             <label class="text-xs font-medium">Status</label>
-                            <select wire:model="materialStatus" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                            <select wire:model="materialStatus" class="mentor-workspace-field mt-1">
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
@@ -151,20 +151,20 @@
                         @if(in_array($materialType, ['pdf', 'ppt'], true))
                             <div class="sm:col-span-2">
                                 <label class="text-xs font-medium">File</label>
-                                <input type="file" wire:model="materialFile" accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                                <input type="file" wire:model="materialFile" accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" class="mentor-workspace-field mt-1">
                             </div>
                         @endif
 
                         @if($materialType === 'video')
                             <div class="sm:col-span-2">
                                 <label class="text-xs font-medium">Video URL</label>
-                                <input wire:model.live.debounce.500ms="materialExternalUrl" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                                <input wire:model.live.debounce.500ms="materialExternalUrl" class="mentor-workspace-field mt-1">
                             </div>
                         @endif
 
                         <div class="sm:col-span-2">
                             <label class="text-xs font-medium">Sort Order</label>
-                            <input wire:model="materialSortOrder" type="number" min="0" class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2">
+                            <input wire:model="materialSortOrder" type="number" min="0" class="mentor-workspace-field mt-1">
                         </div>
                     </div>
 
