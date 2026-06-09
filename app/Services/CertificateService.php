@@ -175,11 +175,9 @@ class CertificateService
                     ->where('video_session_id', $session->id)
                     ->first();
 
-                $status = match ($attendance?->status) {
-                    'present' => 'Online',
-                    'late' => 'Susulan',
-                    default => 'Absent',
-                };
+                $status = $attendance?->status === 'present'
+                    ? 'Present'
+                    : 'Online';
 
                 $sessions[] = [
                     'session_title' => $session->title,
@@ -272,18 +270,7 @@ class CertificateService
             ->where('attendances.status', 'present')
             ->exists();
 
-        if ($present) {
-            return 'Present';
-        }
-
-        $late = Attendance::query()
-            ->join('video_sessions', 'video_sessions.id', '=', 'attendances.video_session_id')
-            ->where('video_sessions.topic_id', $topicId)
-            ->where('attendances.user_id', $userId)
-            ->where('attendances.status', 'late')
-            ->exists();
-
-        return $late ? 'Susulan' : 'Absent';
+        return $present ? 'Present' : 'Online';
     }
 
     private function generateCertificateNumber(Course $course, int $recipientSequence): string

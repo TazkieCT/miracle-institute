@@ -13,6 +13,69 @@ class UserIndex extends Component
 
     public $roleFilter = '';
     public $sort = 'latest';
+    public bool $showStudentRecapModal = false;
+    public ?User $selectedStudent = null;
+    public array $studentRecapRows = [];
+
+    public function openStudentRecap(string $userId): void
+    {
+        $student = User::with('roles')->findOrFail($userId);
+
+        abort_unless($student->hasRole('student'), 404);
+
+        $enrollments = $student->courseEnrollments()
+            ->with([
+                'course.topics.videoSessions',
+                'topicProgresses',
+            ])
+            ->latest('enrolled_at')
+            ->get();
+
+        $attendances = $student->attendances()
+            ->whereHas('videoSession.topic.course')
+            ->with('videoSession.topic.course')
+            ->get()
+            ->groupBy(function ($attendance) {
+                return $attendance->videoSession?->topic?->course_id;
+            });
+
+        $this->selectedStudent = $student;
+        $this->studentRecapRows = $enrollments->map(function ($enrollment) use ($attendances) {
+            $course = $enrollment->course;
+            $topics = $course?->topics ?? collect();
+            $topicIds = $topics->pluck('id');
+            $sessionIds = $topics->flatMap(fn ($topic) => $topic->videoSessions->pluck('id'))->values();
+            $completedTopics = $enrollment->topicProgresses
+                ->where('status', 'completed')
+                ->count();
+            $totalTopics = $topics->count();
+            $courseAttendances = collect($attendances->get($course?->id, collect()))
+                ->filter(fn ($attendance) => $sessionIds->contains($attendance->video_session_id));
+
+            return [
+                'course_title' => $course?->title ?? '-',
+                'enrollment_status' => $enrollment->status,
+                'enrolled_at' => optional($enrollment->enrolled_at)?->format('d M Y H:i') ?? '-',
+                'completed_at' => optional($enrollment->completed_at)?->format('d M Y H:i') ?? '-',
+                'topics_completed' => $completedTopics,
+                'topics_total' => $totalTopics,
+                'progress_percent' => $totalTopics > 0 ? (int) round(($completedTopics / $totalTopics) * 100) : 0,
+                'sessions_total' => $sessionIds->count(),
+                'attendance_present' => $courseAttendances->where('status', 'present')->count(),
+                'attendance_late' => $courseAttendances->where('status', 'late')->count(),
+                'attendance_absent' => $courseAttendances->where('status', 'absent')->count(),
+            ];
+        })->all();
+
+        $this->showStudentRecapModal = true;
+    }
+
+    public function closeStudentRecapModal(): void
+    {
+        $this->showStudentRecapModal = false;
+        $this->selectedStudent = null;
+        $this->studentRecapRows = [];
+    }
 
     public function render()
     {

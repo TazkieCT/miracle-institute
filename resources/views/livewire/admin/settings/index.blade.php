@@ -8,24 +8,83 @@
             <p class="text-sm text-gray-500">Atur informasi dasar dan kontak platform.</p>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <input wire:model="name" class="rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.company_name') }}">
-            <input wire:model="logo" class="rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.logo') }}">
-        </div>
-
-        <textarea wire:model="description" rows="3" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.description') }}"></textarea>
-        <textarea wire:model="address" rows="2" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.address') }}"></textarea>
-
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <textarea wire:model="vision" rows="3" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.vision') }}"></textarea>
-            <textarea wire:model="mission" rows="3" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.mission') }}"></textarea>
+        <div class="rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
+            <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
         </div>
 
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <input wire:model="facebook" class="rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.facebook') }}">
-            <input wire:model="instagram" class="rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.instagram') }}">
-            <input wire:model="youtube" class="rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.youtube') }}">
-            <input wire:model="whatsapp" class="rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.whatsapp') }}">
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.company_name') }} <span class="text-rose-500">*</span>
+                </label>
+                <input wire:model="name" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.company_name') }}">
+            </div>
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.logo') }}
+                </label>
+                <input wire:model="logo" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.logo') }}">
+            </div>
+        </div>
+
+        <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600">
+                {{ __('admin.settings.form.description') }}
+            </label>
+            <textarea wire:model="description" rows="3" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.description') }}"></textarea>
+        </div>
+
+        <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600">
+                {{ __('admin.settings.form.address') }}
+            </label>
+            <textarea wire:model="address" rows="2" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.address') }}"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.vision') }}
+                </label>
+                <textarea wire:model="vision" rows="3" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.vision') }}"></textarea>
+            </div>
+
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.mission') }}
+                </label>
+                <textarea wire:model="mission" rows="3" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.mission') }}"></textarea>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.facebook') }}
+                </label>
+                <input wire:model="facebook" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.facebook') }}">
+            </div>
+
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.instagram') }}
+                </label>
+                <input wire:model="instagram" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.instagram') }}">
+            </div>
+
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.youtube') }}
+                </label>
+                <input wire:model="youtube" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.youtube') }}">
+            </div>
+
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-slate-600">
+                    {{ __('admin.settings.form.whatsapp') }}
+                </label>
+                <input wire:model="whatsapp" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.whatsapp') }}">
+            </div>
         </div>
 
         <button wire:click="save" class="admin-primary-button rounded-xl border border-brand-dark/20 px-5 py-3 transition">
@@ -93,6 +152,11 @@
                     {{ __('admin.settings.drive.notes.warning') }}
                 </p>
             @endif
+        </div>
+
+        <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+            Callback OAuth Google yang harus didaftarkan:
+            <span class="mt-1 block font-mono text-[11px] text-slate-800">{{ config('services.google.redirect') }}</span>
         </div>
     </div>
 </div>

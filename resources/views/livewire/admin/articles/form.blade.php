@@ -108,6 +108,10 @@
 
     <form id="article-form" wire:submit.prevent="save" class="space-y-6">
         <section class="space-y-8 rounded-2xl border bg-white p-8">
+            <div class="rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
+                <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
+            </div>
+
             <div class="flex flex-col justify-between gap-6 md:flex-row md:items-center">
                 <div class="space-y-1">
                     <h2 class="text-xl font-bold text-slate-900">{{ __('admin.articles.meta.title') }}</h2>
@@ -131,7 +135,7 @@
             </div>
 
             <div class="space-y-2">
-                <label class="ml-1 text-sm font-semibold text-slate-700">{{ __('admin.articles.form.title_label') }}</label>
+                <label class="ml-1 text-sm font-semibold text-slate-700">{{ __('admin.articles.form.title_label') }} <span class="text-rose-500">*</span></label>
                 <input
                     wire:model.blur="title"
                     type="text"
@@ -176,7 +180,7 @@
                         <div x-show="uploadMode === 'local'" x-transition class="space-y-3">
                             <label class="ml-1 flex items-center gap-2 text-sm font-bold text-slate-800">
                                 <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                {{ __('admin.articles.upload.choose_local_file') }}
+                                {{ __('admin.articles.upload.choose_local_file') }} @if(!$articleId)<span class="text-rose-500">*</span>@endif
                             </label>
                             <div class="relative group">
                                 <input type="file" wire:model="imageFile" class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0">
@@ -208,7 +212,7 @@
                     <div class="space-y-3">
                         <label class="ml-1 flex items-center gap-2 text-sm font-bold text-slate-800">
                             <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            {{ __('admin.articles.upload.publication_status') }}
+                            {{ __('admin.articles.upload.publication_status') }} <span class="text-rose-500">*</span>
                         </label>
                         <div class="relative group">
                             <select wire:model.live="status" class="w-full cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-semibold transition appearance-none focus:bg-white">
@@ -229,6 +233,10 @@
             <div class="space-y-1">
                 <h2 class="text-xl font-bold text-slate-900">{{ __('admin.articles.content.title') }}</h2>
                 <p class="text-sm text-slate-500">{{ __('admin.articles.content.subtitle') }}</p>
+            </div>
+
+            <div class="text-xs text-slate-500">
+                <span class="font-semibold text-rose-500">*</span> Konten artikel wajib diisi.
             </div>
 
             <div

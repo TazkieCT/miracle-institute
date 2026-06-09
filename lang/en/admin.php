@@ -733,7 +733,7 @@ return [
         'page_subtitle' => 'Course-centered assessments. Questions are managed on a separate page.',
         'actions' => [
             'create' => '+ New Assessment',
-            'questions' => 'Questions',
+            'questions' => 'Question Bank',
             'edit' => 'Edit',
             'delete' => 'Delete',
             'cancel' => 'Cancel',
@@ -761,7 +761,7 @@ return [
         'course_centered_note' => 'Course-centered assessment',
         'empty' => 'No assessments found',
         'summary' => [
-            'question_count' => 'Will show :count question(s)',
+            'question_count' => 'Will show up to :count question(s)',
         ],
         'modal' => [
             'create_title' => 'New Assessment',
@@ -771,7 +771,7 @@ return [
             'select_course' => 'Select course',
             'title_placeholder' => 'Title',
             'passing_grade_placeholder' => 'Passing grade',
-            'question_limit_placeholder' => 'Question limit',
+            'question_limit_placeholder' => 'Questions shown',
             'randomize_questions' => 'Randomize questions',
         ],
     ],
@@ -788,7 +788,7 @@ return [
         ],
         'stats' => [
             'course' => 'Course',
-            'questions' => 'Questions',
+            'questions' => 'Question Bank',
             'attempts' => 'Attempts',
             'passing_grade' => 'Passing Grade',
         ],

@@ -88,7 +88,7 @@
                     <h2 class="text-lg font-semibold text-slate-900">
                         {{ $editingId ? __('admin.permissions.modal.edit_title') : __('admin.permissions.modal.create_title') }}
                     </h2>
-                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-slate-900">Close</button>
+                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-slate-900">Tutup</button>
                 </div>
 
                 <div class="mt-5 space-y-4">

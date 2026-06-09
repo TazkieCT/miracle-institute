@@ -91,6 +91,12 @@ class MaterialIndex extends Component
     public function updatedTopicId(): void
     {
         $this->updatedType();
+
+        if ($this->editingId) {
+            return;
+        }
+
+        $this->sort_order = $this->nextSortOrderForTopic($this->topic_id);
     }
 
     public function toggleTopic(string $id): void
@@ -113,6 +119,7 @@ class MaterialIndex extends Component
         }
 
         $this->type = $this->availableTypes[0] ?? null;
+        $this->sort_order = $this->nextSortOrderForTopic($this->topic_id);
 
         $this->showModal = true;
     }
@@ -281,9 +288,22 @@ class MaterialIndex extends Component
 
         $this->visibility = 'public';
         $this->status = 'active';
-        $this->sort_order = 0;
+        $this->sort_order = 1;
         $this->type = null;
         $this->showModal = false;
         $this->uploading = false;
+    }
+
+    private function nextSortOrderForTopic(?string $topicId): int
+    {
+        if (!$topicId) {
+            return 1;
+        }
+
+        $lastSortOrder = Material::query()
+            ->where('topic_id', $topicId)
+            ->max('sort_order');
+
+        return max(1, ((int) $lastSortOrder) + 1);
     }
 }

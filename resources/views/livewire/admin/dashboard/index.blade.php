@@ -5,10 +5,15 @@
         'absent' => $attendance['absent'],
     ];
 
-    $calendarSessions = $upcomingSessions->map(function ($session) {
+    $calendarSessionItems = ($calendarSessions ?? collect())->map(function ($session) {
         return [
             'date' => $session->start_at->format('Y-m-d'),
             'title' => $session->title,
+            'topic' => $session->topic?->name ?? __('admin.dashboard.common.no_topic'),
+            'course' => $session->topic?->course?->title ?? __('admin.dashboard.common.no_course'),
+            'time' => $session->start_at?->format('H:i') ?? '-',
+            'datetime' => $session->start_at?->format('d M Y H:i') ?? '-',
+            'status' => ucfirst($session->status),
         ];
     });
 
@@ -142,7 +147,7 @@
             <h2 class="text-lg font-semibold">{{ __('admin.dashboard.upcoming_calendar.title') }}</h2>
 
             <div
-                x-data="calendarComponent(@js($calendarSessions), @js($calendarWeekdays), @js($calendarMonths))"
+                x-data="calendarComponent(@js($calendarSessionItems), @js($calendarWeekdays), @js($calendarMonths))"
                 x-init="init()"
                 class="space-y-4"
             >
@@ -164,16 +169,70 @@
                     </template>
 
                     <template x-for="day in days" :key="day">
-                        <div class="relative h-20 rounded-lg border p-1">
-                            <div x-text="day" class="text-xs"></div>
+                        <button
+                            type="button"
+                            @click="selectDay(day)"
+                            :class="isSelected(day)
+                                ? 'border-[#35A7FF] bg-[#eef8ff] text-[#004777]'
+                                : (hasSession(day)
+                                    ? 'border-sky-200 bg-sky-50 text-slate-700 hover:border-sky-300 hover:bg-sky-100'
+                                    : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50')"
+                            class="relative h-20 rounded-lg border p-1 text-left transition"
+                        >
+                            <div x-text="day" class="text-xs font-medium"></div>
 
-                            <template x-if="hasSession(day)">
-                                <div class="absolute bottom-1 left-1/2 -translate-x-1/2">
+                            <template x-if="sessionCount(day) > 0">
+                                <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
                                     <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                                    <span class="text-[10px] font-semibold" x-text="sessionCount(day) + ' sesi'"></span>
                                 </div>
                             </template>
-                        </div>
+                        </button>
                     </template>
+                </div>
+
+                <div class="border-t border-slate-200 pt-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <div class="text-sm font-semibold text-slate-800">Sesi pada tanggal terpilih</div>
+                            <div class="text-xs text-slate-500" x-text="selectedLabel"></div>
+                        </div>
+                        <button
+                            type="button"
+                            x-show="selectedDate"
+                            @click="clearSelection()"
+                            class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-100"
+                        >
+                            Reset
+                        </button>
+                    </div>
+
+                    <div class="mt-4 space-y-3" x-show="selectedSessions.length > 0">
+                        <template x-for="session in selectedSessions" :key="session.date + '-' + session.title + '-' + session.time">
+                            <div class="border-b border-slate-200 pb-3 last:border-b-0 last:pb-0">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <div class="font-medium text-slate-900" x-text="session.title"></div>
+                                        <div class="mt-1 text-xs text-slate-500">
+                                            <span x-text="session.topic"></span>
+                                            <span> • </span>
+                                            <span x-text="session.course"></span>
+                                        </div>
+                                        <div class="mt-1 text-xs text-slate-400" x-text="session.datetime"></div>
+                                    </div>
+                                    <span class="inline-flex whitespace-nowrap rounded bg-slate-100 px-2 py-1 text-[11px] text-slate-600" x-text="session.status"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div x-show="selectedDate && selectedSessions.length === 0" class="mt-4 text-sm text-slate-500">
+                        Tidak ada sesi pada tanggal ini.
+                    </div>
+
+                    <div x-show="!selectedDate" class="mt-4 text-sm text-slate-500">
+                        Klik tanggal pada kalender untuk melihat sesi yang berlangsung pada hari itu.
+                    </div>
                 </div>
             </div>
         </section>
@@ -191,6 +250,9 @@
                 days: [],
                 blanks: [],
                 monthYear: '',
+                selectedDate: '',
+                selectedSessions: [],
+                selectedLabel: 'Belum ada tanggal dipilih',
 
                 init() {
                     this.generate();
@@ -212,6 +274,35 @@
                 hasSession(day) {
                     const dateStr = this.formatDate(day);
                     return this.sessions.some(session => session.date === dateStr);
+                },
+
+                sessionCount(day) {
+                    const dateStr = this.formatDate(day);
+                    return this.sessions.filter(session => session.date === dateStr).length;
+                },
+
+                isSelected(day) {
+                    return this.selectedDate === this.formatDate(day);
+                },
+
+                selectDay(day) {
+                    const dateStr = this.formatDate(day);
+                    this.selectedDate = dateStr;
+                    this.selectedSessions = this.sessions.filter(session => session.date === dateStr);
+
+                    const labelDate = new Date(`${dateStr}T00:00:00`);
+                    this.selectedLabel = labelDate.toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                    });
+                },
+
+                clearSelection() {
+                    this.selectedDate = '';
+                    this.selectedSessions = [];
+                    this.selectedLabel = 'Belum ada tanggal dipilih';
                 },
 
                 formatDate(day) {

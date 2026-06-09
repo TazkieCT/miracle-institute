@@ -30,6 +30,12 @@ class DashboardIndex extends Component
             ->take(5)
             ->get();
 
+        $calendarSessions = \App\Models\VideoSession::with('topic.course')
+            ->where('start_at', '>', $now)
+            ->orderBy('start_at')
+            ->take(60)
+            ->get();
+
         $sessionsInRange = \App\Models\VideoSession::whereBetween('start_at', [$startDate, $now])->pluck('id');
 
         $attendanceStats = Attendance::whereIn('video_session_id', $sessionsInRange)
@@ -65,6 +71,7 @@ class DashboardIndex extends Component
 
             'attendance' => $attendance,
             'upcomingSessions' => $upcomingSessions,
+            'calendarSessions' => $calendarSessions,
         ])->layout('layouts.admin');
     }
 }

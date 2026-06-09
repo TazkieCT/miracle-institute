@@ -9,7 +9,6 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Topic;
 use App\Models\TopicProgress;
-use App\Models\TopicUser;
 use App\Services\CourseService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -39,6 +38,8 @@ class CourseShow extends Component
 
     public bool $showAssessmentModal = false;
     public bool $showEnrollModal = false;
+    public bool $showTopicAccessWarningModal = false;
+    public string $topicAccessWarningName = '';
 
     public string $topicSearch = '';
     public string $topicSort = 'sort_asc';
@@ -149,25 +150,7 @@ class CourseShow extends Component
                 return $topic;
             });
 
-        $collaboratorTopicIds = TopicUser::query()
-            ->whereIn('topic_id', $this->course->topics->pluck('id')->all())
-            ->where('user_id', $userId)
-            ->where('status', 'active')
-            ->where('role_type', 'collaborator')
-            ->pluck('topic_id')
-            ->all();
-
-        $collaboratingTopics = $this->course->topics
-            ->filter(fn (Topic $topic) => in_array($topic->id, $collaboratorTopicIds, true) && (string) $topic->teacher_id !== (string) $userId)
-            ->map(function (Topic $topic) {
-                $topic->setAttribute('mentor_role', 'collaborator');
-                $topic->setAttribute('can_manage_assessment', $this->hasWorkspacePermission($topic, 'manage_assessments'));
-
-                return $topic;
-            });
-
         $this->mentoredTopics = $ownedTopics
-            ->concat($collaboratingTopics)
             ->unique('id')
             ->sortBy(fn (Topic $topic) => [$topic->sort_order, $topic->name])
             ->values();
@@ -447,12 +430,25 @@ class CourseShow extends Component
             return;
         }
 
+        $this->closeTopicAccessWarning();
         $this->showEnrollModal = true;
     }
 
     public function closeEnrollModal(): void
     {
         $this->showEnrollModal = false;
+    }
+
+    public function openTopicAccessWarning(string $topicName): void
+    {
+        $this->topicAccessWarningName = $topicName;
+        $this->showTopicAccessWarningModal = true;
+    }
+
+    public function closeTopicAccessWarning(): void
+    {
+        $this->showTopicAccessWarningModal = false;
+        $this->topicAccessWarningName = '';
     }
 
     public function clearTopicFilters(): void

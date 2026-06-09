@@ -109,7 +109,7 @@
                         {{ $editingId ? __('admin.study_programs.modal.edit_title') : __('admin.study_programs.modal.create_title') }}
                     </h2>
 
-                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-black">Close</button>
+                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-black">Tutup</button>
                 </div>
 
                 <div class="space-y-3">

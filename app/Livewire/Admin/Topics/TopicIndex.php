@@ -74,7 +74,18 @@ class TopicIndex extends Component
             $this->course_id = $this->selectedCourse->id;
         }
 
+        $this->sort_order = $this->nextSortOrderForCourse($this->course_id);
+
         $this->showModal = true;
+    }
+
+    public function updatedCourseId(): void
+    {
+        if ($this->editingId) {
+            return;
+        }
+
+        $this->sort_order = $this->nextSortOrderForCourse($this->course_id);
     }
 
     public function edit(string $id): void
@@ -187,6 +198,19 @@ class TopicIndex extends Component
 
         $this->visibility = 'Public';
         $this->status = 'draft';
-        $this->sort_order = 0;
+        $this->sort_order = 1;
+    }
+
+    private function nextSortOrderForCourse(?string $courseId): int
+    {
+        if (!$courseId) {
+            return 1;
+        }
+
+        $lastSortOrder = Topic::query()
+            ->where('course_id', $courseId)
+            ->max('sort_order');
+
+        return max(1, ((int) $lastSortOrder) + 1);
     }
 }

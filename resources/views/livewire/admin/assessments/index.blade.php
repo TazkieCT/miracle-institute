@@ -68,16 +68,15 @@
                     <table class="w-full text-sm">
                         <thead class="admin-table-head text-left">
                             <tr>
-                                <th class="p-4">Order</th>
-                                <th class="p-4">Question</th>
-                                <th class="p-4">Options</th>
-                                <th class="p-4">Action</th>
+                                <th class="p-4">Urutan Soal</th>
+                                <th class="p-4">Pertanyaan</th>
+                                <th class="p-4">Opsi</th>
+                                <th class="p-4">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($selectedAssessment->questions as $question)
                                 <tr class="border-t align-top">
-                                    <td class="p-4 text-center">{{ $question->sort_order }}</td>
                                     <td class="p-4">
                                         <div class="font-medium text-slate-900">{{ $question->question }}</div>
                                         <div class="text-xs text-slate-500">{{ $question->question_type }}</div>
@@ -134,7 +133,7 @@
                 </x-ui.table-shell>
             @else
                 <div class="rounded-2xl border border-dashed bg-slate-50 p-6 text-slate-600">
-                    Belum ada assessment untuk course ini.
+                    Belum ada assessment untuk kursus ini.
                 </div>
             @endif
         </div>
@@ -162,6 +161,12 @@
                         <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
                     </div>
 
+                    @if($errors->any())
+                        <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            Periksa kembali field yang wajib diisi.
+                        </div>
+                    @endif
+
                     @if($selectedCourse)
                         <input
                             value="{{ $selectedCourse->title }}"
@@ -174,7 +179,7 @@
                     @else
                         <div class="space-y-1">
                             <label class="mb-1 block text-xs font-semibold text-slate-600">
-                                Course <span class="text-rose-500">*</span>
+                                Kursus <span class="text-rose-500">*</span>
                             </label>
                             <select wire:model="course_id" class="w-full rounded-xl border px-4 py-2">
                             <option value="">{{ __('admin.assessments.form.select_course') }}</option>
@@ -215,6 +220,9 @@
                         </div>
 
                         <div class="space-y-1">
+                            <label class="mb-1 block text-xs font-semibold text-slate-600">
+                                Soal ditampilkan
+                            </label>
                             <input wire:model="question_limit" type="number"
                                 class="w-full rounded-xl border px-4 py-2"
                                 placeholder="{{ __('admin.assessments.form.question_limit_placeholder') }}">
@@ -284,6 +292,12 @@
                     <div class="rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
                         <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
                     </div>
+
+                    @if($errors->any())
+                        <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            Periksa kembali field pertanyaan yang wajib diisi.
+                        </div>
+                    @endif
 
                     @if($selectedAssessment)
                         <div class="rounded-xl border px-4 py-2 bg-slate-50 text-sm">{{ $selectedCourse?->title }} · {{ $selectedAssessment->title }}</div>
@@ -382,15 +396,27 @@
                                     <p class="text-sm text-rose-600">{{ $message }}</p>
                                 @enderror
                             @endforeach
+                            @error('question_correctIndex')
+                                <p class="text-sm text-rose-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        <input wire:model="question_sort_order"
-                            type="number"
-                            class="w-full rounded-xl border px-4 py-2"
-                            placeholder="{{ __('admin.question_manager.form.sort_order_placeholder') }}">
-                        @error('question_sort_order')
-                            <p class="text-sm text-rose-600">{{ $message }}</p>
-                        @enderror
+                        <div>
+                            <label class="mb-1 block text-xs font-semibold text-slate-600">
+                                Nomor Urut Soal
+                            </label>
+                            <input wire:model="question_sort_order"
+                                type="number"
+                                min="1"
+                                class="w-full rounded-xl border px-4 py-2"
+                                placeholder="{{ __('admin.question_manager.form.sort_order_placeholder') }}">
+                            <p class="mt-1 text-[11px] leading-relaxed text-slate-500">
+                                Menentukan posisi soal di dalam assessment. Saat membuat soal baru, sistem otomatis mengisi nomor urut berikutnya dari soal terakhir.
+                            </p>
+                            @error('question_sort_order')
+                                <p class="text-sm text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 

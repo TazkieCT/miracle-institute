@@ -280,9 +280,19 @@
                                     @endguest
 
                                     @auth
-                                        <a href="{{ localized_route('topics.show', $topic->slug) }}" class="inline-flex items-center rounded-xl bg-[#004777] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#00395f] sm:text-sm">
-                                            {{ __('general.course_show.topic_cta_enrolled') }}
-                                        </a>
+                                        @if($enrolled)
+                                            <a href="{{ localized_route('topics.show', $topic->slug) }}" class="inline-flex items-center rounded-xl bg-[#004777] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#00395f] sm:text-sm">
+                                                {{ __('general.course_show.topic_cta_enrolled') }}
+                                            </a>
+                                        @else
+                                            <button
+                                                type="button"
+                                                wire:click="openTopicAccessWarning('{{ addslashes($topic->name) }}')"
+                                                class="inline-flex items-center rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-700 transition hover:bg-amber-100 sm:text-sm"
+                                            >
+                                                {{ __('general.course_show.topic_cta_enrolled') }}
+                                            </button>
+                                        @endif
                                     @endauth
                                 </div>
                             </div>
@@ -502,6 +512,46 @@
                             </svg>
                             Memproses...
                         </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if($showTopicAccessWarningModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+            <button type="button" class="absolute inset-0" wire:click="closeTopicAccessWarning" aria-label="Tutup modal peringatan"></button>
+
+            <div class="relative z-10 w-full max-w-md rounded-[1rem] border border-slate-200 bg-white p-6 shadow-2xl">
+                <div class="space-y-3">
+                    <div>
+                        <h3 class="text-xl font-bold text-[#004777]">Akses topik dibatasi</h3>
+                        <p class="mt-2 text-sm leading-6 text-slate-600">
+                            Kamu belum terdaftar di course ini, jadi topik
+                            <span class="font-semibold text-[#004777]">{{ $topicAccessWarningName }}</span>
+                            belum bisa dibuka.
+                        </p>
+                        <p class="mt-2 text-sm leading-6 text-slate-600">
+                            Silakan daftar ke course ini terlebih dahulu untuk membuka topik pembelajaran.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button
+                        type="button"
+                        wire:click="closeTopicAccessWarning"
+                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                    >
+                        Tutup
+                    </button>
+
+                    <button
+                        type="button"
+                        wire:click="confirmEnroll"
+                        class="inline-flex items-center justify-center rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00395f]"
+                    >
+                        Daftar Course
                     </button>
                 </div>
             </div>

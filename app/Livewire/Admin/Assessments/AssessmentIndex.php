@@ -263,7 +263,7 @@ class AssessmentIndex extends Component
         $this->reset(['questionEditingId', 'question_text', 'question_correctIndex', 'question_sort_order']);
         $this->question_options = $this->questionDefaultOptions();
         $this->question_correctIndex = 0;
-        $this->question_sort_order = 0;
+        $this->question_sort_order = 1;
     }
 
     public function edit(string $id): void

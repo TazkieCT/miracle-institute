@@ -7,7 +7,7 @@
             @if($selectedCourse)
                 <a href="{{ localized_route('admin.courses.index') }}"
                    class="rounded-xl border px-4 py-2 text-sm">
-                    Back
+                    Kembali
                 </a>
             @endif
 
@@ -20,7 +20,7 @@
 
     @if($selectedCourse)
         <div class="rounded-2xl border bg-white p-4">
-            <div class="text-xs text-slate-500">Selected Course</div>
+            <div class="text-xs text-slate-500">Kursus Terpilih</div>
             <div class="mt-1 text-lg font-semibold text-slate-900">{{ $selectedCourse->title }}</div>
         </div>
     @endif
@@ -178,6 +178,12 @@
                         <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
                     </div>
 
+                    @if($errors->any())
+                        <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            Periksa kembali field yang wajib diisi.
+                        </div>
+                    @endif
+
                     @if($selectedCourse)
                         <input
                             value="{{ $selectedCourse->title }}"
@@ -188,7 +194,7 @@
 
                     <div>
                         <label class="mb-1 block text-xs font-semibold text-slate-600">
-                            Teacher <span class="text-rose-500">*</span>
+                            Pengajar <span class="text-rose-500">*</span>
                         </label>
                         <select wire:model="teacher_id" class="w-full rounded-xl border px-4 py-2">
                             <option value="">{{ __('admin.topics.form.select_teacher') }}</option>
@@ -196,6 +202,7 @@
                                 <option value="{{ $teacher->id }}">{{ $teacher->full_name }}</option>
                             @endforeach
                         </select>
+                        @error('teacher_id') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
@@ -203,17 +210,19 @@
                             Nama Topik <span class="text-rose-500">*</span>
                         </label>
                         <input wire:model="name" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.topics.form.name_placeholder') }}">
+                        @error('name') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div>
                             <label class="mb-1 block text-xs font-semibold text-slate-600">
-                                Visibility <span class="text-rose-500">*</span>
+                                Visibilitas <span class="text-rose-500">*</span>
                             </label>
                             <select wire:model="visibility" class="w-full rounded-xl border px-4 py-2">
                                 <option value="Public">{{ __('admin.topics.visibility.public') }}</option>
                                 <option value="Private">{{ __('admin.topics.visibility.private') }}</option>
                             </select>
+                            @error('visibility') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
@@ -225,16 +234,27 @@
                                 <option value="archived">{{ __('admin.topics.status.archived') }}</option>
                                 <option value="draft">{{ __('admin.topics.status.draft') }}</option>
                             </select>
+                            @error('status') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
-                    <input wire:model="sort_order" type="number" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.topics.form.sort_order_placeholder') }}">
+                    <div>
+                        <label class="mb-1 block text-xs font-semibold text-slate-600">
+                            Nomor Urut Topik
+                        </label>
+                        <input wire:model="sort_order" type="number" min="1" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.topics.form.sort_order_placeholder') }}">
+                        <p class="mt-1 text-[11px] leading-relaxed text-slate-500">
+                            Menentukan posisi topik di dalam kursus. Saat membuat topik baru, sistem otomatis mengisi nomor urut berikutnya berdasarkan topik terakhir di kursus ini.
+                        </p>
+                        @error('sort_order') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                    </div>
 
                     <div>
                         <label class="mb-1 block text-xs font-semibold text-slate-600">
                             Deskripsi <span class="text-rose-500">*</span>
                         </label>
                         <textarea wire:model="description" rows="4" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.topics.form.description_placeholder') }}"></textarea>
+                        @error('description') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
 

@@ -7,7 +7,7 @@
             @if($selectedFilterTopic)
                 <a href="{{ localized_route('admin.topics.index', ['courseFilter' => $selectedFilterTopic->course_id]) }}"
                    class="rounded-xl border px-4 py-2 text-sm">
-                    Back
+                    Kembali
                 </a>
 
                 @if($selectedFilterSession)
@@ -52,12 +52,12 @@
 
                 <div class="space-y-3">
                     <div class="text-sm font-semibold text-slate-700">
-                        Session Attendance
+                        Kehadiran Sesi
                     </div>
                     <x-ui.table-shell class="table-auto">
                         <thead class="admin-table-head text-left">
                             <tr>
-                                <th class="px-4 py-3 font-medium text-slate-600">User</th>
+                                <th class="px-4 py-3 font-medium text-slate-600">Pengguna</th>
                                 <th class="px-4 py-3 font-medium text-slate-600">Status</th>
                                 <th class="px-4 py-3 font-medium text-slate-600">Check In</th>
                                 <th class="px-4 py-3 font-medium text-slate-600">Check Out</th>
@@ -82,7 +82,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-6 text-center text-slate-500">No attendance yet.</td>
+                                    <td colspan="5" class="px-4 py-6 text-center text-slate-500">Belum ada kehadiran.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -165,7 +165,7 @@
                                 <div class="flex flex-wrap gap-2">
                                     <a href="{{ localized_route('admin.sessions.index', ['topicFilter' => $row->topic_id]) }}"
                                        class="admin-primary-button rounded-md px-2 py-1 text-xs">
-                                        Open
+                                        Buka
                                     </a>
 
                                     <div class="my-1 w-full border-t"></div>
@@ -229,7 +229,17 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-xs font-medium text-slate-600">{{ __('admin.sessions.form.topic_label') }}</label>
+                    <div class="rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
+                        <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
+                    </div>
+
+                    @if($errors->any())
+                        <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            Periksa kembali field yang wajib diisi.
+                        </div>
+                    @endif
+
+                    <label class="text-xs font-medium text-slate-600">{{ __('admin.sessions.form.topic_label') }} <span class="text-rose-500">*</span></label>
 
                     @if($selectedFilterTopic)
                         <input
@@ -298,12 +308,29 @@
                     @error('topic_id') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
 
-                <input wire:model.live="title" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.sessions.form.title_placeholder') }}">
-                <input wire:model.live="zoom_link" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.sessions.form.zoom_placeholder') }}">
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-slate-600">Judul Sesi <span class="text-rose-500">*</span></label>
+                    <input wire:model.live="title" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.sessions.form.title_placeholder') }}">
+                    @error('title') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-slate-600">Tautan Zoom <span class="text-rose-500">*</span></label>
+                    <input wire:model.live="zoom_link" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.sessions.form.zoom_placeholder') }}">
+                    @error('zoom_link') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <input wire:model.live="start_at" type="datetime-local" class="rounded-xl border px-4 py-2">
-                    <input wire:model.live="end_at" type="datetime-local" class="rounded-xl border px-4 py-2">
+                    <div>
+                        <label class="mb-1 block text-xs font-semibold text-slate-600">Mulai <span class="text-rose-500">*</span></label>
+                        <input wire:model.live="start_at" type="datetime-local" class="w-full rounded-xl border px-4 py-2">
+                        @error('start_at') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-xs font-semibold text-slate-600">Selesai <span class="text-rose-500">*</span></label>
+                        <input wire:model.live="end_at" type="datetime-local" class="w-full rounded-xl border px-4 py-2">
+                        @error('end_at') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 <div class="space-y-3 rounded-xl border bg-slate-50 px-4 py-3">
@@ -324,11 +351,6 @@
                         <div><span class="font-medium text-slate-600">{{ __('admin.sessions.status.cancelled') }}</span> → {{ __('admin.sessions.status_desc.cancelled') }}</div>
                     </div>
                 </div>
-
-                @error('title') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('zoom_link') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('start_at') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('end_at') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
 
                 <div class="flex justify-end gap-2">
                     <button type="button" wire:click="$set('showModal', false)"

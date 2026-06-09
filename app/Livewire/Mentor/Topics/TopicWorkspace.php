@@ -58,13 +58,8 @@ class TopicWorkspace extends Component
             $tabs['attendances'] = 'Attendances';
         }
 
-        
         if ($this->canAccessTopic($this->topic, ['manage_students', 'view_reports', 'manage_topics'])) {
             $tabs['students'] = 'Students';
-            }
-            
-        if ($this->canManageCollaborators($this->topic)) {
-            $tabs['collaborators'] = 'Collaborators';
         }
 
         // if ($this->canAccessTopic($this->topic, ['manage_assessments', 'manage_topics'])) {
@@ -85,7 +80,6 @@ class TopicWorkspace extends Component
                 'sessions' => \App\Livewire\Mentor\Topics\Tabs\SessionsTab::class,
                 'attendances' => \App\Livewire\Mentor\Topics\Tabs\AttendancesTab::class,
                 'students' => \App\Livewire\Mentor\Topics\Tabs\StudentsTab::class,
-                'collaborators' => \App\Livewire\Mentor\Topics\Tabs\CollaboratorsTab::class,
                 // 'assessment' => \App\Livewire\Mentor\Topics\Tabs\AssessmentTab::class,
                 default => \App\Livewire\Mentor\Topics\Tabs\OverviewTab::class,
             },

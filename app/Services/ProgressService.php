@@ -6,6 +6,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Attendance;
 use App\Models\Certificate;
+use App\Models\Course;
 use App\Models\CourseEnrollment;
 use App\Models\Material;
 use App\Models\User;
@@ -13,7 +14,6 @@ use App\Models\MaterialProgress;
 use App\Models\Topic;
 use App\Models\TopicProgress;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class ProgressService
@@ -287,22 +287,10 @@ class ProgressService
             ->first();
 
         if ($eligible) {
-            return DB::transaction(function () use ($userId, $courseId, $certificate) {
-                $certificate = Certificate::query()->firstOrNew([
-                    'user_id' => $userId,
-                    'course_id' => $courseId,
-                ]);
+            $course = Course::query()->findOrFail($courseId);
+            $user = User::query()->findOrFail($userId);
 
-                if (!$certificate->certificate_number) {
-                    $certificate->certificate_number = $this->generateCertificateNumber();
-                }
-
-                $certificate->status = 'issued';
-                $certificate->issued_at = now();
-                $certificate->save();
-
-                return $certificate;
-            });
+            return app(CertificateService::class)->issueCourseCertificate($course, $user);
         }
 
         if ($certificate && $certificate->status === 'issued') {
@@ -350,12 +338,6 @@ class ProgressService
 
         return $session->end_at->lte(now());
     }
-
-    private function generateCertificateNumber(): string
-    {
-        return 'CERT-' . now()->format('Ymd') . '-' . Str::upper(Str::random(8));
-    }
-
     private function requireEnrollment(string $userId, string $courseId): CourseEnrollment
     {
         $enrollment = CourseEnrollment::query()

@@ -1,4 +1,9 @@
 <div wire:key="assessment-{{ $attempt->id }}-{{ $currentIndex }}" class="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    @php
+        $totalQuestions = count($questions);
+        $answeredCount = $this->answeredCount;
+        $answeredPercent = $totalQuestions > 0 ? (int) round(($answeredCount / $totalQuestions) * 100) : 0;
+    @endphp
 
     @if($showIntro)
         <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white">
@@ -94,6 +99,17 @@
                     <span class="font-medium text-mentor-primary">{{ $assessment->passing_grade }}%</span>
                 </div>
             </div>
+
+            <div class="border-t border-slate-100 px-6 pb-6 pt-5">
+                <div class="flex items-center justify-between gap-3 text-xs uppercase tracking-wide text-slate-500">
+                    <span>Progress Jawaban</span>
+                    <span>{{ $answeredCount }} / {{ $totalQuestions }}</span>
+                </div>
+                <div class="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
+                    <div class="h-full rounded-full bg-emerald-500 transition-all duration-300" style="width: {{ $answeredPercent }}%"></div>
+                </div>
+                <p class="mt-2 text-xs text-slate-500">{{ $answeredPercent }}% soal sudah dijawab.</p>
+            </div>
         </section>
 
         <section class="grid grid-cols-1 gap-6 xl:grid-cols-[260px_1fr]">
@@ -101,7 +117,7 @@
                 <div class="mb-3 flex items-center justify-between">
                     <h2 class="font-semibold">{{ __('general.assessment_taker.navigator.title') }}</h2>
                     <span class="text-xs text-slate-500">
-                        {{ $this->answeredCount }} / {{ count($questions) }}
+                        {{ $answeredCount }} / {{ $totalQuestions }}
                     </span>
                 </div>
 
@@ -118,8 +134,8 @@
                             {{ $isActive
                                 ? 'border-mentor-primary bg-mentor-primary text-white'
                                 : ($isAnswered
-                                    ? 'border-emerald-300 bg-emerald-100 text-emerald-700'
-                                    : 'bg-white hover:bg-slate-50') }}"
+                                    ? 'border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50') }}"
                         >
                             {{ $i + 1 }}
                         </button>
@@ -128,6 +144,21 @@
 
                 <div class="mt-4 rounded-2xl border bg-slate-50 p-4 text-sm leading-6 text-slate-600">
                     {{ __('general.assessment_taker.navigator.note') }}
+                </div>
+
+                <div class="mt-4 space-y-2 text-xs text-slate-600">
+                    <div class="flex items-center gap-2">
+                        <span class="h-3 w-3 rounded-sm bg-emerald-100 ring-1 ring-emerald-300"></span>
+                        <span>Soal terjawab</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="h-3 w-3 rounded-sm bg-white ring-1 ring-slate-300"></span>
+                        <span>Soal belum terjawab</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="h-3 w-3 rounded-sm bg-mentor-primary ring-1 ring-mentor-primary"></span>
+                        <span>Soal aktif</span>
+                    </div>
                 </div>
             </aside>
 

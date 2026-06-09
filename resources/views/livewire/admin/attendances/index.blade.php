@@ -146,9 +146,20 @@
                     <h2 class="text-lg font-semibold">
                         {{ $editingId ? __('admin.attendances.modal.edit_title') : __('admin.attendances.modal.create_title') }}
                     </h2>
-                    <button type="button" wire:click="$set('showModal', false)">Close</button>
+                    <button type="button" wire:click="$set('showModal', false)">Tutup</button>
                 </div>
 
+                <div class="rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
+                    <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
+                </div>
+
+                @if($errors->any())
+                    <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                        Periksa kembali field yang wajib diisi.
+                    </div>
+                @endif
+
+                <label class="mb-1 block text-xs font-semibold text-slate-600">Sesi <span class="text-rose-500">*</span></label>
                 <select wire:model="video_session_id" class="w-full rounded-xl border px-4 py-2">
                     <option value="">{{ __('admin.attendances.form.select_session') }}</option>
                     @foreach($sessions as $session)
@@ -157,7 +168,9 @@
                         </option>
                     @endforeach
                 </select>
+                @error('video_session_id') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
 
+                <label class="mb-1 block text-xs font-semibold text-slate-600">Pengguna <span class="text-rose-500">*</span></label>
                 <select wire:model="user_id" class="w-full rounded-xl border px-4 py-2">
                     <option value="">{{ __('admin.attendances.form.select_user') }}</option>
                     @foreach($users as $user)
@@ -166,19 +179,24 @@
                         </option>
                     @endforeach
                 </select>
+                @error('user_id') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
 
+                <label class="mb-1 block text-xs font-semibold text-slate-600">Status <span class="text-rose-500">*</span></label>
                 <select wire:model="status" class="w-full rounded-xl border px-4 py-2">
                     <option value="present">{{ __('admin.attendances.status.present') }}</option>
                     <option value="late">{{ __('admin.attendances.status.late') }}</option>
                     <option value="absent">{{ __('admin.attendances.status.absent') }}</option>
                 </select>
+                @error('status') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
 
                 <input wire:model="check_in_at" type="datetime-local"
                     class="w-full rounded-xl border px-4 py-2">
+                @error('check_in_at') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
 
                 <input wire:model="ip_address"
                     class="w-full rounded-xl border px-4 py-2"
                     placeholder="{{ __('admin.attendances.form.ip_address_placeholder') }}">
+                @error('ip_address') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
 
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" wire:click="$set('showModal', false)"

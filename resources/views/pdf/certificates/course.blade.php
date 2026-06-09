@@ -420,11 +420,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($course->topics as $index => $topic)
+                        @forelse($backTopics ?? [] as $index => $topic)
                             <tr>
                                 <td class="no">{{ $index + 1 }}</td>
-                                <td class="topic">{{ $topic->name }}</td>
-                                <td class="duration">{{ $topic->topic_status ?? 'Absent' }}</td>
+                                <td class="topic">{{ $topic['topic_name'] ?? '-' }}</td>
+                                <td class="duration">{{ $topic['topic_status'] ?? 'Online' }}</td>
                             </tr>
                         @empty
                             <tr>

@@ -14,7 +14,9 @@ class GoogleIntegrationController extends Controller
         $client = new GoogleClient();
         $client->setClientId(config('services.google.client_id'));
         $client->setClientSecret(config('services.google.client_secret'));
-        $client->setRedirectUri(route('admin.google.callback'));
+        $client->setRedirectUri(
+            (string) (config('services.google.redirect') ?: route('admin.google.callback'))
+        );
         $client->setAccessType('offline');
         $client->setPrompt('consent');
         $client->setScopes([

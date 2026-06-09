@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Courses;
 
 use App\Livewire\Concerns\WithAdminTableState;
 use App\Models\Assessment;
+use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Material;
@@ -19,6 +20,7 @@ class CourseIndex extends Component
     use WithAdminTableState;
 
     public bool $showModal = false;
+    public bool $showRecapModal = false;
 
     /** @var array<string> */
     public array $thumbnails = [];
@@ -35,6 +37,9 @@ class CourseIndex extends Component
 
     public string $studyProgramFilter = '';
     public string $statusFilter = '';
+    public ?Course $selectedCourseRecap = null;
+    public array $courseRecapSummary = [];
+    public array $courseRecapSessions = [];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -137,6 +142,65 @@ class CourseIndex extends Component
     {
         Course::findOrFail($id)->delete();
         $this->dispatch('toast', type: 'success', message: 'Course berhasil dihapus.');
+    }
+
+    public function openRecap(string $id): void
+    {
+        $course = Course::with([
+            'studyProgram',
+            'topics.videoSessions',
+            'enrollments',
+            'certificates' => fn ($query) => $query->where('status', 'issued'),
+        ])->findOrFail($id);
+
+        $sessionIds = $course->topics
+            ->flatMap(fn ($topic) => $topic->videoSessions->pluck('id'))
+            ->values();
+
+        $attendances = Attendance::query()
+            ->whereIn('video_session_id', $sessionIds)
+            ->get()
+            ->groupBy('video_session_id');
+
+        $sessions = $course->topics
+            ->flatMap(function ($topic) use ($attendances) {
+                return $topic->videoSessions->map(function ($session) use ($topic, $attendances) {
+                    $rows = collect($attendances->get($session->id, collect()));
+
+                    return [
+                        'topic_name' => $topic->name,
+                        'session_title' => $session->title,
+                        'start_at' => $session->start_at?->format('d M Y H:i') ?? '-',
+                        'status' => $session->status,
+                        'present' => $rows->where('status', 'present')->count(),
+                        'late' => $rows->where('status', 'late')->count(),
+                        'absent' => $rows->where('status', 'absent')->count(),
+                        'attendance_total' => $rows->count(),
+                    ];
+                });
+            })
+            ->sortBy('start_at')
+            ->values();
+
+        $this->selectedCourseRecap = $course;
+        $this->courseRecapSessions = $sessions->all();
+        $this->courseRecapSummary = [
+            'enrollments_total' => $course->enrollments->count(),
+            'graduates_total' => $course->certificates->count(),
+            'sessions_total' => $sessions->count(),
+            'attendance_present' => $sessions->sum('present'),
+            'attendance_late' => $sessions->sum('late'),
+            'attendance_absent' => $sessions->sum('absent'),
+        ];
+        $this->showRecapModal = true;
+    }
+
+    public function closeRecapModal(): void
+    {
+        $this->showRecapModal = false;
+        $this->selectedCourseRecap = null;
+        $this->courseRecapSummary = [];
+        $this->courseRecapSessions = [];
     }
 
     public function mount(): void

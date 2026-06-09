@@ -76,7 +76,7 @@
                     >
 
                     <p class="text-xs leading-5 text-slate-500">
-                        Pilih gambar thumbnail baru untuk ditambahkan ke library template course.
+                        Pilih gambar thumbnail baru untuk ditambahkan ke library template kursus.
                     </p>
 
                     @error('thumbnail')

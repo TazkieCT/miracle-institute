@@ -15,7 +15,7 @@ return [
                 'hint' => 'Pengguna terdaftar',
             ],
             'courses' => [
-                'label' => 'Course',
+                'label' => 'Kursus',
                 'hint' => 'Pelajaran tersedia',
             ],
             'topics' => [
@@ -81,7 +81,7 @@ return [
 
         'common' => [
             'no_topic' => 'Tidak Ada Topik',
-            'no_course' => 'Tidak Ada Course',
+            'no_course' => 'Tidak Ada Kursus',
         ],
     ],
 
@@ -353,10 +353,10 @@ return [
     ],
 
     'courses' => [
-        'page_title' => 'Course',
-        'page_subtitle' => 'Halaman utama course. Detail topik, materi, sesi, assessment, dan sertifikat dibuka dari sini.',
+        'page_title' => 'Kursus',
+        'page_subtitle' => 'Halaman utama kursus. Detail topik, materi, sesi, assessment, dan sertifikat dibuka dari sini.',
         'actions' => [
-            'create' => '+ Course Baru',
+            'create' => '+ Kursus Baru',
             'manage_thumbnails' => 'Kelola Thumbnail',
             'topics' => 'Topik',
             'materials' => 'Materi',
@@ -368,14 +368,14 @@ return [
             'cancel' => 'Batal',
             'save' => 'Simpan',
         ],
-        'search_placeholder' => 'Cari course...',
+        'search_placeholder' => 'Cari kursus...',
         'filters' => [
             'all_programs' => 'Semua program',
             'all_status' => 'Semua status',
         ],
         'per_page' => '{1} :count / halaman|[2,*] :count / halaman',
         'table' => [
-            'course' => 'Course',
+            'course' => 'Kursus',
             'program' => 'Program',
             'topics' => 'Topik',
             'enrollments' => 'Enrollment',
@@ -388,15 +388,15 @@ return [
             'inactive' => 'Nonaktif',
         ],
         'empty' => 'Tidak ada data.',
-        'confirm_delete' => 'Hapus course ini?',
+        'confirm_delete' => 'Hapus kursus ini?',
         'modal' => [
-            'create_title' => 'Course Baru',
-            'edit_title' => 'Edit Course',
+            'create_title' => 'Kursus Baru',
+            'edit_title' => 'Edit Kursus',
         ],
         'form' => [
             'select_program' => 'Pilih program',
             'title_placeholder' => 'Judul',
-            'certificate_course_number_label' => 'Nomor urut sertifikat course',
+            'certificate_course_number_label' => 'Nomor urut sertifikat kursus',
             'certificate_course_number_placeholder' => 'Contoh: 2',
             'certificate_prefix_code_label' => 'Prefix code sertifikat',
             'certificate_prefix_code_placeholder' => 'Contoh: CRSE',
@@ -410,42 +410,42 @@ return [
     ],
 
     'course_thumbnails' => [
-        'page_title' => 'Thumbnail Course',
-        'page_subtitle' => 'Upload dan kelola template thumbnail reusable untuk course.',
+        'page_title' => 'Thumbnail Kursus',
+        'page_subtitle' => 'Upload dan kelola template thumbnail reusable untuk kursus.',
         'confirm_delete' => 'Hapus template thumbnail ini?',
         'empty' => 'Belum ada template thumbnail.',
         'actions' => [
-            'back_to_courses' => 'Kembali ke Course',
+            'back_to_courses' => 'Kembali ke Kursus',
             'upload' => 'Upload Thumbnail',
             'uploading' => 'Mengunggah...',
             'delete' => 'Hapus',
         ],
         'stats' => [
             'total' => 'Total template',
-            'used' => 'Dipakai course',
+            'used' => 'Dipakai kursus',
             'unused' => 'Siap dibersihkan',
         ],
         'upload' => [
             'title' => 'Upload Thumbnail Baru',
-            'subtitle' => 'Gambar yang diupload di sini akan disimpan ke library thumbnail course bersama.',
+            'subtitle' => 'Gambar yang diupload di sini akan disimpan ke library thumbnail kursus bersama.',
         ],
         'library' => [
             'title' => 'Library Thumbnail',
-            'subtitle' => 'Template dari library ini bisa dipilih di form course.',
-            'used_by' => '{0} Belum dipakai|{1} Dipakai oleh :count course|[2,*] Dipakai oleh :count course',
+            'subtitle' => 'Template dari library ini bisa dipilih di form kursus.',
+            'used_by' => '{0} Belum dipakai|{1} Dipakai oleh :count kursus|[2,*] Dipakai oleh :count kursus',
             'in_use' => 'Sedang dipakai',
         ],
     ],
 
     'topics' => [
         'page_title' => 'Topik',
-        'page_subtitle' => 'Halaman utama topik. Semua detail content berada di bawah course yang relevan.',
+        'page_subtitle' => 'Halaman utama topik. Semua detail konten berada di bawah kursus yang relevan.',
         'actions' => [
             'create' => '+ Topik Baru',
             'materials' => 'Materi',
             'sessions' => 'Sesi',
             'assessments' => 'Assessment',
-            'attendances' => 'Attendance',
+            'attendances' => 'Kehadiran',
             'certificates' => 'Sertifikat',
             'edit' => 'Edit',
             'delete' => 'Hapus',
@@ -453,7 +453,7 @@ return [
             'save' => 'Simpan',
         ],
         'stats' => [
-            'courses' => 'Course',
+            'courses' => 'Kursus',
             'topics' => 'Topik',
             'materials' => 'Materi',
             'sessions' => 'Sesi',
@@ -461,14 +461,14 @@ return [
         ],
         'search_placeholder' => 'Cari topik...',
         'filters' => [
-            'all_courses' => 'Semua course',
-            'all_teachers' => 'Semua teacher',
+            'all_courses' => 'Semua kursus',
+            'all_teachers' => 'Semua pengajar',
             'all_status' => 'Semua status',
         ],
         'table' => [
-            'course' => 'Course',
+            'course' => 'Kursus',
             'topic' => 'Topik',
-            'teacher' => 'Teacher',
+            'teacher' => 'Pengajar',
             'order' => 'Urutan',
             'content' => 'Konten',
             'status' => 'Status',
@@ -494,8 +494,8 @@ return [
             'edit_title' => 'Edit Topik',
         ],
         'form' => [
-            'select_course' => 'Pilih course',
-            'select_teacher' => 'Pilih teacher',
+            'select_course' => 'Pilih kursus',
+            'select_teacher' => 'Pilih pengajar',
             'name_placeholder' => 'Nama',
             'sort_order_placeholder' => 'Urutan',
             'description_placeholder' => 'Deskripsi',
@@ -505,9 +505,9 @@ return [
     'materials' => [
         'page_title' => 'Materi',
         'page_subtitle' => 'Halaman utama materi. Detail material berada di bawah topic yang relevan.',
-        'search_placeholder' => 'Cari materi, topik, atau course...',
+        'search_placeholder' => 'Cari materi, topik, atau kursus...',
         'filters' => [
-            'all_courses' => 'Semua course',
+            'all_courses' => 'Semua kursus',
             'all_topics' => 'Semua topik',
             'all_types' => 'Semua tipe',
             'all_status' => 'Semua status',
@@ -525,7 +525,7 @@ return [
             'public' => 'Publik',
             'private' => 'Pribadi',
         ],
-        'course_group' => ':count topik di course ini',
+        'course_group' => ':count topik di kursus ini',
         'topic_meta' => ':materials materi · :visibility · :status',
         'sort_order' => 'Urutan :count',
         'full_tooltip' => 'Topik ini sudah memiliki 3 materi. Hapus salah satu untuk menambah baru.',
@@ -564,11 +564,11 @@ return [
     ],
 
     'sessions' => [
-        'page_title' => 'Video Sessions',
+        'page_title' => 'Sesi Video',
         'page_subtitle' => 'Halaman utama sesi. Detail attendance dibuka dari tiap sesi.',
         'actions' => [
             'create' => '+ Sesi Baru',
-            'attend' => 'Attendance',
+            'attend' => 'Kehadiran',
             'edit' => 'Edit',
             'delete' => 'Hapus',
             'cancel' => 'Batal',
@@ -584,7 +584,7 @@ return [
         ],
         'search_placeholder' => 'Cari sesi...',
         'filters' => [
-            'all_courses' => 'Semua course',
+            'all_courses' => 'Semua kursus',
             'all_topics' => 'Semua topik',
             'all_status' => 'Semua status',
         ],
@@ -601,11 +601,11 @@ return [
             'cancelled' => 'sesi dibatalkan manual',
         ],
         'table' => [
-            'course' => 'Course',
+            'course' => 'Kursus',
             'title' => 'Judul',
             'schedule' => 'Jadwal',
             'status' => 'Status',
-            'attend' => 'Attendance',
+            'attend' => 'Kehadiran',
             'action' => 'Aksi',
         ],
         'empty' => 'Tidak ada sesi ditemukan.',
@@ -615,7 +615,7 @@ return [
         ],
         'form' => [
             'topic_label' => 'Topik',
-            'topic_search_placeholder' => 'Cari course atau topik...',
+            'topic_search_placeholder' => 'Cari kursus atau topik...',
             'topic_helper' => 'Pilih satu topik dari hasil di bawah.',
             'selected' => 'Terpilih',
             'title_placeholder' => 'Judul sesi',
@@ -628,7 +628,7 @@ return [
 
     'certificates' => [
         'page_title' => 'Sertifikat',
-        'page_subtitle' => 'CRUD sertifikat penuh. Bisa difilter per course/topic/type/status.',
+        'page_subtitle' => 'CRUD sertifikat penuh. Bisa difilter per kursus/topik/tipe/status.',
         'actions' => [
             'create' => '+ Sertifikat Baru',
             'download' => 'Unduh',
@@ -645,13 +645,13 @@ return [
         ],
         'search_placeholder' => 'Cari sertifikat...',
         'filters' => [
-            'all_courses' => 'Semua course',
+            'all_courses' => 'Semua kursus',
             'all_topics' => 'Semua topik',
             'all_types' => 'Semua tipe',
             'all_status' => 'Semua status',
         ],
         'types' => [
-            'course' => 'Course',
+            'course' => 'Kursus',
             'topic' => 'Topik',
         ],
         'status' => [
@@ -661,7 +661,7 @@ return [
         ],
         'table' => [
             'certificate' => 'Sertifikat',
-            'course_topic' => 'Course / Topik',
+            'course_topic' => 'Kursus / Topik',
             'type' => 'Tipe',
             'issued' => 'Diterbitkan',
             'status' => 'Status',
@@ -674,18 +674,18 @@ return [
         ],
         'form' => [
             'certificate_number_placeholder' => 'Nomor sertifikat',
-            'select_user' => 'Pilih user',
-            'select_course' => 'Pilih course',
+            'select_user' => 'Pilih pengguna',
+            'select_course' => 'Pilih kursus',
             'select_topic' => 'Pilih topik',
             'file_path_placeholder' => 'Path file',
         ],
     ],
 
     'attendances' => [
-        'page_title' => 'Attendance',
-        'page_subtitle' => 'Kelola absensi peserta per video session.',
+        'page_title' => 'Kehadiran',
+        'page_subtitle' => 'Kelola absensi peserta per sesi video.',
         'actions' => [
-            'create' => '+ Attendance Baru',
+            'create' => '+ Kehadiran Baru',
             'edit' => 'Edit',
             'delete' => 'Hapus',
             'cancel' => 'Batal',
@@ -697,7 +697,7 @@ return [
             'late' => 'Terlambat',
             'absent' => 'Absen',
         ],
-        'search_placeholder' => 'Cari user/session...',
+        'search_placeholder' => 'Cari pengguna/sesi...',
         'filters' => [
             'all_topics' => 'Semua topik',
             'all_sessions' => 'Semua sesi',
@@ -711,29 +711,29 @@ return [
         'table' => [
             'session' => 'Sesi',
             'topic' => 'Topik',
-            'user' => 'User',
+            'user' => 'Pengguna',
             'status' => 'Status',
             'check_in' => 'Check In',
             'action' => 'Aksi',
         ],
         'empty' => 'Tidak ada data absensi ditemukan.',
         'modal' => [
-            'create_title' => 'Attendance Baru',
-            'edit_title' => 'Edit Attendance',
+            'create_title' => 'Kehadiran Baru',
+            'edit_title' => 'Edit Kehadiran',
         ],
         'form' => [
             'select_session' => 'Pilih sesi',
-            'select_user' => 'Pilih user',
+            'select_user' => 'Pilih pengguna',
             'ip_address_placeholder' => 'IP Address',
         ],
     ],
 
     'assessments' => [
         'page_title' => 'Assessment',
-        'page_subtitle' => 'Assessment terpusat pada course. Pertanyaan dikelola di halaman terpisah.',
+        'page_subtitle' => 'Assessment terpusat pada kursus. Pertanyaan dikelola di halaman terpisah.',
         'actions' => [
             'create' => '+ Assessment Baru',
-            'questions' => 'Pertanyaan',
+            'questions' => 'Bank Soal',
             'edit' => 'Edit',
             'delete' => 'Hapus',
             'cancel' => 'Batal',
@@ -741,7 +741,7 @@ return [
         ],
         'search_placeholder' => 'Cari assessment...',
         'filters' => [
-            'all_courses' => 'Semua course',
+            'all_courses' => 'Semua kursus',
             'all_status' => 'Semua status',
         ],
         'status' => [
@@ -750,7 +750,7 @@ return [
             'draft' => 'Draft',
         ],
         'table' => [
-            'course' => 'Course',
+            'course' => 'Kursus',
             'assessment' => 'Assessment',
             'questions' => 'Q',
             'grade' => 'Nilai',
@@ -758,26 +758,26 @@ return [
             'status' => 'Status',
             'action' => 'Aksi',
         ],
-        'course_centered_note' => 'Assessment berbasis course',
+        'course_centered_note' => 'Assessment berbasis kursus',
         'empty' => 'Tidak ada assessment ditemukan.',
         'summary' => [
-            'question_count' => 'Akan menampilkan :count pertanyaan',
+            'question_count' => 'Akan menampilkan hingga :count soal',
         ],
         'modal' => [
             'create_title' => 'Assessment Baru',
             'edit_title' => 'Edit Assessment',
         ],
         'form' => [
-            'select_course' => 'Pilih course',
+            'select_course' => 'Pilih kursus',
             'title_placeholder' => 'Judul',
             'passing_grade_placeholder' => 'Nilai kelulusan',
-            'question_limit_placeholder' => 'Batas pertanyaan',
+            'question_limit_placeholder' => 'Soal ditampilkan',
             'randomize_questions' => 'Acak pertanyaan',
         ],
     ],
 
     'question_manager' => [
-        'page_title' => 'Question Manager',
+        'page_title' => 'Manajer Pertanyaan',
         'actions' => [
             'back' => 'Kembali',
             'create' => '+ Pertanyaan Baru',
@@ -787,8 +787,8 @@ return [
             'save' => 'Simpan',
         ],
         'stats' => [
-            'course' => 'Course',
-            'questions' => 'Pertanyaan',
+            'course' => 'Kursus',
+            'questions' => 'Bank Soal',
             'attempts' => 'Percobaan',
             'passing_grade' => 'Passing Grade',
         ],
@@ -823,14 +823,14 @@ return [
         'dashboard' => 'Dashboard',
         'study_programs' => 'Study Program',
         'learning' => 'Learning',
-        'courses' => 'Course',
-        'topics' => 'Topic',
-        'materials' => 'Material',
-        'sessions' => 'Session',
-        'attendances' => 'Attendance',
+        'courses' => 'Kursus',
+        'topics' => 'Topik',
+        'materials' => 'Materi',
+        'sessions' => 'Sesi',
+        'attendances' => 'Kehadiran',
         'assessments' => 'Assessment',
-        'certificates' => 'Certificate',
-        'users' => 'User',
+        'certificates' => 'Sertifikat',
+        'users' => 'Pengguna',
         'roles' => 'Role',
         'permissions' => 'Permission',
         'articles' => 'Artikel',
