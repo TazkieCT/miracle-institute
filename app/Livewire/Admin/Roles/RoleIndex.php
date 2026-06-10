@@ -11,6 +11,8 @@ class RoleIndex extends Component
 {
     use WithAdminTableState;
 
+    public bool $readOnly = true;
+
     public bool $showModal = false;
     public bool $showDeleteModal = false;
     public ?string $deleteId = null;
@@ -40,27 +42,17 @@ class RoleIndex extends Component
 
     public function create(): void
     {
-        $this->resetForm();
-        $this->showModal = true;
+        $this->toast('info', 'Role bersifat read-only dan tidak bisa diubah.');
     }
 
     public function edit(string $id): void
     {
-        $row = Role::with('permissions')->findOrFail($id);
-
-        $this->editingId = $row->id;
-        $this->name = $row->name;
-        $this->label = $row->label;
-        $this->description = $row->description;
-        $this->permissionIds = $row->permissions->pluck('id')->toArray();
-
-        $this->showModal = true;
+        $this->toast('info', 'Role bersifat read-only dan tidak bisa diubah.');
     }
 
     public function confirmDelete(string $id): void
     {
-        $this->deleteId = $id;
-        $this->showDeleteModal = true;
+        $this->toast('info', 'Role bersifat read-only dan tidak bisa dihapus.');
     }
 
     private function toast(string $type, string $message): void
@@ -70,36 +62,12 @@ class RoleIndex extends Component
 
     public function save(): void
     {
-        $this->validate();
-
-        $role = Role::updateOrCreate(
-            ['id' => $this->editingId],
-            [
-                'name' => $this->name,
-                'label' => $this->label,
-                'description' => $this->description,
-            ]
-        );
-
-        $role->permissions()->sync($this->permissionIds);
-
-        $this->resetForm();
-        $this->showModal = false;
-        $this->toast('success', 'Role berhasil disimpan.');
+        $this->toast('warning', 'Role bersifat read-only dan tidak bisa disimpan.');
     }
 
     public function delete(): void
     {
-        if (!$this->deleteId) {
-            $this->toast('warning', 'Pilih role yang akan dihapus.');
-            return;
-        }
-
-        Role::findOrFail($this->deleteId)->delete();
-
-        $this->deleteId = null;
-        $this->showDeleteModal = false;
-        $this->toast('success', 'Role berhasil dihapus.');
+        $this->toast('warning', 'Role bersifat read-only dan tidak bisa dihapus.');
     }
 
     public function render()

@@ -1,9 +1,9 @@
 <div class="space-y-6">
-    <x-ui.page-header title="{{ __('admin.roles.page_title') }}" subtitle="{{ __('admin.roles.page_subtitle') }}">
-        <button wire:click="create" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 text-sm transition">
-            {{ __('admin.roles.actions.create') }}
-        </button>
-    </x-ui.page-header>
+    <x-ui.page-header title="{{ __('admin.roles.page_title') }}" subtitle="{{ __('admin.roles.page_subtitle') }}" />
+
+    {{-- <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        Role saat ini bersifat read-only. Anda masih bisa melihat daftar role dan permission yang dimiliki, tetapi tidak bisa menambah, mengubah, atau menghapus role.
+    </div> --}}
 
     <section class="space-y-4">
         <div class="overflow-hidden rounded-2xl border bg-white">
@@ -14,7 +14,6 @@
                             <th class="px-4 py-3 font-medium">{{ __('admin.roles.table.name') }}</th>
                             <th class="px-4 py-3 font-medium">{{ __('admin.roles.table.label') }}</th>
                             <th class="px-4 py-3 font-medium">{{ __('admin.roles.table.permissions') }}</th>
-                            <th class="px-4 py-3 text-right font-medium">{{ __('admin.roles.table.action') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
@@ -35,46 +34,10 @@
                                         @endforelse
                                     </div>
                                 </td>
-
-                                <td class="px-4 py-3">
-                                    <div class="flex justify-end gap-2">
-                                        <div class="relative group">
-                                            <button
-                                                wire:click="edit('{{ $row->id }}')"
-                                                class="admin-edit-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
-                                                title="{{ __('admin.roles.actions.edit') }}"
-                                            >
-                                                <span class="sr-only">{{ __('admin.roles.actions.edit') }}</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a2.25 2.25 0 1 1 3.182 3.182L10.582 17.13a4.5 4.5 0 0 1-1.897 1.13L6 19l.74-2.685a4.5 4.5 0 0 1 1.13-1.897L16.862 4.487ZM16.862 4.487 19.5 7.125" />
-                                                </svg>
-                                            </button>
-                                            <span class="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-brand-dark/20 bg-white px-2 py-1 text-[11px] font-medium text-brand-dark opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
-                                                {{ __('admin.roles.actions.edit') }}
-                                            </span>
-                                        </div>
-
-                                        <div class="relative group">
-                                            <button
-                                                wire:click="confirmDelete('{{ $row->id }}')"
-                                                class="admin-delete-button inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
-                                                title="{{ __('admin.roles.actions.delete') }}"
-                                            >
-                                                <span class="sr-only">{{ __('admin.roles.actions.delete') }}</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084a2.25 2.25 0 0 1-2.245-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                </svg>
-                                            </button>
-                                            <span class="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-brand-dark/20 bg-white px-2 py-1 text-[11px] font-medium text-brand-dark opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
-                                                {{ __('admin.roles.actions.delete') }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-8 text-center text-slate-500">
+                                <td colspan="3" class="px-4 py-8 text-center text-slate-500">
                                     {{ __('admin.roles.empty') }}
                                 </td>
                             </tr>
@@ -86,100 +49,4 @@
 
         <div>{{ $rows->links() }}</div>
     </section>
-
-    @if($showModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="absolute inset-0 bg-black/50" wire:click="$set('showModal', false)"></div>
-
-            <div class="relative mx-4 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-slate-900">
-                        {{ $editingId ? __('admin.roles.modal.edit_title') : __('admin.roles.modal.create_title') }}
-                    </h2>
-
-                    <button type="button" wire:click="$set('showModal', false)" class="text-slate-500 hover:text-slate-900">Tutup</button>
-                </div>
-
-                <div class="mt-5 space-y-4">
-                    <div class="rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
-                        <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
-                    </div>
-
-                    <div>
-                        <label class="mb-1 block text-xs font-semibold text-slate-600">
-                            {{ __('admin.roles.form.name_placeholder') }} <span class="text-rose-500">*</span>
-                        </label>
-                        <input wire:model="name" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.roles.form.name_placeholder') }}">
-                        @error('name')
-                            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="mb-1 block text-xs font-semibold text-slate-600">
-                            {{ __('admin.roles.form.label_placeholder') }} <span class="text-rose-500">*</span>
-                        </label>
-                        <input wire:model="label" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.roles.form.label_placeholder') }}">
-                        @error('label')
-                            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="mb-1 block text-xs font-semibold text-slate-600">
-                            Deskripsi
-                        </label>
-                        <textarea wire:model="description" rows="3" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.roles.form.description_placeholder') }}"></textarea>
-                        @error('description')
-                            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="font-medium text-slate-900">{{ __('admin.roles.form.permissions_title') }}</div>
-                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            @foreach($permissions as $perm)
-                                <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 hover:border-slate-300">
-                                    <input type="checkbox" wire:model="permissionIds" value="{{ $perm->id }}" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900">
-                                    <span class="text-sm text-slate-700">{{ $perm->name }}</span>
-                                </label>
-                            @endforeach
-                        </div>
-                        @error('permissionIds')
-                            <p class="text-xs text-rose-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="mt-6 flex justify-end gap-2">
-                    <button type="button" wire:click="$set('showModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
-                        {{ __('admin.roles.actions.cancel') }}
-                    </button>
-                    <button wire:click="save" class="admin-primary-button rounded-xl border border-brand-dark/20 px-4 py-2 transition">
-                        {{ __('admin.roles.actions.save') }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    @if($showDeleteModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="absolute inset-0 bg-black/50" wire:click="$set('showDeleteModal', false)"></div>
-
-            <div class="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-                <h2 class="text-lg font-semibold text-slate-900">{{ __('admin.roles.delete.title') }}</h2>
-                <p class="mt-2 text-sm text-slate-600">{{ __('admin.roles.delete.subtitle') }}</p>
-
-                <div class="mt-6 flex justify-end gap-2">
-                    <button type="button" wire:click="$set('showDeleteModal', false)" class="rounded-xl border px-4 py-2 hover:bg-slate-50">
-                        {{ __('admin.roles.actions.cancel') }}
-                    </button>
-                    <button wire:click="delete" class="admin-delete-button rounded-xl px-4 py-2">
-                        {{ __('admin.roles.actions.delete') }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endif
 </div>
