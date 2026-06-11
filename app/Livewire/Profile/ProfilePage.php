@@ -38,7 +38,7 @@ class ProfilePage extends Component
         $userId = Auth::id();
 
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:35'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'phone' => ['required', 'string', 'regex:/^62[0-9]{8,13}$/'],
             'gender' => ['required', Rule::in(['male', 'female'])],

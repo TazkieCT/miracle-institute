@@ -25,7 +25,6 @@ use App\Email\Listeners\SendAssessmentSubmissionNotification;
 use App\Email\Listeners\SendAttendanceIssueNotification;
 use App\Email\Listeners\SendContentCompletionNotification;
 use App\Email\Listeners\SendCourseEnrollmentNotification;
-use App\Email\Listeners\SendVideoSessionScheduledNotification;
 use App\Email\Listeners\SendCertificateReadyEmail;
 
 
@@ -59,7 +58,6 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         VideoSessionScheduled::class => [
-            SendVideoSessionScheduledNotification::class,
             ScheduleVideoSessionReminder::class,
         ],
 

@@ -14,10 +14,13 @@ class SendVideoSessionReminders extends Command
 
     public function handle(): int
     {
+        $windowStart = now()->addDays(3);
+        $windowEnd = $windowStart->copy()->addMinute();
+
         $sessions = VideoSession::query()
             ->whereBetween('start_at', [
-                now(),
-                now()->addMinutes(30)
+                $windowStart,
+                $windowEnd,
             ])
             ->whereNull('reminder_sent_at')
             ->get();

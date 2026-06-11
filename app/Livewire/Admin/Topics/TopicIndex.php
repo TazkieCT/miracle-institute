@@ -54,7 +54,7 @@ class TopicIndex extends Component
         return [
             'course_id' => 'required|exists:courses,id',
             'teacher_id' => 'required|exists:users,id',
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:70',
             'description' => 'required|string',
             'visibility' => 'required|string|max:50',
             'status' => 'required|in:published,archived,draft',

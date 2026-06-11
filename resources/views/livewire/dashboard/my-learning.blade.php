@@ -4,33 +4,87 @@
 
 <div class="min-h-screen bg-white pb-16 text-[#0f172a] sm:pb-24">
     <section class="px-4 pb-8 pt-8 sm:px-6 sm:pb-10 sm:pt-12 lg:px-8">
-        <div class="relative mx-auto overflow-hidden rounded-[2rem] bg-[#eef8ff] px-7 py-10 sm:px-10 sm:py-12 lg:max-w-6xl lg:px-14">
-            <div class="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-                <div class="max-w-2xl">
-                    <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#35A7FF]">
-                        {{ __('general.my_learning.page_title') }}
-                    </p>
-                    <h1 class="mt-3 text-3xl font-bold leading-tight text-[#004777] sm:text-4xl">
-                        {{ __('general.my_learning.overview_title') }}
-                    </h1>
-                    <p class="mt-4 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-                        {{ __('general.my_learning.overview_description') }}
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:w-[27rem]">
-                    <div class="rounded-2xl border border-white/80 bg-white/80 p-4 backdrop-blur sm:p-5">
-                        <p class="text-3xl font-bold text-[#004777] sm:text-4xl">{{ $summary['courses_enrolled'] ?? 0 }}</p>
-                        <p class="mt-2 text-xs font-bold uppercase tracking-wide text-slate-500">
-                            {{ __('general.my_learning.metrics.courses_enrolled') }}
+        <div class="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]">
+            <div class="relative flex h-full overflow-hidden rounded-[2rem] bg-[#eef8ff] px-7 py-10 sm:px-10 sm:py-12 lg:px-14">
+                <div class="relative flex h-full w-full flex-col">
+                    <div class="max-w-2xl">
+                        <p class="text-sm font-bold uppercase tracking-[0.16em] text-[#35A7FF]">
+                            {{ __('general.my_learning.page_title') }}
+                        </p>
+                        <h1 class="mt-3 text-3xl font-bold leading-tight text-[#004777] sm:text-4xl">
+                            {{ __('general.my_learning.overview_title') }}
+                        </h1>
+                        <p class="mt-4 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
+                            {{ __('general.my_learning.overview_description') }}
                         </p>
                     </div>
 
-                    <div class="rounded-2xl border border-white/80 bg-white/80 p-4 backdrop-blur sm:p-5">
-                        <p class="text-3xl font-bold text-[#35A7FF] sm:text-4xl">{{ $summary['certificates'] ?? 0 }}</p>
-                        <p class="mt-2 text-xs font-bold uppercase tracking-wide text-slate-500">
-                            {{ __('general.my_learning.metrics.certificates') }}
-                        </p>
+                    <div class="mt-auto grid grid-cols-2 gap-3 pt-8 sm:gap-4">
+                        <div class="rounded-2xl border border-white/80 bg-white/80 px-4 py-3 backdrop-blur sm:px-5 sm:py-4">
+                            <p class="text-3xl font-bold text-[#004777] sm:text-4xl">{{ $summary['courses_enrolled'] ?? 0 }}</p>
+                            <p class="mt-1.5 text-xs font-bold uppercase tracking-wide text-slate-500">
+                                {{ __('general.my_learning.metrics.courses_enrolled') }}
+                            </p>
+                        </div>
+
+                        <div class="rounded-2xl border border-white/80 bg-white/80 px-4 py-3 backdrop-blur sm:px-5 sm:py-4">
+                            <p class="text-3xl font-bold text-[#35A7FF] sm:text-4xl">{{ $summary['certificates'] ?? 0 }}</p>
+                            <p class="mt-1.5 text-xs font-bold uppercase tracking-wide text-slate-500">
+                                {{ __('general.my_learning.metrics.certificates') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative overflow-hidden rounded-[2rem] border border-[#d9ecfb] bg-white px-7 py-8 sm:px-8 sm:py-10">
+                <div class="flex h-full flex-col">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h2 class="mt-3 text-2xl font-bold leading-tight text-[#004777] sm:text-3xl">
+                                {{ __('general.my_learning.sessions.title') }}
+                            </h2>
+                        </div>
+{{-- 
+                        <div class="rounded-2xl bg-[#eef8ff] px-4 py-3 text-center">
+                            <p class="text-2xl font-bold text-[#004777]">{{ $upcomingSessions->count() }}</p>
+                            <p class="mt-1 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                                Upcoming
+                            </p>
+                        </div> --}}
+                    </div>
+
+                    <div class="mt-6 flex-1 space-y-3">
+                        @forelse($upcomingSessions->take(3) as $session)
+                            <div class="rounded-2xl border border-slate-200 bg-[#f8fbff] p-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="line-clamp-2 text-base font-bold text-[#004777]">
+                                            {{ $session->topic?->name }}
+                                        </p>
+                                        <p class="mt-1 line-clamp-1 text-sm text-slate-500">
+                                            {{ $session->topic?->course?->title }}
+                                        </p>
+                                    </div>
+
+                                    <div class="shrink-0 rounded-xl bg-white px-3 py-2 text-right shadow-sm">
+                                        <p class="text-xs font-semibold uppercase tracking-wide text-[#35A7FF]">
+                                            {{ $session->start_at->format('d M') }}
+                                        </p>
+                                        <p class="mt-1 text-sm font-bold text-[#004777]">
+                                            {{ $session->start_at->format('H:i') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="flex h-full min-h-48 items-center justify-center rounded-2xl border border-dashed border-[#d7dcef] bg-[#f8fbff] px-6 text-center">
+                                <div>
+                                    <p class="text-base font-semibold text-[#004777]">{{ __('general.my_learning.sessions.title') }}</p>
+                                    <p class="mt-2 text-sm leading-6 text-[#5f6785]">{{ __('general.my_learning.sessions.empty') }}</p>
+                                </div>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

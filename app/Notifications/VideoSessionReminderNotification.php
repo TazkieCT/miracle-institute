@@ -14,7 +14,9 @@ class VideoSessionReminderNotification extends Notification implements ShouldQue
 
     public function __construct(
         public VideoSession $session
-    ) {}
+    ) {
+        $this->onQueue('emails');
+    }
 
     public function via($notifiable): array
     {
@@ -24,7 +26,7 @@ class VideoSessionReminderNotification extends Notification implements ShouldQue
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Reminder Sesi')
+            ->subject('Pengingat Sesi Pertemuan')
             ->view('emails.sessions.reminder', [
                 'notifiable' => $notifiable,
                 'session' => $this->session,
@@ -35,7 +37,7 @@ class VideoSessionReminderNotification extends Notification implements ShouldQue
     {
         return [
             'video_session_id' => $this->session->id,
-            'message' => 'Sesi video baru telah dijadwalkan.',
+            'message' => 'Sesi pertemuan akan dimulai dalam 3 hari.',
         ];
     }
 }

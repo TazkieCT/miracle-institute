@@ -52,7 +52,7 @@ class CourseIndex extends Component
     {
         return [
             'study_program_id' => 'required|exists:study_programs,id',
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:150',
             'slug' => 'required|string|max:255',
             'poster' => 'nullable|string|max:255',
             'certificate_course_number' => 'required|integer|min:1|max:999',

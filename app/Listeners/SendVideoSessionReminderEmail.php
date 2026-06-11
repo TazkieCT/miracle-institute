@@ -22,6 +22,10 @@ class SendVideoSessionReminderEmail
             ])
             ->findOrFail($event->videoSessionId);
 
+        if ($session->reminder_sent_at) {
+            return;
+        }
+
         foreach ($session->topic->course->enrollments as $enrollment) {
 
             if (!$enrollment->user) {
@@ -32,5 +36,9 @@ class SendVideoSessionReminderEmail
                 new VideoSessionReminderNotification($session)
             );
         }
+
+        $session->forceFill([
+            'reminder_sent_at' => now(),
+        ])->save();
     }
 }

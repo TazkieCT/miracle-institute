@@ -249,7 +249,7 @@
                         <label class="mb-1 block text-xs font-semibold text-slate-600">
                             Judul Kursus <span class="text-rose-500">*</span>
                         </label>
-                        <input wire:model="title" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.courses.form.title_placeholder') }}">
+                        <input wire:model="title" maxlength="150" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.courses.form.title_placeholder') }}">
                         @error('title') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
 

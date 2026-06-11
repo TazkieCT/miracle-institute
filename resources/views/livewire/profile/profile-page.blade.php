@@ -131,7 +131,7 @@
 
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-[#004777]">{{ __('general.profile.fields.name') }}</label>
-                            <input wire:model.live.debounce.300ms="name" type="text"
+                            <input wire:model.live.debounce.300ms="name" type="text" maxlength="35"
                                    aria-invalid="{{ $errors->has('name') ? 'true' : 'false' }}"
                                    aria-describedby="name-error"
                                    @class([

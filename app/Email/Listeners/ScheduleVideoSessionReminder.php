@@ -12,11 +12,11 @@ class ScheduleVideoSessionReminder
     {
         $session = VideoSession::query()->find($event->videoSessionId);
 
-        if (!$session ||!$session->start_at || $session->start_at->isPast()) {
+        if (! $session || ! $session->start_at || $session->start_at->isPast()) {
             return;
         }
 
-        $reminderAt = $session->start_at->copy()->subMinutes(30);
+        $reminderAt = $session->start_at->copy()->subDays(3);
 
         if ($reminderAt->isPast()) {
             return;
@@ -24,6 +24,6 @@ class ScheduleVideoSessionReminder
 
         ScheduleVideoSessionReminderJob::dispatch($session->id)
             ->delay($reminderAt)
-            ->onQueue('emails'); 
+            ->onQueue('emails');
     }
 }

@@ -209,7 +209,7 @@
                         <label class="mb-1 block text-xs font-semibold text-slate-600">
                             Nama Topik <span class="text-rose-500">*</span>
                         </label>
-                        <input wire:model="name" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.topics.form.name_placeholder') }}">
+                        <input wire:model="name" maxlength="70" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.topics.form.name_placeholder') }}">
                         @error('name') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
 

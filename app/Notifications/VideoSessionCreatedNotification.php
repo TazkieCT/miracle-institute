@@ -27,7 +27,7 @@ class VideoSessionCreatedNotification extends Notification implements ShouldQueu
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Sesi Video Baru Telah Dibuka')
+            ->subject('Sesi Pertemuan Baru Telah Dibuka')
             ->view('emails.sessions.created', [
                 'notifiable' => $notifiable,
                 'session' => $this->session,
@@ -38,7 +38,7 @@ class VideoSessionCreatedNotification extends Notification implements ShouldQueu
     {
         return [
             'video_session_id' => $this->session->id,
-            'message' => 'Sesi video baru telah dijadwalkan.',
+            'message' => 'Sesi pertemuan baru telah dijadwalkan.',
         ];
     }
 }
