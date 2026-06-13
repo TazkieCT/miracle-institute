@@ -53,6 +53,7 @@ class MyLearning extends Component
     public function render(ProgressService $progressService)
     {
         $user = auth()->user();
+        $view = $this->view;
         $summary = array_merge([
             'courses_enrolled' => 0,
             'certificates' => 0,
