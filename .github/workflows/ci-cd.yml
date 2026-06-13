@@ -79,6 +79,15 @@ jobs:
             DEPLOY_PATH="/opt/miracle-institute"
             REPO_URL="https://github.com/GigihFathy/miracle-institute.git"
 
+            if docker compose version >/dev/null 2>&1; then
+              DOCKER_COMPOSE="docker compose"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              DOCKER_COMPOSE="docker-compose"
+            else
+              echo "Docker Compose is not installed on the server."
+              exit 1
+            fi
+
             mkdir -p "$DEPLOY_PATH"
 
             if [ ! -d "$DEPLOY_PATH/.git" ]; then
@@ -90,7 +99,7 @@ jobs:
             git checkout main
             git pull --ff-only origin main
 
-            docker compose up -d --build --remove-orphans
-            docker compose exec -T app php artisan migrate --force
-            docker compose exec -T app php artisan config:cache
-            docker compose exec -T app php artisan view:cache
+            $DOCKER_COMPOSE up -d --build --remove-orphans
+            $DOCKER_COMPOSE exec -T app php artisan migrate --force
+            $DOCKER_COMPOSE exec -T app php artisan config:cache
+            $DOCKER_COMPOSE exec -T app php artisan view:cache
