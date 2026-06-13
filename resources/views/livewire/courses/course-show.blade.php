@@ -43,6 +43,7 @@
     $selectedStudentMaterials = $selectedStudentTopic?->materials->sortBy('sort_order')->values() ?? collect();
     $selectedStudentMaterial = $selectedStudentMaterials->firstWhere('id', $this->selectedStudentMaterialId) ?? $selectedStudentMaterials->first();
     $selectedStudentMaterialPreviewUrl = app(\App\Services\Materials\MaterialAssetService::class)->resolvePreviewUrl($selectedStudentMaterial);
+    $selectedStudentMaterialProgress = $selectedStudentMaterial ? ($this->materialProgressMap[$selectedStudentMaterial->id] ?? 'not_started') : 'not_started';
     $selectedStudentSession = $selectedStudentTopic?->videoSessions->sortByDesc('start_at')->first();
     $selectedStudentSessionScheduleLabel = $selectedStudentSession?->start_at && $selectedStudentSession?->end_at
         ? 'Sesi: ' . $selectedStudentSession->start_at->format('H:i') . ' - ' . $selectedStudentSession->end_at->format('H:i') . ' ' . $selectedStudentSession->start_at->format('d M Y')
@@ -339,6 +340,37 @@
 
                                     @if($selectedStudentMaterial)
                                         <div class="space-y-4">
+                                            <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+                                                <div>
+                                                    <div class="text-base font-semibold text-[var(--mentor-primary)]">{{ $selectedStudentMaterial->name }}</div>
+                                                    <div class="mt-1 text-xs uppercase tracking-wide text-[color:color-mix(in_oklab,#004777_55%,white)]">
+                                                        {{ strtoupper($selectedStudentMaterial->type) }}
+                                                        ·
+                                                        {{ $selectedStudentMaterialProgress === 'completed' ? 'Selesai' : ($selectedStudentMaterialProgress === 'in_progress' ? 'Sedang dipelajari' : 'Belum selesai') }}
+                                                    </div>
+                                                </div>
+
+                                                @if(!$isStudentMaterialLocked)
+                                                    @if($selectedStudentMaterialProgress === 'completed')
+                                                        <span class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+                                                            <span>✓</span>
+                                                            Material selesai
+                                                        </span>
+                                                    @else
+                                                        <button
+                                                            type="button"
+                                                            wire:click="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
+                                                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00395f] disabled:opacity-70"
+                                                        >
+                                                            <span>✓</span>
+                                                            Tandai selesai
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            </div>
+
                                             @if($isStudentMaterialLocked)
                                                 <div class="rounded-2xl border border-dashed border-amber-200 bg-amber-50 px-4 py-10 text-center">
                                                     <div class="text-sm font-semibold text-amber-700">Materi masih terkunci</div>
@@ -393,6 +425,9 @@
                                     <div class="text-xs font-semibold uppercase tracking-wide text-[color:color-mix(in_oklab,#004777_55%,white)]">List Materi ({{ $selectedStudentTopic->materials_count ?? $selectedStudentTopic->materials->count() }})</div>
                                     <div class="mt-3 space-y-2">
                                         @forelse($selectedStudentMaterials as $material)
+                                            @php
+                                                $materialProgressStatus = $this->materialProgressMap[$material->id] ?? 'not_started';
+                                            @endphp
                                             <button type="button"
                                                     wire:key="student-material-{{ $material->id }}"
                                                     @if(!$isStudentMaterialLocked) wire:click="selectStudentMaterial('{{ $material->id }}')" @endif
@@ -402,6 +437,9 @@
                                                 </div>
                                                 <div class="mt-1 text-xs {{ (string) ($selectedStudentMaterial?->id) === (string) $material->id ? 'text-white/75' : '' }}">
                                                     {{ strtoupper($material->type) }} · {{ ucfirst($material->status) }}{{ $isStudentMaterialLocked ? ' · Terkunci' : '' }}
+                                                </div>
+                                                <div class="mt-2 text-[11px] font-semibold {{ (string) ($selectedStudentMaterial?->id) === (string) $material->id ? 'text-white' : 'text-emerald-700' }}">
+                                                    {{ $materialProgressStatus === 'completed' ? '✓ Selesai' : ($materialProgressStatus === 'in_progress' ? 'Sedang dipelajari' : 'Belum selesai') }}
                                                 </div>
                                             </button>
                                         @empty

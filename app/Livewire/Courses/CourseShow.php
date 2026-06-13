@@ -8,9 +8,11 @@ use App\Models\AssessmentAttempt;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
+use App\Models\MaterialProgress;
 use App\Models\Topic;
 use App\Models\TopicProgress;
 use App\Services\CourseService;
+use App\Services\ProgressService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -32,6 +34,7 @@ class CourseShow extends Component
     public ?Certificate $courseCertificate = null;
 
     public array $topicStatusMap = [];
+    public array $materialProgressMap = [];
 
     public ?Assessment $assessment = null;
     public bool $hasStudentFinishedAssessment = false;
@@ -119,10 +122,7 @@ class CourseShow extends Component
                     ->latest()
                     ->first();
 
-                $this->topicStatusMap = TopicProgress::query()
-                    ->where('course_enrollment_id', $enrollment->id)
-                    ->pluck('status', 'topic_id')
-                    ->toArray();
+                $this->hydrateStudentProgressMaps($enrollment->id, $user->id);
             }
         }
 
@@ -246,6 +246,53 @@ class CourseShow extends Component
         if ($topic && $topic->materials->contains(fn ($material) => (string) $material->id === (string) $materialId)) {
             $this->selectedStudentMaterialId = $materialId;
         }
+    }
+
+    public function markStudentMaterialComplete(string $materialId, ProgressService $progressService): void
+    {
+        abort_unless(auth()->check() && session('active_role') === 'student', 403);
+
+        if (! $this->enrolled) {
+            session()->flash('error', 'Kamu harus terdaftar pada course ini terlebih dahulu.');
+            return;
+        }
+
+        $topic = $this->course->topics->firstWhere('id', $this->selectedStudentTopicId);
+        $material = $topic?->materials->firstWhere('id', $materialId);
+
+        if (! $topic || ! $material) {
+            session()->flash('error', 'Material tidak ditemukan.');
+            return;
+        }
+
+        if (! $this->topicHasCompletedSessions($topic)) {
+            session()->flash('error', 'Material baru bisa diselesaikan setelah sesi topic ini selesai.');
+            return;
+        }
+
+        $result = $progressService->markMaterialCompleted((string) auth()->id(), $materialId);
+
+        $enrollment = auth()->user()?->courseEnrollments()
+            ->where('course_id', $this->course->id)
+            ->first();
+
+        if ($enrollment) {
+            $this->hydrateStudentProgressMaps($enrollment->id, (string) auth()->id());
+        }
+
+        $this->courseCertificate = Certificate::query()
+            ->where('user_id', auth()->id())
+            ->where('course_id', $this->course->id)
+            ->latest()
+            ->first();
+
+        session()->flash(
+            'success',
+            $result['snapshot']['can_complete']
+                ? 'Material selesai. Topik ini juga dinyatakan completed.'
+                : 'Material berhasil diselesaikan.'
+        );
+        $this->dispatch('toast', type: 'success', message: session('success'));
     }
 
     public function hydrateMentorStudents(): void
@@ -622,10 +669,7 @@ class CourseShow extends Component
                 ->first();
 
             if ($enrollment) {
-                $this->topicStatusMap = TopicProgress::query()
-                    ->where('course_enrollment_id', $enrollment->id)
-                    ->pluck('status', 'topic_id')
-                    ->toArray();
+                $this->hydrateStudentProgressMaps($enrollment->id, (string) auth()->id());
             }
 
             session()->flash('success', 'Course berhasil diikuti.');
@@ -663,5 +707,24 @@ class CourseShow extends Component
             'mentorStudents' => $this->mentorStudents,
             'activeTab' => $activeTab,
         ])->layout('layouts.learning');
+    }
+
+    private function hydrateStudentProgressMaps(string $enrollmentId, string $userId): void
+    {
+        $this->topicStatusMap = TopicProgress::query()
+            ->where('course_enrollment_id', $enrollmentId)
+            ->pluck('status', 'topic_id')
+            ->toArray();
+
+        $materialIds = $this->course->topics
+            ->flatMap(fn (Topic $topic) => $topic->materials->pluck('id'))
+            ->filter()
+            ->values();
+
+        $this->materialProgressMap = MaterialProgress::query()
+            ->where('user_id', $userId)
+            ->whereIn('material_id', $materialIds)
+            ->pluck('status', 'material_id')
+            ->toArray();
     }
 }
