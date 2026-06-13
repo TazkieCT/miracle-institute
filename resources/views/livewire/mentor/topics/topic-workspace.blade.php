@@ -14,12 +14,6 @@
                     </p>
                 </div>
 
-                <div class="flex gap-3">
-                    <a href="{{ localized_route('topics.show', $topic->slug) }}"
-                       class="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20">
-                        {{ __('mentor.topic_workspace.visit_topic') }}
-                    </a>
-                </div>
             </div>
         </div>
 

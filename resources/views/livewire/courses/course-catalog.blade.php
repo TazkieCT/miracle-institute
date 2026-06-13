@@ -132,7 +132,7 @@
                         }
                     @endphp
 
-                    <article class="group relative flex h-full flex-col rounded-[1.5rem] border border-slate-200 bg-white p-3 transition hover:-translate-y-1 hover:border-[#35A7FF]">
+                    <article class="group relative flex h-full flex-col rounded-[1.5rem] border border-slate-200 bg-white p-3 transition hover:border-[#35A7FF]">
                         <a href="{{ localized_route('courses.show', $course->slug) }}"
                            aria-label="{{ __('general.course_catalog.actions.open') }}: {{ $course->title }}"
                            class="absolute inset-0 z-10 rounded-[1.5rem] focus:outline-none focus:ring-2 focus:ring-[#35A7FF] focus:ring-offset-2"></a>

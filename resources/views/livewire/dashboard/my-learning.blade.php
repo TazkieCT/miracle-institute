@@ -419,7 +419,7 @@
                             $courseImageSrc = $resolveCourseImage($course);
                         @endphp
 
-                        <article class="group flex h-full flex-col rounded-[1.5rem] border border-slate-200 bg-white p-3 transition hover:-translate-y-1 hover:border-[#35A7FF]">
+                        <article class="group flex h-full flex-col rounded-[1.5rem] border border-slate-200 bg-white p-3 transition hover:border-[#35A7FF]">
                             <div class="relative overflow-hidden rounded-2xl">
                                 @if($courseImageSrc)
                                     <img src="{{ $courseImageSrc }}" alt="{{ $course?->title ?? __('general.my_learning.certificates.default_course_certificate') }}" class="h-48 w-full object-cover transition duration-500 group-hover:scale-105">
@@ -473,7 +473,7 @@
                             $courseImageSrc = $resolveCourseImage($course);
                         @endphp
 
-                        <article class="group flex w-[290px] shrink-0 flex-col rounded-[1.5rem] border border-slate-200 bg-white p-3 transition hover:-translate-y-1 hover:border-[#35A7FF]">
+                        <article class="group flex w-[290px] shrink-0 flex-col rounded-[1.5rem] border border-slate-200 bg-white p-3 transition hover:border-[#35A7FF]">
                             <div class="relative overflow-hidden rounded-2xl">
                                 @if($courseImageSrc)
                                     <img src="{{ $courseImageSrc }}" alt="{{ $course?->title ?? __('general.my_learning.certificates.default_course_certificate') }}" class="h-44 w-full object-cover transition duration-500 group-hover:scale-105">
