@@ -78,7 +78,7 @@ jobs:
           script: |
             set -eu
             DEPLOY_PATH="/opt/miracle-institute"
-            REPO_URL="https://github.com/GigihFathy/miracle-institute.git"
+            REPO_URL="https://github.com/TazkieCT/miracle-institute.git"
 
             if docker compose version >/dev/null 2>&1; then
               DOCKER_COMPOSE="docker compose"
