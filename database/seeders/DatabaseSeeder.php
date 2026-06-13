@@ -13,15 +13,16 @@ class DatabaseSeeder extends Seeder
     {
         DB::transaction(function () {
             $now = now();
-            $asset = 'images/logo.png';
+            $logoAsset = 'images/logo.png';
+            $courseAsset = 'images/thumbnail/thumbnail_dove.png';
 
-            $this->seedCompany($asset, $now);
+            $this->seedCompany($logoAsset, $now);
             [$permissions, $roles] = $this->seedPermissionsAndRoles($now);
             $this->seedRolePermissions($roles, $permissions);
 
-            $users = $this->seedUsers($roles, $asset, $now);
+            $users = $this->seedUsers($roles, $logoAsset, $now);
             $program = $this->seedStudentStudyProgram($now);
-            $this->seedAdditionalLearningData($program, $users, $asset, $now);
+            $this->seedAdditionalLearningData($program, $users, $courseAsset, $now);
         });
     }
 
