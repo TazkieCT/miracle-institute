@@ -68,6 +68,10 @@ class ProfilePage extends Component
             return;
         }
 
+        if ($property === 'name') {
+            $this->name = mb_substr((string) $this->name, 0, 35);
+        }
+
         $this->validateOnly($property);
     }
 
