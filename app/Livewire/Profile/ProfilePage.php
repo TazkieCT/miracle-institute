@@ -4,6 +4,7 @@ namespace App\Livewire\Profile;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Component;
@@ -128,8 +129,12 @@ class ProfilePage extends Component
 
         Auth::logout();
 
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
+        if (request()->hasSession()) {
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+        } else {
+            Session::flush();
+        }
 
         session()->flash('success', __('general.profile.flash.password_updated_login_again'));
 
