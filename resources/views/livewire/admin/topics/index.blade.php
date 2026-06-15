@@ -140,7 +140,7 @@
                             <div class="text-xs text-slate-500">{{ $row->category }}</div>
                         </td>
 
-                        <td class="whitespace-nowrap px-4 py-3">{{ $row->teacher?->full_name }}</td>
+                        <td class="whitespace-nowrap px-4 py-3">{{ $row->teacher?->full_name ?? '-' }}</td>
                         <td class="whitespace-nowrap px-4 py-3">{{ $row->sort_order }}</td>
 
                         <td class="px-4 py-3 text-xs text-slate-500">
@@ -223,6 +223,13 @@
         </div>
 
         <div>{{ $rows->links() }}</div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-xs leading-6 text-slate-600">
+            <p class="font-semibold text-[#004777]">Keterangan status topik</p>
+            <p><span class="font-semibold">Belum diterbitkan</span> berarti topik masih tahap persiapan dan belum tampil untuk siswa.</p>
+            <p><span class="font-semibold">Diterbitkan</span> berarti topik sudah aktif dan bisa diakses siswa jika syarat aksesnya sudah terpenuhi.</p>
+            <p><span class="font-semibold">Diarsipkan</span> berarti topik tidak lagi dipakai di alur belajar aktif, tetapi datanya masih disimpan.</p>
+        </div>
     </section>
 
     @if($showModal)
@@ -265,7 +272,7 @@
 
                     <div>
                         <label class="mb-1 block text-xs font-semibold text-slate-600">
-                            Pengajar <span class="text-rose-500">*</span>
+                            Pengajar
                         </label>
                         <select wire:model="teacher_id" class="w-full rounded-xl border px-4 py-2">
                             <option value="">{{ __('admin.topics.form.select_teacher') }}</option>
@@ -310,6 +317,13 @@
                             </select>
                             @error('status') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                         </div>
+                    </div>
+
+                    <div class="rounded-xl border border-sky-100 bg-sky-50 px-4 py-3 text-xs leading-6 text-slate-600">
+                        <p class="font-semibold text-[#004777]">Catatan penggunaan status</p>
+                        <p><span class="font-semibold">Belum diterbitkan</span> dipakai saat topik masih disusun dan belum siap dilihat siswa.</p>
+                        <p><span class="font-semibold">Diterbitkan</span> dipakai saat topik sudah siap diakses siswa. Topik hanya bisa diterbitkan jika sudah punya minimal 1 sesi.</p>
+                        <p><span class="font-semibold">Diarsipkan</span> dipakai saat topik lama sudah tidak ingin ditampilkan ke alur belajar aktif, tetapi datanya tetap disimpan untuk referensi.</p>
                     </div>
 
                     <div>

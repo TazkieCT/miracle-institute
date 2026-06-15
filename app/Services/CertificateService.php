@@ -24,6 +24,8 @@ class CertificateService
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            app(LearningAccessRequirementService::class)->ensureCourseCanIssueCertificate($course);
+
             $enrollment = CourseEnrollment::query()
                 ->where('course_id', $course->id)
                 ->where('user_id', $user->id)
@@ -114,6 +116,8 @@ class CertificateService
         if (! $course) {
             abort(404);
         }
+
+        app(LearningAccessRequirementService::class)->ensureCourseCanIssueCertificate($course);
 
         $course->loadMissing([
             'topics.videoSessions',

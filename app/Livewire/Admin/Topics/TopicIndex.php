@@ -10,6 +10,7 @@ use App\Models\Material;
 use App\Models\Topic;
 use App\Models\User;
 use App\Models\VideoSession;
+use App\Services\LearningAccessRequirementService;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -53,7 +54,7 @@ class TopicIndex extends Component
     {
         return [
             'course_id' => 'required|exists:courses,id',
-            'teacher_id' => 'required|exists:users,id',
+            'teacher_id' => 'nullable|exists:users,id',
             'name' => 'required|string|max:70',
             'description' => 'required|string',
             'visibility' => 'required|string|max:50',
@@ -99,7 +100,7 @@ class TopicIndex extends Component
 
         $this->editingId = $row->id;
         $this->course_id = $row->course_id;
-        $this->teacher_id = $row->teacher_id;
+        $this->teacher_id = $row->teacher_id ?? '';
         $this->name = $row->name;
         $this->description = $row->description;
         $this->visibility = $row->visibility;
@@ -114,12 +115,35 @@ class TopicIndex extends Component
         $this->validate();
 
         $course = Course::with('studyProgram')->findOrFail($this->course_id);
+        $topic = $this->editingId ? Topic::findOrFail($this->editingId) : new Topic();
+
+        $topic->forceFill([
+            'course_id' => $this->course_id,
+            'teacher_id' => $this->teacher_id !== '' ? $this->teacher_id : null,
+            'name' => $this->name,
+            'category' => strtolower($course->studyProgram->title),
+            'slug' => Str::slug($this->name),
+            'description' => $this->description,
+            'visibility' => $this->visibility,
+            'status' => $this->normalizeStatus($this->status),
+            'sort_order' => $this->sort_order,
+        ]);
+
+        if ($this->normalizeStatus($this->status) === 'published') {
+            try {
+                app(LearningAccessRequirementService::class)->ensureTopicCanBePublished($topic);
+            } catch (\RuntimeException $e) {
+                $this->addError('status', $e->getMessage());
+
+                return;
+            }
+        }
 
         Topic::updateOrCreate(
             ['id' => $this->editingId],
             [
                 'course_id' => $this->course_id,
-                'teacher_id' => $this->teacher_id,
+                'teacher_id' => $this->teacher_id !== '' ? $this->teacher_id : null,
                 'name' => $this->name,
                 'category' => strtolower($course->studyProgram->title),
                 'slug' => Str::slug($this->name),

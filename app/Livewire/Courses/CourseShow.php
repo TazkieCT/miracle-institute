@@ -12,6 +12,7 @@ use App\Models\MaterialProgress;
 use App\Models\Topic;
 use App\Models\TopicProgress;
 use App\Services\CourseService;
+use App\Services\LearningAccessRequirementService;
 use App\Services\ProgressService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -105,6 +106,14 @@ class CourseShow extends Component
         $this->buildAssessmentMeta();
 
         $this->isGuest = !auth()->check();
+
+        if (session('active_role') === 'student') {
+            $visibleTopics = $this->course->topics
+                ->filter(fn (Topic $topic) => $this->topicIsVisibleToStudents($topic))
+                ->values();
+
+            $this->course->setRelation('topics', $visibleTopics);
+        }
 
         if (!$this->isGuest) {
             $user = auth()->user();
@@ -495,10 +504,18 @@ class CourseShow extends Component
         ];
 
         $hasTopics = $this->course->topics->isNotEmpty();
+        $hasAssessmentQuestions = app(LearningAccessRequirementService::class)
+            ->courseHasAssessmentQuestions($this->course);
         $checks[] = [
             'label' => 'Course has topics',
             'done' => $hasTopics,
             'note' => $hasTopics ? 'Topics available' : 'No topic yet',
+        ];
+
+        $checks[] = [
+            'label' => 'Course has questions',
+            'done' => $hasAssessmentQuestions,
+            'note' => $hasAssessmentQuestions ? 'Questions available' : 'Add at least one question first',
         ];
 
         $allTopicsCompleted = $hasTopics && $this->completedTopicsCount === $this->course->topics->count();
@@ -524,6 +541,7 @@ class CourseShow extends Component
         $eligible = auth()->check()
             && $this->enrolled
             && $hasTopics
+            && $hasAssessmentQuestions
             && $allTopicsCompleted
             && $assessmentOk
             && !$this->courseCertificate;
@@ -538,6 +556,10 @@ class CourseShow extends Component
 
         if (!$hasTopics) {
             $reasons[] = 'Course ini belum memiliki topic.';
+        }
+
+        if (! $hasAssessmentQuestions) {
+            $reasons[] = 'Sertifikat belum tersedia karena course ini belum memiliki soal.';
         }
 
         if ($hasTopics && !$allTopicsCompleted) {
@@ -726,5 +748,13 @@ class CourseShow extends Component
             ->whereIn('material_id', $materialIds)
             ->pluck('status', 'material_id')
             ->toArray();
+    }
+
+    private function topicIsVisibleToStudents(Topic $topic): bool
+    {
+        $requirements = app(LearningAccessRequirementService::class);
+
+        return $requirements->topicIsPublished($topic)
+            && $requirements->topicHasStudentAccessRequirements($topic);
     }
 }

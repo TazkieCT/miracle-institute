@@ -7,36 +7,36 @@
 
 <div class="min-h-screen bg-white text-[#0f172a]">
     <section class="relative isolate overflow-x-clip px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8">
-        <div class="relative mx-auto grid max-w-6xl items-center gap-8 overflow-hidden rounded-[2rem] bg-[#eef8ff] px-7 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.1fr_0.9fr] lg:px-14 lg:py-16">
+        <div class="relative mx-auto grid max-w-6xl items-center gap-4 overflow-hidden rounded-[2rem] bg-[#eef8ff] px-7 py-8 sm:gap-8 sm:px-10 sm:py-14 lg:grid-cols-[1.1fr_0.9fr] lg:px-14 lg:py-16">
             <div class="pointer-events-none absolute -left-24 -top-24 -z-10 h-72 w-72 rounded-full bg-[#7DD3FC]/50 blur-3xl" aria-hidden="true"></div>
             <div class="pointer-events-none absolute -bottom-28 right-10 -z-10 h-80 w-80 rounded-full bg-violet-300/30 blur-3xl" aria-hidden="true"></div>
 
             <div class="relative z-10 order-2 text-center lg:order-1 lg:text-left">
-                <h1 class="text-3xl font-bold leading-tight text-[#004777] sm:text-5xl lg:text-6xl">
+                <h1 class="text-xl font-bold leading-tight text-[#004777] sm:text-5xl lg:text-6xl">
                     {{ __("general.course_catalog.hero.{$hero}.title") }}
                 </h1>
-                <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg lg:mx-0">
+                <p class="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:mt-5 sm:text-lg sm:leading-7 lg:mx-0">
                     {{ __("general.course_catalog.hero.{$hero}.description") }}
                 </p>
 
-                <div class="mt-8 flex justify-center gap-8 lg:justify-start">
+                <div class="mt-6 flex justify-center gap-6 sm:mt-8 sm:gap-8 lg:justify-start">
                     <div>
-                        <p class="text-3xl font-bold text-[#004777]">{{ $courses->total() }}</p>
-                        <p class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <p class="text-2xl font-bold text-[#004777] sm:text-3xl">{{ $courses->total() }}</p>
+                        <p class="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-xs">
                             {{ __('general.course_catalog.stats.available_courses') }}
                         </p>
                     </div>
-                    <div class="h-14 w-px bg-[#004777]/15" aria-hidden="true"></div>
+                    <div class="h-12 w-px bg-[#004777]/15 sm:h-14" aria-hidden="true"></div>
                     <div>
-                        <p class="text-3xl font-bold text-[#35A7FF]">{{ $studyPrograms->count() }}</p>
-                        <p class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <p class="text-2xl font-bold text-[#35A7FF] sm:text-3xl">{{ $studyPrograms->count() }}</p>
+                        <p class="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-xs">
                             {{ __('general.course_catalog.stats.study_programs') }}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div class="relative order-1 flex min-h-64 items-center justify-center lg:order-2 lg:min-h-[24rem] lg:justify-end">
+            <div class="relative order-1 flex min-h-52 items-center justify-center lg:order-2 lg:min-h-[24rem] lg:justify-end">
                 <span class="pointer-events-none absolute left-[8%] top-[12%] h-7 w-7 rotate-12 bg-[#FFE100]"
                       style="-webkit-mask: url('{{ asset('images/decor/star.svg') }}') center / contain no-repeat; mask: url('{{ asset('images/decor/star.svg') }}') center / contain no-repeat;"
                       aria-hidden="true"></span>
@@ -45,7 +45,7 @@
                       aria-hidden="true"></span>
                 <img src="{{ asset('images/decor/book_1.png') }}"
                      alt="{{ __('general.course_catalog.stats.available_courses') }}"
-                     class="relative z-10 w-full max-w-xs drop-shadow-2xl sm:max-w-sm lg:max-w-md">
+                     class="relative z-10 w-full max-w-[12rem] drop-shadow-2xl sm:max-w-sm lg:max-w-md">
             </div>
         </div>
     </section>
@@ -75,11 +75,12 @@
                 </select>
             </div>
 
-            <div class="mt-5 flex flex-wrap gap-2">
+            <div class="-mx-1 mt-5 overflow-x-auto px-1 pb-2">
+                <div class="flex w-max min-w-full flex-nowrap gap-2 md:w-auto md:min-w-0 md:flex-wrap">
                 <button type="button"
                         wire:click="$set('studyProgram', '')"
                         @class([
-                            'inline-flex min-h-10 items-center rounded-full border px-4 py-2 text-sm font-semibold transition',
+                            'inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 py-2 text-sm font-semibold whitespace-nowrap transition',
                             'border-[#004777] bg-[#004777] text-white' => $studyProgram === '',
                             'border-slate-200 bg-white text-[#004777] hover:border-[#35A7FF] hover:bg-[#eef8ff]' => $studyProgram !== '',
                         ])>
@@ -90,13 +91,14 @@
                     <button type="button"
                             wire:click="$set('studyProgram', '{{ $sp->slug }}')"
                             @class([
-                                'inline-flex min-h-10 items-center rounded-full border px-4 py-2 text-sm font-semibold transition',
+                                'inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 py-2 text-sm font-semibold whitespace-nowrap transition',
                                 'border-[#004777] bg-[#004777] text-white' => $studyProgram === $sp->slug,
                                 'border-slate-200 bg-white text-[#004777] hover:border-[#35A7FF] hover:bg-[#eef8ff]' => $studyProgram !== $sp->slug,
                             ])>
                         {{ $sp->title }}
                     </button>
                 @endforeach
+                </div>
             </div>
         </div>
     </section>

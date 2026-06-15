@@ -11,6 +11,7 @@ use App\Models\Material;
 use App\Models\StudyProgram;
 use App\Models\Topic;
 use App\Models\VideoSession;
+use App\Services\LearningAccessRequirementService;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Livewire\Component;
@@ -33,7 +34,7 @@ class CourseIndex extends Component
     public string $certificate_course_number = '';
     public string $certificate_prefix_code = '';
     public string $description = '';
-    public string $status = 'active';
+    public string $status = 'inactive';
 
     public string $studyProgramFilter = '';
     public string $statusFilter = '';
@@ -97,6 +98,29 @@ class CourseIndex extends Component
     public function save(): void
     {
         $this->validate();
+
+        $course = $this->editingId ? Course::findOrFail($this->editingId) : new Course();
+
+        $course->forceFill([
+            'study_program_id' => $this->study_program_id,
+            'title' => $this->title,
+            'slug' => Str::slug($this->title),
+            'poster' => $this->poster,
+            'certificate_course_number' => (int) $this->certificate_course_number,
+            'certificate_prefix_code' => Str::upper(trim($this->certificate_prefix_code)),
+            'description' => $this->description,
+            'status' => $this->status,
+        ]);
+
+        if ($this->status === 'active') {
+            try {
+                app(LearningAccessRequirementService::class)->ensureCourseCanBeActivated($course);
+            } catch (\RuntimeException $e) {
+                $this->addError('status', $e->getMessage());
+
+                return;
+            }
+        }
 
         Course::updateOrCreate(
             ['id' => $this->editingId],
@@ -254,7 +278,7 @@ class CourseIndex extends Component
             'status',
         ]);
 
-        $this->status = 'active';
+        $this->status = 'inactive';
         $this->resetValidation();
     }
 
