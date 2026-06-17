@@ -239,7 +239,7 @@ $registerLocalizedRoutes = function (bool $named): void {
                 $request->session()->regenerate();
             }
 
-            return redirect()->to(localized_route('home'))
+            return redirect()->to(localized_route('redirect.by.role'))
                 ->with('success', __('auth.email_verified_success'));
         })->middleware([
             'signed',
