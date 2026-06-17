@@ -54,8 +54,10 @@ class CourseShow extends Component
     public string $activeTopicTab = 'general';
     public ?string $selectedMentorTopicId = null;
     public ?string $selectedMentorMaterialId = null;
+    public ?string $selectedMentorSessionId = null;
     public ?string $selectedStudentTopicId = null;
     public ?string $selectedStudentMaterialId = null;
+    public ?string $selectedStudentSessionId = null;
 
     public Collection $mentoredTopics;
     public bool $hasMentoredTopics = false;
@@ -141,15 +143,18 @@ class CourseShow extends Component
         if ($this->mentoredTopics->isNotEmpty()) {
             $this->selectedMentorTopicId = $this->mentoredTopics->first()->id;
             $this->selectedMentorMaterialId = $this->mentoredTopics->first()?->materials->sortBy('sort_order')->first()?->id;
+            $this->selectedMentorSessionId = $this->resolveLatestSessionId($this->mentoredTopics->first());
         }
 
         if ($this->course->topics->isNotEmpty()) {
             $this->selectedStudentTopicId = $this->course->topics->first()->id;
             $this->selectedStudentMaterialId = $this->course->topics->first()?->materials->sortBy('sort_order')->first()?->id;
+            $this->selectedStudentSessionId = $this->resolveLatestSessionId($this->course->topics->first());
         }
 
         $requestedTab = request()->query('tab');
         $requestedTopicId = request()->query('topic');
+        $requestedSessionId = request()->query('session');
 
         if (auth()->check() && session('active_role') === 'disciples') {
             $this->activeTopicTab = 'overview';
@@ -166,6 +171,14 @@ class CourseShow extends Component
                 $this->selectMentorTopic($requestedTopicId);
             } else {
                 $this->selectStudentTopic($requestedTopicId);
+            }
+        }
+
+        if (is_string($requestedSessionId) && $requestedSessionId !== '') {
+            if (auth()->check() && session('active_role') === 'disciples') {
+                $this->selectMentorSession($requestedSessionId);
+            } else {
+                $this->selectStudentSession($requestedSessionId);
             }
         }
     }
@@ -218,6 +231,7 @@ class CourseShow extends Component
         if ($this->hasMentoredTopics) {
             $this->selectedMentorTopicId = $this->mentoredTopics->first()->id;
             $this->selectedMentorMaterialId = $this->mentoredTopics->first()?->materials->sortBy('sort_order')->first()?->id;
+            $this->selectedMentorSessionId = $this->resolveLatestSessionId($this->mentoredTopics->first());
         }
     }
 
@@ -227,7 +241,23 @@ class CourseShow extends Component
             $this->selectedMentorTopicId = $topicId;
             $topic = $this->mentoredTopics->firstWhere('id', $topicId);
             $this->selectedMentorMaterialId = $topic?->materials->sortBy('sort_order')->first()?->id;
+            $this->selectedMentorSessionId = $this->resolveLatestSessionId($topic);
         }
+    }
+
+    public function selectMentorSession(string $sessionId): void
+    {
+        $topic = $this->mentoredTopics->first(function (Topic $topic) use ($sessionId) {
+            return $topic->videoSessions->contains(fn ($session) => (string) $session->id === (string) $sessionId);
+        });
+
+        if (! $topic) {
+            return;
+        }
+
+        $this->selectedMentorTopicId = $topic->id;
+        $this->selectedMentorMaterialId = $topic->materials->sortBy('sort_order')->first()?->id;
+        $this->selectedMentorSessionId = $sessionId;
     }
 
     public function selectMentorMaterial(string $materialId): void
@@ -245,7 +275,23 @@ class CourseShow extends Component
             $this->selectedStudentTopicId = $topicId;
             $topic = $this->course->topics->firstWhere('id', $topicId);
             $this->selectedStudentMaterialId = $topic?->materials->sortBy('sort_order')->first()?->id;
+            $this->selectedStudentSessionId = $this->resolveLatestSessionId($topic);
         }
+    }
+
+    public function selectStudentSession(string $sessionId): void
+    {
+        $topic = $this->course->topics->first(function (Topic $topic) use ($sessionId) {
+            return $topic->videoSessions->contains(fn ($session) => (string) $session->id === (string) $sessionId);
+        });
+
+        if (! $topic) {
+            return;
+        }
+
+        $this->selectedStudentTopicId = $topic->id;
+        $this->selectedStudentMaterialId = $topic->materials->sortBy('sort_order')->first()?->id;
+        $this->selectedStudentSessionId = $sessionId;
     }
 
     public function selectStudentMaterial(string $materialId): void
@@ -756,5 +802,12 @@ class CourseShow extends Component
 
         return $requirements->topicIsPublished($topic)
             && $requirements->topicHasStudentAccessRequirements($topic);
+    }
+
+    private function resolveLatestSessionId(?Topic $topic): ?string
+    {
+        return $topic?->videoSessions
+            ->sortByDesc('start_at')
+            ->first()?->id;
     }
 }

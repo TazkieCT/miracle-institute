@@ -18,7 +18,12 @@
         Silakan buka halaman sesi saat waktunya tiba untuk bergabung.
     </p>
 
-    @component('emails.components.button', ['url' => url('/sessions/' . $session->id), 'color' => '#004777'])
+    @component('emails.components.button', ['url' => localized_route('courses.show', [
+        'slug' => $session->topic->course->slug,
+        'tab' => 'topics',
+        'topic' => $session->topic->id,
+        'session' => $session->id,
+    ]), 'color' => '#004777'])
         Buka sesi
     @endcomponent
 @endcomponent

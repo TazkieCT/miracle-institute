@@ -297,17 +297,6 @@
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div>
                             <label class="mb-1 block text-xs font-semibold text-slate-600">
-                                Visibilitas <span class="text-rose-500">*</span>
-                            </label>
-                            <select wire:model="visibility" class="w-full rounded-xl border px-4 py-2">
-                                <option value="Public">{{ __('admin.topics.visibility.public') }}</option>
-                                <option value="Private">{{ __('admin.topics.visibility.private') }}</option>
-                            </select>
-                            @error('visibility') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div>
-                            <label class="mb-1 block text-xs font-semibold text-slate-600">
                                 Status <span class="text-rose-500">*</span>
                             </label>
                             <select wire:model="status" class="w-full rounded-xl border px-4 py-2">
@@ -319,12 +308,20 @@
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-sky-100 bg-sky-50 px-4 py-3 text-xs leading-6 text-slate-600">
-                        <p class="font-semibold text-[#004777]">Catatan penggunaan status</p>
-                        <p><span class="font-semibold">Belum diterbitkan</span> dipakai saat topik masih disusun dan belum siap dilihat siswa.</p>
-                        <p><span class="font-semibold">Diterbitkan</span> dipakai saat topik sudah siap diakses siswa. Topik hanya bisa diterbitkan jika sudah punya minimal 1 sesi.</p>
-                        <p><span class="font-semibold">Diarsipkan</span> dipakai saat topik lama sudah tidak ingin ditampilkan ke alur belajar aktif, tetapi datanya tetap disimpan untuk referensi.</p>
-                    </div>
+                    <details class="rounded-xl border border-sky-100 bg-sky-50 px-4 py-3 text-xs text-slate-600">
+                        <summary class="cursor-pointer list-none font-semibold text-[#004777]">
+                            <span class="flex items-center justify-between gap-3">
+                                <span>Catatan penggunaan status</span>
+                                <span class="text-[11px] font-medium text-slate-500">Lihat detail</span>
+                            </span>
+                        </summary>
+
+                        <div class="mt-3 space-y-2 leading-6">
+                            <p><span class="font-semibold">Belum diterbitkan</span> dipakai saat topik masih disusun dan belum siap dilihat siswa.</p>
+                            <p><span class="font-semibold">Diterbitkan</span> dipakai saat topik sudah siap diakses siswa. Topik hanya bisa diterbitkan jika sudah punya minimal 1 sesi.</p>
+                            <p><span class="font-semibold">Diarsipkan</span> dipakai saat topik lama sudah tidak ingin ditampilkan ke alur belajar aktif, tetapi datanya tetap disimpan untuk referensi.</p>
+                        </div>
+                    </details>
 
                     <div>
                         <label class="mb-1 block text-xs font-semibold text-slate-600">

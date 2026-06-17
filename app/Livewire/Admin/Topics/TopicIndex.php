@@ -25,7 +25,6 @@ class TopicIndex extends Component
     public string $teacher_id = '';
     public string $name = '';
     public string $description = '';
-    public string $visibility = 'Public';
     public string $status = 'draft';
     public int $sort_order = 0;
 
@@ -57,7 +56,6 @@ class TopicIndex extends Component
             'teacher_id' => 'nullable|exists:users,id',
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'visibility' => 'required|string|max:50',
             'status' => 'required|in:published,archived,draft',
             'sort_order' => 'nullable|integer|min:0',
         ];
@@ -103,7 +101,6 @@ class TopicIndex extends Component
         $this->teacher_id = $row->teacher_id ?? '';
         $this->name = $row->name;
         $this->description = $row->description;
-        $this->visibility = $row->visibility;
         $this->status = $row->status === 'active' ? 'published' : $row->status;
         $this->sort_order = (int) ($row->sort_order ?? 0);
 
@@ -124,7 +121,6 @@ class TopicIndex extends Component
             'category' => strtolower($course->studyProgram->title),
             'slug' => Str::slug($this->name),
             'description' => $this->description,
-            'visibility' => $this->visibility,
             'status' => $this->normalizeStatus($this->status),
             'sort_order' => $this->sort_order,
         ]);
@@ -148,7 +144,6 @@ class TopicIndex extends Component
                 'category' => strtolower($course->studyProgram->title),
                 'slug' => Str::slug($this->name),
                 'description' => $this->description,
-                'visibility' => $this->visibility,
                 'status' => $this->normalizeStatus($this->status),
                 'sort_order' => $this->sort_order,
             ]
@@ -227,12 +222,10 @@ class TopicIndex extends Component
             'teacher_id',
             'name',
             'description',
-            'visibility',
             'status',
             'sort_order',
         ]);
 
-        $this->visibility = 'Public';
         $this->status = 'draft';
         $this->sort_order = 1;
     }

@@ -29,7 +29,8 @@
     $selectedMentorMaterials = $selectedMentorTopic?->materials->sortBy('sort_order')->values() ?? collect();
     $selectedMentorMaterial = $selectedMentorMaterials->firstWhere('id', $this->selectedMentorMaterialId) ?? $selectedMentorMaterials->first();
     $selectedMentorMaterialPreviewUrl = app(\App\Services\Materials\MaterialAssetService::class)->resolvePreviewUrl($selectedMentorMaterial);
-    $selectedMentorSession = $selectedMentorTopic?->videoSessions->sortByDesc('start_at')->first();
+    $selectedMentorSession = $selectedMentorTopic?->videoSessions->firstWhere('id', $this->selectedMentorSessionId)
+        ?? $selectedMentorTopic?->videoSessions->sortByDesc('start_at')->first();
     $selectedMentorSessionScheduleLabel = $selectedMentorSession?->start_at && $selectedMentorSession?->end_at
         ? 'Sesi: ' . $selectedMentorSession->start_at->format('H:i') . '-' . $selectedMentorSession->end_at->format('H:i') . ' ' . $selectedMentorSession->start_at->format('d M Y')
         : null;
@@ -44,7 +45,8 @@
     $selectedStudentMaterial = $selectedStudentMaterials->firstWhere('id', $this->selectedStudentMaterialId) ?? $selectedStudentMaterials->first();
     $selectedStudentMaterialPreviewUrl = app(\App\Services\Materials\MaterialAssetService::class)->resolvePreviewUrl($selectedStudentMaterial);
     $selectedStudentMaterialProgress = $selectedStudentMaterial ? ($this->materialProgressMap[$selectedStudentMaterial->id] ?? 'not_started') : 'not_started';
-    $selectedStudentSession = $selectedStudentTopic?->videoSessions->sortByDesc('start_at')->first();
+    $selectedStudentSession = $selectedStudentTopic?->videoSessions->firstWhere('id', $this->selectedStudentSessionId)
+        ?? $selectedStudentTopic?->videoSessions->sortByDesc('start_at')->first();
     $selectedStudentSessionScheduleLabel = $selectedStudentSession?->start_at && $selectedStudentSession?->end_at
         ? 'Sesi: ' . $selectedStudentSession->start_at->format('H:i') . ' - ' . $selectedStudentSession->end_at->format('H:i') . ' ' . $selectedStudentSession->start_at->format('d M Y')
         : null;
