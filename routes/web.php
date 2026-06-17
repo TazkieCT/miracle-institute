@@ -149,6 +149,9 @@ $registerLocalizedRoutes = function (bool $named): void {
 
     $nameRoute(Route::get('/articles/{article}', ArticleShow::class), 'articles.show');
 
+    $nameRoute(Route::view('/terms-and-conditions', 'legal.terms'), 'legal.terms');
+    $nameRoute(Route::view('/privacy-policy', 'legal.privacy'), 'legal.privacy');
+
         /*
         |--------------------------------------------------------------------------
         | Guest Routes

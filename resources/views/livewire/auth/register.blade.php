@@ -58,6 +58,13 @@
                 <span>Loading...</span>
             </span>
         </button>
+
+        <p class="text-center text-xs leading-6 text-[#004777]/70">
+            Dengan mendaftar, Anda menyetujui
+            <a href="{{ localized_route('legal.terms') }}" class="underline decoration-[#35A7FF]/50 underline-offset-4">Terms &amp; Conditions</a>
+            dan
+            <a href="{{ localized_route('legal.privacy') }}" class="underline decoration-[#35A7FF]/50 underline-offset-4">Privacy Policy</a>.
+        </p>
     </form>
 
     <div class="text-sm text-center">
