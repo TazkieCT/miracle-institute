@@ -271,17 +271,16 @@ class CourseIndex extends Component
 
     private function loadThumbnails(): void
     {
-        $dir = public_path('images/thumbnail');
-
-        if (!File::exists($dir)) {
-            $this->thumbnails = [];
-            return;
-        }
-
-        $files = collect(File::files($dir))
+        $files = collect(course_thumbnail_files())
             ->filter(fn ($file) => in_array(Str::lower($file->getExtension()), ['jpg', 'jpeg', 'png', 'webp'], true))
             ->sortByDesc(fn ($file) => $file->getMTime())
             ->values();
+
+        if ($files->isEmpty()) {
+            $this->thumbnails = [];
+
+            return;
+        }
 
         $this->thumbnails = $files
             ->map(fn ($file) => 'images/thumbnail/' . $file->getFilename())

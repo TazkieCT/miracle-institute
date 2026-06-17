@@ -218,10 +218,10 @@
                             if ($courseImage) {
                                 if (\Illuminate\Support\Str::startsWith($courseImage, ['http://', 'https://'])) {
                                     $courseImageSrc = $courseImage;
-                                } elseif (\Illuminate\Support\Str::startsWith($courseImage, 'images/')) {
-                                    $courseImageSrc = asset($courseImage);
+                                } elseif ($thumbnailUrl = course_thumbnail_url($courseImage)) {
+                                    $courseImageSrc = $thumbnailUrl;
                                 } else {
-                                    $courseImageSrc = asset('images/thumbnail/' . $courseImage);
+                                    $courseImageSrc = course_thumbnail_url($courseImage);
                                 }
                             }
                         @endphp

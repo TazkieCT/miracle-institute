@@ -106,7 +106,7 @@
             @forelse($thumbnails as $thumbnail)
                 <div class="overflow-hidden rounded-2xl border bg-white">
                     <img
-                        src="{{ asset($thumbnail['path']) }}"
+                        src="{{ course_thumbnail_url($thumbnail['path']) }}"
                         alt="{{ $thumbnail['name'] }}"
                         class="h-44 w-full object-cover"
                     >

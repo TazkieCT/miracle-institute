@@ -61,10 +61,8 @@
     if ($poster) {
         if (\Illuminate\Support\Str::startsWith($poster, ['http://', 'https://'])) {
             $posterSrc = $poster;
-        } elseif (file_exists(public_path($poster))) {
-            $posterSrc = asset($poster);
-        } elseif (file_exists(public_path('storage/' . $poster))) {
-            $posterSrc = asset('storage/' . $poster);
+        } elseif ($thumbnailUrl = course_thumbnail_url($poster)) {
+            $posterSrc = $thumbnailUrl;
         }
     }
 @endphp

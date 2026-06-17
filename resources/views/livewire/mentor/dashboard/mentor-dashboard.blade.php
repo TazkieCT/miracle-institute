@@ -267,12 +267,10 @@
                             if ($poster) {
                                 if (Str::startsWith($poster, ['http://', 'https://'])) {
                                     $posterSrc = $poster;
-                                } elseif (file_exists(public_path($poster))) {
-                                    $posterSrc = asset($poster);
-                                } elseif (file_exists(public_path('storage/' . $poster))) {
-                                    $posterSrc = asset('storage/' . $poster);
+                                } elseif ($thumbnailUrl = course_thumbnail_url($poster)) {
+                                    $posterSrc = $thumbnailUrl;
                                 } elseif ($course->poster) {
-                                    $posterSrc = asset('images/thumbnail/' . $poster);
+                                    $posterSrc = course_thumbnail_url($poster);
                                 }
                             }
                         @endphp

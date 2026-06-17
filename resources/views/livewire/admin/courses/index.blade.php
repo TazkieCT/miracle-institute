@@ -61,10 +61,8 @@
                                 if ($row->poster) {
                                     if (\Illuminate\Support\Str::startsWith($row->poster, ['http://', 'https://'])) {
                                         $posterSrc = $row->poster;
-                                    } elseif (file_exists(public_path($row->poster))) {
-                                        $posterSrc = asset($row->poster);
-                                    } elseif (file_exists(public_path('storage/' . $row->poster))) {
-                                        $posterSrc = asset('storage/' . $row->poster);
+                                    } elseif ($thumbnailUrl = course_thumbnail_url($row->poster)) {
+                                        $posterSrc = $thumbnailUrl;
                                     }
                                 }
                             @endphp
@@ -303,7 +301,7 @@
                             <div id="file:thumbnail" class="grid max-h-64 grid-cols-2 gap-2 overflow-auto rounded-lg border p-2 sm:grid-cols-3 lg:grid-cols-4">
                                 @foreach($thumbnails as $t)
                                     <button type="button" wire:click="selectThumbnail('{{ $t }}')" class="overflow-hidden rounded-md border p-0 {{ $poster === $t ? 'ring-2 ring-slate-900' : '' }}">
-                                        <img src="{{ asset($t) }}" class="h-20 w-full object-cover" alt="thumb">
+                                        <img src="{{ course_thumbnail_url($t) }}" class="h-20 w-full object-cover" alt="thumb">
                                     </button>
                                 @endforeach
 

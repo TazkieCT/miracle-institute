@@ -25,10 +25,10 @@
         if ($courseImage) {
             if (Str::startsWith($courseImage, ['http://', 'https://'])) {
                 $courseImageSrc = $courseImage;
-            } elseif (Str::startsWith($courseImage, 'images/')) {
-                $courseImageSrc = asset($courseImage);
+            } elseif ($thumbnailUrl = course_thumbnail_url($courseImage)) {
+                $courseImageSrc = $thumbnailUrl;
             } else {
-                $courseImageSrc = asset('images/thumbnail/' . $courseImage);
+                $courseImageSrc = course_thumbnail_url($courseImage);
             }
         } elseif (!empty($course?->image)) {
             $courseImageSrc = asset('storage/' . $course->image);
