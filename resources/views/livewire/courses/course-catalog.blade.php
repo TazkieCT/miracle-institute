@@ -18,16 +18,6 @@
                 <p class="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:mt-5 sm:text-lg sm:leading-7 lg:mx-0">
                     {{ __("general.course_catalog.hero.{$hero}.description") }}
                 </p>
-
-                <div class="mt-6 flex justify-center gap-6 sm:mt-8 sm:gap-8 lg:justify-start">
-                    <div>
-                        <p class="text-2xl font-bold text-[#004777] sm:text-3xl">{{ $courses->total() }}</p>
-                        <p class="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-xs">
-                            {{ __('general.course_catalog.stats.available_courses') }}
-                        </p>
-                    </div>
-                    <div class="h-12 w-px bg-[#004777]/15 sm:h-14" aria-hidden="true"></div>
-                </div>
             </div>
 
             <div class="relative order-1 flex min-h-52 items-center justify-center lg:order-2 lg:min-h-[24rem] lg:justify-end">
