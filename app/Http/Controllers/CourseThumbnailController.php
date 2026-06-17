@@ -29,7 +29,6 @@ class CourseThumbnailController extends Controller
                 File::ensureDirectoryExists(dirname($targetPath));
                 File::put($targetPath, File::get($file->getRealPath()));
                 $stored = true;
-                break;
             } catch (\Throwable $exception) {
                 $lastErrorMessage = $exception->getMessage();
             }

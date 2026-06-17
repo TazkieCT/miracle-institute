@@ -138,10 +138,12 @@ if (! function_exists('course_thumbnail_relative_path')) {
 if (! function_exists('course_thumbnail_directories')) {
     function course_thumbnail_directories(): array
     {
-        return [
+        return array_values(array_unique([
             storage_path('app/public/images/thumbnail'),
             public_path('images/thumbnail'),
-        ];
+            public_path('storage/images/thumbnail'),
+            base_path('public/images/thumbnail'),
+        ]));
     }
 }
 
