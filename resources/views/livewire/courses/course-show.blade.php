@@ -4,7 +4,7 @@
     $canTrack = auth()->check() && $enrolled;
 
     $topicsToRender = $paginatedTopics;
-    $totalTopicsCount = $course->topics->count();
+    $totalTopicsCount = $studentTopics->count();
     $completedTopicsCount = $this->completedTopicsCount ?? 0;
     $progressPercent = $totalTopicsCount > 0 ? (int) round(($completedTopicsCount / $totalTopicsCount) * 100) : 0;
     $hasPassedAssessment = $this->hasPassedAssessment;
@@ -38,9 +38,9 @@
         && (!$selectedMentorSession?->end_at || now()->lte($selectedMentorSession->end_at));
     $studentTopicsToRender = $paginatedTopics;
     $selectedStudentTopic = $studentTopicsToRender->firstWhere('id', $this->selectedStudentTopicId)
-        ?? $course->topics->firstWhere('id', $this->selectedStudentTopicId)
+        ?? $studentTopics->firstWhere('id', $this->selectedStudentTopicId)
         ?? $studentTopicsToRender->first()
-        ?? $course->topics->first();
+        ?? $studentTopics->first();
     $selectedStudentMaterials = $selectedStudentTopic?->materials->sortBy('sort_order')->values() ?? collect();
     $selectedStudentMaterial = $selectedStudentMaterials->firstWhere('id', $this->selectedStudentMaterialId) ?? $selectedStudentMaterials->first();
     $selectedStudentMaterialPreviewUrl = app(\App\Services\Materials\MaterialAssetService::class)->resolvePreviewUrl($selectedStudentMaterial);
@@ -412,14 +412,12 @@
                                 <div class="mt-4 rounded-xl bg-[var(--mentor-primary-soft-2)] text-sm text-[var(--mentor-primary)]">
                                     {{ $selectedStudentSessionScheduleLabel ?? 'Jadwal sesi belum tersedia' }}
                                 </div>
-                                @if($showStudentZoomButton)
-                                    <div class="mt-4 flex flex-col gap-3">
-                                        <a href="{{ $selectedStudentSession->zoom_link }}"
-                                           target="_blank"
-                                           rel="noopener noreferrer"
-                                           class="admin-neutral-button inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm">
-                                            Buka Zoom
-                                        </a>
+                                @if($selectedStudentSession)
+                                    <div class="mt-4">
+                                        <livewire:sessions.join-session-button
+                                            :video-session-id="$selectedStudentSession->id"
+                                            :key="'course-show-session-' . $selectedStudentSession->id"
+                                        />
                                     </div>
                                 @endif
 

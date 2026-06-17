@@ -109,14 +109,6 @@ class CourseShow extends Component
 
         $this->isGuest = !auth()->check();
 
-        if (session('active_role') === 'student') {
-            $visibleTopics = $this->course->topics
-                ->filter(fn (Topic $topic) => $this->topicIsVisibleToStudents($topic))
-                ->values();
-
-            $this->course->setRelation('topics', $visibleTopics);
-        }
-
         if (!$this->isGuest) {
             $user = auth()->user();
 
@@ -146,10 +138,12 @@ class CourseShow extends Component
             $this->selectedMentorSessionId = $this->resolveLatestSessionId($this->mentoredTopics->first());
         }
 
-        if ($this->course->topics->isNotEmpty()) {
-            $this->selectedStudentTopicId = $this->course->topics->first()->id;
-            $this->selectedStudentMaterialId = $this->course->topics->first()?->materials->sortBy('sort_order')->first()?->id;
-            $this->selectedStudentSessionId = $this->resolveLatestSessionId($this->course->topics->first());
+        $studentTopics = $this->studentTopics();
+
+        if ($studentTopics->isNotEmpty()) {
+            $this->selectedStudentTopicId = $studentTopics->first()->id;
+            $this->selectedStudentMaterialId = $studentTopics->first()?->materials->sortBy('sort_order')->first()?->id;
+            $this->selectedStudentSessionId = $this->resolveLatestSessionId($studentTopics->first());
         }
 
         $requestedTab = request()->query('tab');
@@ -271,9 +265,11 @@ class CourseShow extends Component
 
     public function selectStudentTopic(string $topicId): void
     {
-        if ($this->course->topics->contains(fn (Topic $topic) => (string) $topic->id === (string) $topicId)) {
+        $studentTopics = $this->studentTopics();
+
+        if ($studentTopics->contains(fn (Topic $topic) => (string) $topic->id === (string) $topicId)) {
             $this->selectedStudentTopicId = $topicId;
-            $topic = $this->course->topics->firstWhere('id', $topicId);
+            $topic = $studentTopics->firstWhere('id', $topicId);
             $this->selectedStudentMaterialId = $topic?->materials->sortBy('sort_order')->first()?->id;
             $this->selectedStudentSessionId = $this->resolveLatestSessionId($topic);
         }
@@ -281,7 +277,7 @@ class CourseShow extends Component
 
     public function selectStudentSession(string $sessionId): void
     {
-        $topic = $this->course->topics->first(function (Topic $topic) use ($sessionId) {
+        $topic = $this->studentTopics()->first(function (Topic $topic) use ($sessionId) {
             return $topic->videoSessions->contains(fn ($session) => (string) $session->id === (string) $sessionId);
         });
 
@@ -296,7 +292,7 @@ class CourseShow extends Component
 
     public function selectStudentMaterial(string $materialId): void
     {
-        $topic = $this->course->topics->firstWhere('id', $this->selectedStudentTopicId);
+        $topic = $this->studentTopics()->firstWhere('id', $this->selectedStudentTopicId);
 
         if ($topic && $topic->materials->contains(fn ($material) => (string) $material->id === (string) $materialId)) {
             $this->selectedStudentMaterialId = $materialId;
@@ -312,7 +308,7 @@ class CourseShow extends Component
             return;
         }
 
-        $topic = $this->course->topics->firstWhere('id', $this->selectedStudentTopicId);
+        $topic = $this->studentTopics()->firstWhere('id', $this->selectedStudentTopicId);
         $material = $topic?->materials->firstWhere('id', $materialId);
 
         if (! $topic || ! $material) {
@@ -423,7 +419,7 @@ class CourseShow extends Component
 
     public function getFilteredTopicsProperty()
     {
-        $topics = $this->course->topics->map(function (Topic $topic) {
+        $topics = $this->studentTopics()->map(function (Topic $topic) {
             $status = $this->isGuest
                 ? 'available'
                 : ($this->topicStatusMap[$topic->id] ?? 'not_started');
@@ -485,7 +481,7 @@ class CourseShow extends Component
 
     public function getNotStartedTopicsCountProperty(): int
     {
-        return $this->course->topics->count()
+        return $this->studentTopics()->count()
             - $this->completedTopicsCount
             - $this->inProgressTopicsCount;
     }
@@ -496,11 +492,11 @@ class CourseShow extends Component
             return false;
         }
 
-        if ($this->course->topics->isEmpty()) {
+        if ($this->studentTopics()->isEmpty()) {
             return false;
         }
 
-        return $this->course->topics->every(function ($topic) {
+        return $this->studentTopics()->every(function ($topic) {
             return ($this->topicStatusMap[$topic->id] ?? null) === 'completed';
         });
     }
@@ -549,7 +545,7 @@ class CourseShow extends Component
             'note' => $this->enrolled ? 'Course enrolled' : 'Enroll course first',
         ];
 
-        $hasTopics = $this->course->topics->isNotEmpty();
+        $hasTopics = $this->studentTopics()->isNotEmpty();
         $hasAssessmentQuestions = app(LearningAccessRequirementService::class)
             ->courseHasAssessmentQuestions($this->course);
         $checks[] = [
@@ -564,7 +560,7 @@ class CourseShow extends Component
             'note' => $hasAssessmentQuestions ? 'Questions available' : 'Add at least one question first',
         ];
 
-        $allTopicsCompleted = $hasTopics && $this->completedTopicsCount === $this->course->topics->count();
+        $allTopicsCompleted = $hasTopics && $this->completedTopicsCount === $this->studentTopics()->count();
 
         $checks[] = [
             'label' => 'All topics completed',
@@ -767,6 +763,7 @@ class CourseShow extends Component
         return view('livewire.courses.course-show', [
             'filteredTopics' => $this->filteredTopics,
             'paginatedTopics' => $this->paginatedTopics,
+            'studentTopics' => $this->studentTopics(),
             'assessment' => $this->assessment,
             'assessmentMeta' => $this->assessmentMeta,
             'certificateEligibility' => $this->certificateEligibility,
@@ -784,7 +781,7 @@ class CourseShow extends Component
             ->pluck('status', 'topic_id')
             ->toArray();
 
-        $materialIds = $this->course->topics
+        $materialIds = $this->studentTopics()
             ->flatMap(fn (Topic $topic) => $topic->materials->pluck('id'))
             ->filter()
             ->values();
@@ -802,6 +799,17 @@ class CourseShow extends Component
 
         return $requirements->topicIsPublished($topic)
             && $requirements->topicHasStudentAccessRequirements($topic);
+    }
+
+    private function studentTopics(): Collection
+    {
+        if (auth()->check() && session('active_role') === 'student') {
+            return $this->course->topics
+                ->filter(fn (Topic $topic) => $this->topicIsVisibleToStudents($topic))
+                ->values();
+        }
+
+        return $this->course->topics;
     }
 
     private function resolveLatestSessionId(?Topic $topic): ?string
