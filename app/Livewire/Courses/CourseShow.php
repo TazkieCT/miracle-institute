@@ -181,7 +181,7 @@ class CourseShow extends Component
         $allowedTabs = auth()->check() && session('active_role') === 'disciples'
             ? ['overview', 'topics', 'students']
             : (auth()->check() && session('active_role') === 'student'
-                ? ['overview', 'topics']
+                ? $this->studentAllowedTabs()
                 : ['general', 'mentored']);
 
         if (!in_array($tab, $allowedTabs, true)) {
@@ -397,29 +397,6 @@ class CourseShow extends Component
         });
     }
 
-    private function topicSessionStatus(Topic $topic): string
-    {
-        $studentSessions = $this->studentRelevantSessions($topic);
-
-        if ($studentSessions->isEmpty()) {
-            return 'no_session';
-        }
-
-        if ($studentSessions->every(fn ($session) => $session->status === 'completed')) {
-            return 'completed';
-        }
-
-        if ($studentSessions->contains(fn ($session) => $session->status === 'ongoing')) {
-            return 'ongoing';
-        }
-
-        if ($studentSessions->contains(fn ($session) => $session->status === 'scheduled')) {
-            return 'scheduled';
-        }
-
-        return 'cancelled';
-    }
-
     public function getFilteredTopicsProperty()
     {
         $topics = $this->studentTopics()->map(function (Topic $topic) {
@@ -435,7 +412,6 @@ class CourseShow extends Component
 
             $topic->setAttribute('progress_status', $status);
             $topic->setAttribute('progress_percent', $percent);
-            $topic->setAttribute('session_status', $this->topicSessionStatus($topic));
             $topic->setAttribute('materials_count', $topic->materials_count ?? $topic->materials->count());
             $topic->setAttribute('sessions_count', $topic->video_sessions_count ?? $topic->videoSessions->count());
 
@@ -775,7 +751,7 @@ class CourseShow extends Component
                 $activeTab = 'overview';
             }
         } elseif (auth()->check() && session('active_role') === 'student') {
-            if (!in_array($activeTab, ['overview', 'topics'], true)) {
+            if (!in_array($activeTab, $this->studentAllowedTabs(), true)) {
                 $activeTab = 'overview';
             }
         } elseif ($activeTab === 'mentored' && (!auth()->check() || session('active_role') !== 'disciples')) {
@@ -855,5 +831,12 @@ class CourseShow extends Component
         return $this->studentRelevantSessions($topic)
             ->sortByDesc('start_at')
             ->first()?->id;
+    }
+
+    private function studentAllowedTabs(): array
+    {
+        return $this->enrolled
+            ? ['overview', 'topics']
+            : ['overview'];
     }
 }

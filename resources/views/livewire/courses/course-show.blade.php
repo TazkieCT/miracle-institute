@@ -21,6 +21,9 @@
         'overview' => 'Ringkasan',
         'topics' => 'Topik',
     ];
+    $studentVisibleTabs = $enrolled
+        ? $studentTabs
+        : ['overview' => $studentTabs['overview']];
     $mentorTopicsToRender = $paginatedTopics;
     $mentorStudentsCount = $mentorStudents->count();
     $mentorMaterialsCount = $mentoredTopics->sum(fn ($topic) => $topic->materials_count ?? $topic->materials->count());
@@ -138,6 +141,18 @@
                                 <p class="max-w-3xl text-sm leading-6 text-white/75">
                                     {{ $course->description ?: __('general.course_catalog.defaults.no_description') }}
                                 </p>
+
+                                @if(!$enrolled)
+                                    <div class="pt-2">
+                                        <button
+                                            type="button"
+                                            wire:click="confirmEnroll"
+                                            class="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#004777] transition hover:bg-slate-100"
+                                        >
+                                            Daftar sekarang
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
@@ -195,7 +210,7 @@
 
                 <div class="border-t border-slate-100 px-3 pt-3 sm:px-5">
                     <div class="flex gap-2 overflow-x-auto">
-                        @foreach($studentTabs as $key => $label)
+                        @foreach($studentVisibleTabs as $key => $label)
                             <button type="button"
                                     wire:click="setTopicTab('{{ $key }}')"
                                     class="mentor-tab-button whitespace-nowrap {{ $activeTab === $key ? 'mentor-tab-button-active' : '' }}">
