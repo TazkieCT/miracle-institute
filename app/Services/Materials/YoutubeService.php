@@ -62,7 +62,7 @@ class YoutubeService
             return null;
         }
 
-        return 'https://www.youtube.com/embed/' . $id;
+        return 'https://www.youtube.com/embed/' . $id . '?enablejsapi=1&playsinline=1&rel=0&modestbranding=1';
     }
 
     public function deleteByUrl(?string $url): void
@@ -93,7 +93,7 @@ class YoutubeService
 
     public function extractVideoId(string $input): ?string
     {
-        $input = trim($input);
+        $input = trim(html_entity_decode($input));
 
         if ($input === '') {
             return null;
@@ -103,11 +103,41 @@ class YoutubeService
             return $input;
         }
 
+        $parts = parse_url($input);
+
+        if (! empty($parts['query'])) {
+            parse_str($parts['query'], $query);
+
+            if (! empty($query['v']) && preg_match('/^[A-Za-z0-9_-]{11}$/', $query['v'])) {
+                return $query['v'];
+            }
+        }
+
+        $host = strtolower($parts['host'] ?? '');
+        $path = trim($parts['path'] ?? '', '/');
+
+        if ($path !== '') {
+            $segments = explode('/', $path);
+
+            if (str_contains($host, 'youtu.be') && isset($segments[0]) && preg_match('/^[A-Za-z0-9_-]{11}$/', $segments[0])) {
+                return $segments[0];
+            }
+
+            foreach (['embed', 'shorts', 'live'] as $prefix) {
+                $index = array_search($prefix, $segments, true);
+
+                if ($index !== false && isset($segments[$index + 1]) && preg_match('/^[A-Za-z0-9_-]{11}$/', $segments[$index + 1])) {
+                    return $segments[$index + 1];
+                }
+            }
+        }
+
         $patterns = [
             '/v=([A-Za-z0-9_-]{11})/',
             '/youtu\.be\/([A-Za-z0-9_-]{11})/',
             '/embed\/([A-Za-z0-9_-]{11})/',
             '/shorts\/([A-Za-z0-9_-]{11})/',
+            '/live\/([A-Za-z0-9_-]{11})/',
         ];
 
         foreach ($patterns as $pattern) {
