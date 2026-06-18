@@ -43,7 +43,9 @@ class LearningAccessRequirementService
 
     public function topicHasStudentAccessRequirements(Topic $topic): bool
     {
-        return $topic->videoSessions()->exists();
+        return $topic->videoSessions()
+            ->where('status', '!=', 'draft')
+            ->exists();
     }
 
     public function topicIsPublished(Topic $topic): bool

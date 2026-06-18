@@ -45,8 +45,9 @@
     $selectedStudentMaterial = $selectedStudentMaterials->firstWhere('id', $this->selectedStudentMaterialId) ?? $selectedStudentMaterials->first();
     $selectedStudentMaterialPreviewUrl = app(\App\Services\Materials\MaterialAssetService::class)->resolvePreviewUrl($selectedStudentMaterial);
     $selectedStudentMaterialProgress = $selectedStudentMaterial ? ($this->materialProgressMap[$selectedStudentMaterial->id] ?? 'not_started') : 'not_started';
-    $selectedStudentSession = $selectedStudentTopic?->videoSessions->firstWhere('id', $this->selectedStudentSessionId)
-        ?? $selectedStudentTopic?->videoSessions->sortByDesc('start_at')->first();
+    $selectedStudentSessions = $selectedStudentTopic?->videoSessions->filter(fn ($session) => $session->status !== 'draft')->values() ?? collect();
+    $selectedStudentSession = $selectedStudentSessions->firstWhere('id', $this->selectedStudentSessionId)
+        ?? $selectedStudentSessions->sortByDesc('start_at')->first();
     $selectedStudentSessionScheduleLabel = $selectedStudentSession?->start_at && $selectedStudentSession?->end_at
         ? 'Sesi: ' . $selectedStudentSession->start_at->format('H:i') . ' - ' . $selectedStudentSession->end_at->format('H:i') . ' ' . $selectedStudentSession->start_at->format('d M Y')
         : null;
@@ -301,14 +302,22 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 flex gap-3 overflow-x-auto pb-1">
-                        @foreach($studentTopicsToRender as $topic)
-                            <button type="button"
-                                    wire:click="selectStudentTopic('{{ $topic->id }}')"
-                                    class="shrink-0 rounded-2xl border px-4 py-3 text-left transition {{ (string) ($selectedStudentTopic?->id) === (string) $topic->id ? 'border-[var(--mentor-primary)] bg-[var(--mentor-primary)] text-white shadow-md' : 'border-slate-200 bg-white text-[var(--mentor-primary)] hover:border-[var(--mentor-primary)]' }}">
-                                <div class="text-sm font-semibold">{{ $topic->name }}</div>
-                            </button>
-                        @endforeach
+                    <div class="mt-6 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                        <div class="flex gap-3 overflow-x-auto pb-1">
+                            @foreach($studentTopicsToRender as $topic)
+                                <button type="button"
+                                        wire:click="selectStudentTopic('{{ $topic->id }}')"
+                                        class="shrink-0 rounded-2xl border px-4 py-3 text-left transition {{ (string) ($selectedStudentTopic?->id) === (string) $topic->id ? 'border-[var(--mentor-primary)] bg-[var(--mentor-primary)] text-white shadow-md' : 'border-slate-200 bg-white text-[var(--mentor-primary)] hover:border-[var(--mentor-primary)]' }}">
+                                    <div class="text-sm font-semibold">{{ $topic->name }}</div>
+                                </button>
+                            @endforeach
+                        </div>
+
+                        @if($this->upcomingTopicsCount > 0)
+                            <div class="shrink-0 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                                {{ $this->upcomingTopicsCount }} topik lagi akan datang.
+                            </div>
+                        @endif
                     </div>
 
                     @if($paginatedTopics->hasPages())

@@ -386,30 +386,34 @@ class CourseShow extends Component
 
     private function topicHasCompletedSessions(Topic $topic): bool
     {
-        if ($topic->videoSessions->isEmpty()) {
+        $studentSessions = $this->studentRelevantSessions($topic);
+
+        if ($studentSessions->isEmpty()) {
             return false;
         }
 
-        return $topic->videoSessions->every(function ($session) {
+        return $studentSessions->every(function ($session) {
             return $session->status === 'completed';
         });
     }
 
     private function topicSessionStatus(Topic $topic): string
     {
-        if ($topic->videoSessions->isEmpty()) {
+        $studentSessions = $this->studentRelevantSessions($topic);
+
+        if ($studentSessions->isEmpty()) {
             return 'no_session';
         }
 
-        if ($topic->videoSessions->every(fn ($session) => $session->status === 'completed')) {
+        if ($studentSessions->every(fn ($session) => $session->status === 'completed')) {
             return 'completed';
         }
 
-        if ($topic->videoSessions->contains(fn ($session) => $session->status === 'ongoing')) {
+        if ($studentSessions->contains(fn ($session) => $session->status === 'ongoing')) {
             return 'ongoing';
         }
 
-        if ($topic->videoSessions->contains(fn ($session) => $session->status === 'scheduled')) {
+        if ($studentSessions->contains(fn ($session) => $session->status === 'scheduled')) {
             return 'scheduled';
         }
 
@@ -491,6 +495,10 @@ class CourseShow extends Component
             return false;
         }
 
+        if ($this->upcomingTopicsCount > 0) {
+            return false;
+        }
+
         if ($this->studentTopics()->isEmpty()) {
             return false;
         }
@@ -498,6 +506,14 @@ class CourseShow extends Component
         return $this->studentTopics()->every(function ($topic) {
             return ($this->topicStatusMap[$topic->id] ?? null) === 'completed';
         });
+    }
+
+    public function getUpcomingTopicsCountProperty(): int
+    {
+        return $this->course->topics
+            ->filter(fn (Topic $topic) => ! $this->topicIsVisibleToStudents($topic))
+            ->filter(fn (Topic $topic) => $this->topicHasUpcomingStudentContent($topic))
+            ->count();
     }
 
     public function getActiveAttemptProperty()
@@ -559,12 +575,17 @@ class CourseShow extends Component
             'note' => $hasAssessmentQuestions ? 'Questions available' : 'Add at least one question first',
         ];
 
-        $allTopicsCompleted = $hasTopics && $this->completedTopicsCount === $this->studentTopics()->count();
+        $hasUpcomingTopics = $this->upcomingTopicsCount > 0;
+        $allTopicsCompleted = ! $hasUpcomingTopics
+            && $hasTopics
+            && $this->completedTopicsCount === $this->studentTopics()->count();
 
         $checks[] = [
             'label' => 'All topics completed',
             'done' => $allTopicsCompleted,
-            'note' => $allTopicsCompleted ? 'All topics completed' : 'Finish remaining topics',
+            'note' => $allTopicsCompleted
+                ? 'All topics completed'
+                : ($hasUpcomingTopics ? 'Wait for remaining topics to be published' : 'Finish remaining topics'),
         ];
 
         $assessmentOk = true;
@@ -604,7 +625,9 @@ class CourseShow extends Component
         }
 
         if ($hasTopics && !$allTopicsCompleted) {
-            $reasons[] = 'Selesaikan seluruh topic untuk membuka sertifikat.';
+            $reasons[] = $hasUpcomingTopics
+                ? 'Masih ada topik yang belum terbit. Tunggu semua topik tersedia terlebih dahulu.'
+                : 'Selesaikan seluruh topic untuk membuka sertifikat.';
         }
 
         if ($this->assessment && !$assessmentOk) {
@@ -800,6 +823,18 @@ class CourseShow extends Component
             && $requirements->topicHasStudentAccessRequirements($topic);
     }
 
+    private function topicHasUpcomingStudentContent(Topic $topic): bool
+    {
+        return $this->studentRelevantSessions($topic)->isNotEmpty();
+    }
+
+    private function studentRelevantSessions(Topic $topic): Collection
+    {
+        return $topic->videoSessions
+            ->filter(fn ($session) => $session->status !== 'draft')
+            ->values();
+    }
+
     private function studentTopics(): Collection
     {
         if (auth()->check() && session('active_role') === 'student') {
@@ -813,7 +848,11 @@ class CourseShow extends Component
 
     private function resolveLatestSessionId(?Topic $topic): ?string
     {
-        return $topic?->videoSessions
+        if (! $topic) {
+            return null;
+        }
+
+        return $this->studentRelevantSessions($topic)
             ->sortByDesc('start_at')
             ->first()?->id;
     }
