@@ -731,6 +731,10 @@ return [
             'create_title' => 'Assessment Baru',
             'edit_title' => 'Edit Assessment',
         ],
+        'delete' => [
+            'title' => 'Hapus Assessment',
+            'subtitle' => 'Aksi ini tidak dapat dibatalkan. Anda yakin ingin menghapus assessment ini?',
+        ],
         'form' => [
             'select_course' => 'Pilih kursus',
             'title_placeholder' => 'Judul',

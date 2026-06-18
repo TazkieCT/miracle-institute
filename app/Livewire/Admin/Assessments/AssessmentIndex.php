@@ -49,6 +49,8 @@ class AssessmentIndex extends Component
     }
 
     public bool $showModal = false;
+    public bool $showDeleteModal = false;
+    public ?string $deleteId = null;
 
     public ?string $editingId = null;
 
@@ -75,6 +77,8 @@ class AssessmentIndex extends Component
     public function mount(?string $courseFilter = null): void
     {
         $this->showModal = false;
+        $this->showDeleteModal = false;
+        $this->deleteId = null;
         $this->questionModalOpen = false;
         $this->courseFilter = $courseFilter ?? '';
     }
@@ -316,9 +320,24 @@ class AssessmentIndex extends Component
         session()->flash('success', 'Assessment berhasil disimpan.');
     }
 
-    public function delete(string $id): void
+    public function confirmDelete(string $id): void
     {
-        Assessment::findOrFail($id)->delete();
+        $this->deleteId = $id;
+        $this->showDeleteModal = true;
+    }
+
+    public function delete(): void
+    {
+        if (!$this->deleteId) {
+            session()->flash('error', 'Pilih assessment yang akan dihapus.');
+            return;
+        }
+
+        Assessment::findOrFail($this->deleteId)->delete();
+
+        $this->deleteId = null;
+        $this->showDeleteModal = false;
+        $this->questionAssessment = null;
         session()->flash('success', 'Assessment berhasil dihapus.');
     }
 
@@ -345,6 +364,7 @@ class AssessmentIndex extends Component
     {
         $this->reset([
             'editingId',
+            'deleteId',
             'course_id',
             'title',
             'passing_grade',
@@ -356,5 +376,6 @@ class AssessmentIndex extends Component
         $this->passing_grade = 70;
         $this->status = 'active';
         $this->randomize_questions = false;
+        $this->showDeleteModal = false;
     }
 }
