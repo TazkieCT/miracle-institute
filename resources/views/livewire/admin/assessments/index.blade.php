@@ -42,10 +42,14 @@
             </div>
 
             @if($selectedAssessment)
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
                     <div class="rounded-2xl border bg-slate-50 p-4">
                         <div class="text-xs text-slate-500">{{ __('admin.assessments.table.assessment') }}</div>
                         <div class="mt-1 font-semibold">{{ $selectedAssessment->title }}</div>
+                    </div>
+                    <div class="rounded-2xl border bg-slate-50 p-4">
+                        <div class="text-xs text-slate-500">Pengajar</div>
+                        <div class="mt-1 font-semibold">{{ $selectedAssessment->teacher?->name ?? '-' }}</div>
                     </div>
                     <div class="rounded-2xl border bg-slate-50 p-4">
                         <div class="text-xs text-slate-500">{{ __('admin.question_manager.stats.passing_grade') }}</div>
@@ -197,6 +201,21 @@
                             @enderror
                         </div>
                     @endif
+
+                    <div class="space-y-1">
+                        <label class="mb-1 block text-xs font-semibold text-slate-600">
+                            Pengajar Pengelola Assessment
+                        </label>
+                        <select wire:model="teacher_id" class="w-full rounded-xl border px-4 py-2">
+                            <option value="">{{ __('admin.assessments.form.select_teacher') }}</option>
+                            @foreach($teachers as $teacher)
+                                <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('teacher_id')
+                            <p class="text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                     <div class="space-y-1">
                         <label class="mb-1 block text-xs font-semibold text-slate-600">

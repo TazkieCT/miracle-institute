@@ -42,18 +42,34 @@
             @if($selectedMaterial)
                 @if($selectedMaterial->type === 'video' && $selectedMaterial->external_url)
                     <div class="mx-auto flex w-full max-w-3xl flex-col space-y-5">
-                        <div class="group relative aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-[var(--mentor-primary)] shadow-md">
-                            @if($videoThumbnailUrl)
-                                <img src="{{ $videoThumbnailUrl }}" class="h-full w-full object-cover opacity-80" alt="{{ $selectedMaterial->name }}">
-                            @endif
-                            @if($videoEmbedUrl)
-                                <a href="{{ $selectedMaterial->external_url }}" target="_blank" rel="noopener noreferrer" class="absolute inset-0 flex items-center justify-center">
-                                    <div class="grid h-16 w-16 place-items-center rounded-full bg-white/90 text-[var(--mentor-primary)] shadow-xl">
-                                        ▶
-                                    </div>
+                        @if($videoEmbedUrl)
+                            <div class="aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-[var(--mentor-primary)] shadow-md">
+                                <iframe
+                                    src="{{ $videoEmbedUrl }}"
+                                    title="{{ $selectedMaterial->name }}"
+                                    class="h-full w-full"
+                                    loading="lazy"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3">
+                                <a
+                                    href="{{ $selectedMaterial->external_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="admin-neutral-button inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm"
+                                >
+                                    {{ __('mentor.topic_tabs.materials.preview.watch_youtube') }}
                                 </a>
-                            @endif
-                        </div>
+                            </div>
+                        @elseif($videoThumbnailUrl)
+                            <div class="group relative aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-[var(--mentor-primary)] shadow-md">
+                                <img src="{{ $videoThumbnailUrl }}" class="h-full w-full object-cover opacity-80" alt="{{ $selectedMaterial->name }}">
+                            </div>
+                        @endif
                     </div>
                 @elseif($materialPreviewUrl)
                     <div class="mx-auto flex w-full max-w-4xl flex-col space-y-5">
@@ -94,10 +110,10 @@
                         wire:click="selectMaterial(@js($material->id))"
                         class="w-full rounded-xl border p-4 text-left transition {{ $selectedMaterial?->id === $material->id ? 'border-[var(--mentor-primary)] bg-[var(--mentor-primary)] text-white shadow-md' : 'border-slate-200 bg-[var(--mentor-primary-soft-2)] text-[var(--mentor-primary)] hover:border-[var(--mentor-primary)]' }}">
                     <div class="truncate text-sm font-medium">
-                        #{{ $material->sort_order }} · {{ $material->name }}
+                        #{{ $material->sort_order }} Â· {{ $material->name }}
                     </div>
                     <div class="mt-1 text-xs">
-                        {{ strtoupper($material->type) }} · {{ ucfirst($material->status) }}
+                        {{ strtoupper($material->type) }} Â· {{ ucfirst($material->status) }}
                     </div>
                 </button>
             @empty
@@ -120,7 +136,7 @@
                     </div>
 
                     <button type="button" wire:click="closeMaterialModal" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm">
-                        ✕
+                        âœ•
                     </button>
                 </div>
 

@@ -737,6 +737,7 @@ return [
         ],
         'form' => [
             'select_course' => 'Pilih kursus',
+            'select_teacher' => 'Pilih pengajar',
             'title_placeholder' => 'Judul',
             'passing_grade_placeholder' => 'Nilai kelulusan',
             'question_limit_placeholder' => 'Soal ditampilkan',

@@ -45,6 +45,7 @@ class CourseShow extends Component
     public bool $showEnrollModal = false;
     public bool $showTopicAccessWarningModal = false;
     public string $topicAccessWarningName = '';
+    public array $videoCompletionUnlocked = [];
 
     public string $topicSearch = '';
     public string $topicSort = 'sort_asc';
@@ -298,6 +299,24 @@ class CourseShow extends Component
         }
     }
 
+    public function unlockStudentVideoCompletion(string $materialId): void
+    {
+        abort_unless(auth()->check() && session('active_role') === 'student', 403);
+
+        $topic = $this->studentTopics()->firstWhere('id', $this->selectedStudentTopicId);
+        $material = $topic?->materials->firstWhere('id', $materialId);
+
+        if (! $material || $material->type !== 'video') {
+            return;
+        }
+
+        if (! $this->extractYoutubeVideoId((string) $material->external_url)) {
+            return;
+        }
+
+        $this->videoCompletionUnlocked[$materialId] = true;
+    }
+
     public function markStudentMaterialComplete(string $materialId, ProgressService $progressService): void
     {
         abort_unless(auth()->check() && session('active_role') === 'student', 403);
@@ -312,6 +331,15 @@ class CourseShow extends Component
 
         if (! $topic || ! $material) {
             session()->flash('error', 'Material tidak ditemukan.');
+            return;
+        }
+
+        if (
+            $material->type === 'video' &&
+            $this->extractYoutubeVideoId((string) $material->external_url) &&
+            ! ($this->videoCompletionUnlocked[$materialId] ?? false)
+        ) {
+            session()->flash('error', 'Video harus ditonton minimal 70% sebelum bisa diselesaikan.');
             return;
         }
 
@@ -831,6 +859,64 @@ class CourseShow extends Component
         return $this->studentRelevantSessions($topic)
             ->sortByDesc('start_at')
             ->first()?->id;
+    }
+
+    private function extractYoutubeVideoId(string $input): ?string
+    {
+        $input = trim(html_entity_decode($input));
+
+        if ($input === '') {
+            return null;
+        }
+
+        if (preg_match('/^[A-Za-z0-9_-]{11}$/', $input)) {
+            return $input;
+        }
+
+        $parts = parse_url($input);
+
+        if (! empty($parts['query'])) {
+            parse_str($parts['query'], $query);
+
+            if (! empty($query['v']) && preg_match('/^[A-Za-z0-9_-]{11}$/', $query['v'])) {
+                return $query['v'];
+            }
+        }
+
+        $host = strtolower($parts['host'] ?? '');
+        $path = trim($parts['path'] ?? '', '/');
+
+        if ($path !== '') {
+            $segments = explode('/', $path);
+
+            if (str_contains($host, 'youtu.be') && isset($segments[0]) && preg_match('/^[A-Za-z0-9_-]{11}$/', $segments[0])) {
+                return $segments[0];
+            }
+
+            foreach (['embed', 'shorts', 'live'] as $prefix) {
+                $index = array_search($prefix, $segments, true);
+
+                if ($index !== false && isset($segments[$index + 1]) && preg_match('/^[A-Za-z0-9_-]{11}$/', $segments[$index + 1])) {
+                    return $segments[$index + 1];
+                }
+            }
+        }
+
+        $patterns = [
+            '/v=([A-Za-z0-9_-]{11})/',
+            '/youtu\.be\/([A-Za-z0-9_-]{11})/',
+            '/embed\/([A-Za-z0-9_-]{11})/',
+            '/shorts\/([A-Za-z0-9_-]{11})/',
+            '/live\/([A-Za-z0-9_-]{11})/',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $input, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        return null;
     }
 
     private function studentAllowedTabs(): array

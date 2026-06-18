@@ -48,6 +48,13 @@
     $selectedStudentMaterial = $selectedStudentMaterials->firstWhere('id', $this->selectedStudentMaterialId) ?? $selectedStudentMaterials->first();
     $selectedStudentMaterialPreviewUrl = app(\App\Services\Materials\MaterialAssetService::class)->resolvePreviewUrl($selectedStudentMaterial);
     $selectedStudentMaterialProgress = $selectedStudentMaterial ? ($this->materialProgressMap[$selectedStudentMaterial->id] ?? 'not_started') : 'not_started';
+    $selectedStudentYoutubeId = $selectedStudentMaterial && $selectedStudentMaterial->type === 'video'
+        ? app(\App\Services\Materials\YoutubeService::class)->extractVideoId((string) $selectedStudentMaterial->external_url)
+        : null;
+    $isSelectedStudentTrackableVideo = $selectedStudentMaterial?->type === 'video' && filled($selectedStudentYoutubeId);
+    $selectedStudentVideoUnlocked = $selectedStudentMaterial
+        ? ($this->videoCompletionUnlocked[$selectedStudentMaterial->id] ?? false)
+        : false;
     $selectedStudentSessions = $selectedStudentTopic?->videoSessions->filter(fn ($session) => $session->status !== 'draft')->values() ?? collect();
     $selectedStudentSession = $selectedStudentSessions->firstWhere('id', $this->selectedStudentSessionId)
         ?? $selectedStudentSessions->sortByDesc('start_at')->first();
@@ -344,7 +351,18 @@
                     @if($selectedStudentTopic)
                         <div class="mt-6 grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
                             <div class="mentor-workspace-card p-5">
-                                <div class="flex flex-col gap-4">
+                                <div
+                                    class="flex flex-col gap-4"
+                                    @if($selectedStudentMaterial && !$isStudentMaterialLocked && $isSelectedStudentTrackableVideo && $selectedStudentMaterialProgress !== 'completed')
+                                        x-data="courseShowVideoProgressTracker({
+                                            materialId: @js((string) $selectedStudentMaterial->id),
+                                            youtubeId: @js($selectedStudentYoutubeId),
+                                            requiredPercent: 70,
+                                            initiallyUnlocked: @js($selectedStudentVideoUnlocked),
+                                        })"
+                                        x-init="init()"
+                                    @endif
+                                >
                                     <div>
                                         <h3 class="text-lg font-semibold text-[var(--mentor-primary)]">{{ $selectedStudentTopic->name }}</h3>
                                         <p class="mt-1 text-sm leading-6 text-[color:color-mix(in_oklab,#004777_70%,white)]">
@@ -376,6 +394,10 @@
                                                             wire:click="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
                                                             wire:loading.attr="disabled"
                                                             wire:target="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
+                                                            @if($isSelectedStudentTrackableVideo)
+                                                                x-bind:disabled="!isUnlocked"
+                                                                x-bind:class="!isUnlocked ? 'cursor-not-allowed opacity-50' : ''"
+                                                            @endif
                                                             class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00395f] disabled:opacity-70"
                                                         >
                                                             <span>✓</span>
@@ -393,10 +415,36 @@
                                                     </div>
                                                 </div>
                                             @elseif($selectedStudentMaterial->type === 'video' && $selectedStudentMaterialPreviewUrl)
+                                                @if($isSelectedStudentTrackableVideo && $selectedStudentMaterialProgress !== 'completed')
+                                                    <div class="rounded-2xl border border-[#35A7FF]/20 bg-[#eef8ff] p-4 text-sm text-[#004777]">
+                                                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                            <div>
+                                                                <div class="font-semibold">Tonton minimal 70% video untuk mengaktifkan tombol selesai.</div>
+                                                                <div class="mt-1 text-xs text-slate-600" x-show="!isUnlocked">
+                                                                    Sisa waktu tonton:
+                                                                    <span class="font-semibold text-[#004777]" x-text="formattedRemaining"></span>
+                                                                </div>
+                                                                <div class="mt-1 text-xs text-emerald-700" x-show="isUnlocked">
+                                                                    Durasi tonton sudah memenuhi syarat. Material sekarang bisa diselesaikan.
+                                                                </div>
+                                                            </div>
+                                                            <div class="shrink-0 rounded-full border border-[#35A7FF]/20 bg-white px-3 py-1 text-xs font-semibold text-[#004777]">
+                                                                <span x-text="progressLabel"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-3 h-2 overflow-hidden rounded-full bg-white">
+                                                            <div class="h-full rounded-full bg-[#35A7FF] transition-all duration-500" x-bind:style="`width: ${progressPercent}%`"></div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+
                                                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950">
                                                     <iframe
+                                                        id="course-show-video-player-{{ $selectedStudentMaterial->id }}"
                                                         src="{{ $selectedStudentMaterialPreviewUrl }}"
                                                         class="aspect-video w-full"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                        referrerpolicy="strict-origin-when-cross-origin"
                                                         allowfullscreen
                                                     ></iframe>
                                                 </div>
@@ -580,6 +628,12 @@
                                            class="admin-primary-button inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm">
                                             Kelola
                                         </a>
+                                        @if($assessment && (string) $assessment->teacher_id === (string) auth()->id())
+                                            <a href="{{ localized_route('mentor.assessments.index', ['courseFilter' => $course->id]) }}"
+                                               class="admin-neutral-button inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm">
+                                                Kelola Assessment
+                                            </a>
+                                        @endif
                                         @if($showMentorZoomButton)
                                             <a href="{{ $selectedMentorSession->zoom_link }}"
                                                target="_blank"
@@ -856,3 +910,188 @@
         </div>
     @endif
 </div>
+
+@once
+    @push('scripts')
+        <script>
+            (() => {
+                let youtubeApiReadyPromise;
+
+                function loadYoutubeApi() {
+                    if (window.YT && window.YT.Player) {
+                        return Promise.resolve(window.YT);
+                    }
+
+                    if (youtubeApiReadyPromise) {
+                        return youtubeApiReadyPromise;
+                    }
+
+                    youtubeApiReadyPromise = new Promise((resolve) => {
+                        const previousHandler = window.onYouTubeIframeAPIReady;
+
+                        window.onYouTubeIframeAPIReady = () => {
+                            previousHandler?.();
+                            resolve(window.YT);
+                        };
+
+                        const script = document.createElement('script');
+                        script.src = 'https://www.youtube.com/iframe_api';
+                        script.async = true;
+                        document.head.appendChild(script);
+                    });
+
+                    return youtubeApiReadyPromise;
+                }
+
+                window.courseShowVideoProgressTracker = function courseShowVideoProgressTracker(config) {
+                    return {
+                        materialId: config.materialId,
+                        youtubeId: config.youtubeId,
+                        requiredPercent: config.requiredPercent ?? 70,
+                        isUnlocked: !!config.initiallyUnlocked,
+                        player: null,
+                        playerState: -1,
+                        timer: null,
+                        lastTickAt: null,
+                        durationSeconds: 0,
+                        watchedSeconds: 0,
+                        progressPercent: config.initiallyUnlocked ? 100 : 0,
+                        progressLabel: config.initiallyUnlocked ? '70% terpenuhi' : '0% dari target',
+                        formattedRemaining: '--:--',
+
+                        async init() {
+                            this.updateProgressUi();
+
+                            if (!this.youtubeId || this.isUnlocked) {
+                                return;
+                            }
+
+                            const yt = await loadYoutubeApi();
+                            const elementId = `course-show-video-player-${this.materialId}`;
+                            const iframe = document.getElementById(elementId);
+
+                            if (!iframe) {
+                                return;
+                            }
+
+                            this.player = new yt.Player(elementId, {
+                                events: {
+                                    onReady: (event) => this.handleReady(event),
+                                    onStateChange: (event) => this.handleStateChange(event),
+                                },
+                            });
+                        },
+
+                        handleReady(event) {
+                            const duration = Number(event.target.getDuration?.() || 0);
+
+                            if (duration > 0) {
+                                this.durationSeconds = duration;
+                            }
+
+                            this.updateProgressUi();
+                        },
+
+                        handleStateChange(event) {
+                            this.playerState = event.data;
+
+                            if (event.data === window.YT.PlayerState.PLAYING) {
+                                this.startTimer();
+                                return;
+                            }
+
+                            this.stopTimer();
+                        },
+
+                        startTimer() {
+                            if (this.timer || this.isUnlocked) {
+                                return;
+                            }
+
+                            this.lastTickAt = Date.now();
+                            this.timer = window.setInterval(() => this.tick(), 500);
+                        },
+
+                        stopTimer() {
+                            if (this.timer) {
+                                window.clearInterval(this.timer);
+                                this.timer = null;
+                            }
+
+                            this.lastTickAt = null;
+                        },
+
+                        tick() {
+                            if (this.isUnlocked || this.playerState !== window.YT.PlayerState.PLAYING) {
+                                return;
+                            }
+
+                            const now = Date.now();
+
+                            if (this.lastTickAt === null) {
+                                this.lastTickAt = now;
+                                return;
+                            }
+
+                            const elapsedSeconds = Math.max(0, (now - this.lastTickAt) / 1000);
+                            this.lastTickAt = now;
+                            this.watchedSeconds += elapsedSeconds;
+                            this.updateProgressUi();
+
+                            if (this.progressPercent >= 100) {
+                                this.finishThreshold();
+                            }
+                        },
+
+                        updateProgressUi() {
+                            const requiredSeconds = this.getRequiredSeconds();
+                            const consumed = this.isUnlocked
+                                ? requiredSeconds
+                                : Math.min(this.watchedSeconds, requiredSeconds);
+                            const remaining = Math.max(0, requiredSeconds - consumed);
+                            const percent = requiredSeconds > 0
+                                ? Math.min(100, Math.round((consumed / requiredSeconds) * 100))
+                                : 0;
+
+                            this.progressPercent = percent;
+                            this.progressLabel = this.isUnlocked
+                                ? '70% terpenuhi'
+                                : `${percent}% dari target`;
+                            this.formattedRemaining = this.formatDuration(remaining);
+                        },
+
+                        getRequiredSeconds() {
+                            if (this.durationSeconds <= 0 && this.player?.getDuration) {
+                                this.durationSeconds = Number(this.player.getDuration() || 0);
+                            }
+
+                            return this.durationSeconds > 0
+                                ? this.durationSeconds * (this.requiredPercent / 100)
+                                : 0;
+                        },
+
+                        async finishThreshold() {
+                            if (this.isUnlocked) {
+                                return;
+                            }
+
+                            this.isUnlocked = true;
+                            this.stopTimer();
+                            this.updateProgressUi();
+
+                            await this.$wire.unlockStudentVideoCompletion(this.materialId);
+                        },
+
+                        formatDuration(totalSeconds) {
+                            const safeSeconds = Math.max(0, Math.ceil(totalSeconds));
+                            const minutes = Math.floor(safeSeconds / 60);
+                            const seconds = safeSeconds % 60;
+
+                            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                        },
+                    };
+                };
+            })();
+        </script>
+    @endpush
+@endonce

@@ -17,6 +17,15 @@
                 <div class="mt-1 font-semibold text-[var(--mentor-primary)]">{{ $assessment->question_limit ?? 'All' }}</div>
             </div>
         </div>
+
+        <div class="mt-4">
+            <a
+                href="{{ localized_route('mentor.assessments.index', ['courseFilter' => $topic->course_id]) }}"
+                class="admin-primary-button inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm"
+            >
+                Kelola Assessment
+            </a>
+        </div>
     @else
         <div class="mentor-workspace-empty mt-4">
             Assessment belum tersedia.

@@ -101,6 +101,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Topic::class, 'teacher_id');
     }
 
+    public function managedAssessments()
+    {
+        return $this->hasMany(Assessment::class, 'teacher_id');
+    }
+
     public function getFullNameAttribute()
     {
         return $this->name;

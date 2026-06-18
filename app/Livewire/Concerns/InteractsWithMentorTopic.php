@@ -11,7 +11,7 @@ trait InteractsWithMentorTopic
     {
         return Topic::query()
             ->with([
-                'course.assessment',
+                'course.assessment.teacher',
             ])
             ->findOrFail($topicId);
     }
@@ -138,5 +138,22 @@ trait InteractsWithMentorTopic
         }
 
         return (string) $topic->teacher_id === (string) $user->id;
+    }
+
+    protected function canManageAssessmentForTopic(Topic $topic): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        $assessment = $topic->course?->assessment;
+
+        return $assessment && (string) $assessment->teacher_id === (string) $user->id;
     }
 }
