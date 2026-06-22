@@ -485,7 +485,7 @@ return [
         ],
         'contact' => [
             'title' => 'Kontak',
-            'whatsapp' => 'WhatsApp',
+            'email' => 'Email',
             'instagram' => 'Instagram',
         ],
         'social' => [

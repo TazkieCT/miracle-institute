@@ -172,7 +172,7 @@ return [
             'facebook' => 'URL Facebook',
             'instagram' => 'URL Instagram',
             'youtube' => 'URL YouTube',
-            'whatsapp' => 'URL WhatsApp',
+            'email' => 'Email Kontak',
         ],
         'drive' => [
             'title' => 'Integrasi Cloud Storage (Google Drive)',

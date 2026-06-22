@@ -24,7 +24,7 @@ class SettingsIndex extends Component
     public string $facebook = '';
     public string $instagram = '';
     public string $youtube = '';
-    public string $whatsapp = '';
+    public string $email = '';
 
     public function mount(): void
     {
@@ -33,7 +33,7 @@ class SettingsIndex extends Component
         if ($company) {
             $this->fill($company->only([
                 'name','description','address','vision','mission','logo',
-                'facebook','instagram','youtube','whatsapp',
+                'facebook','instagram','youtube','email',
             ]));
         }
 
@@ -103,7 +103,7 @@ class SettingsIndex extends Component
             'facebook' => 'nullable|url',
             'instagram' => 'nullable|url',
             'youtube' => 'nullable|url',
-            'whatsapp' => 'nullable|url',
+            'email' => 'nullable|email',
         ]);
 
         Company::updateOrCreate(
@@ -118,7 +118,7 @@ class SettingsIndex extends Component
                 'facebook' => $this->facebook,
                 'instagram' => $this->instagram,
                 'youtube' => $this->youtube,
-                'whatsapp' => $this->whatsapp,
+                'email' => $this->email,
             ]
         );
 

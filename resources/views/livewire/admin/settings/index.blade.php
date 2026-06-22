@@ -81,9 +81,9 @@
 
             <div>
                 <label class="mb-1 block text-xs font-semibold text-slate-600">
-                    {{ __('admin.settings.form.whatsapp') }}
+                    {{ __('admin.settings.form.email') }}
                 </label>
-                <input wire:model="whatsapp" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.whatsapp') }}">
+                <input wire:model="email" type="email" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.email') }}">
             </div>
         </div>
 
