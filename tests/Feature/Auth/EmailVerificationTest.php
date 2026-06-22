@@ -38,6 +38,7 @@ class EmailVerificationTest extends TestCase
             ->set('email', 'budi@example.test')
             ->set('password', 'password123')
             ->set('password_confirmation', 'password123')
+            ->set('accept_legal', true)
             ->call('submit')
             ->assertRedirect(route('verification.notice'));
 
@@ -51,7 +52,7 @@ class EmailVerificationTest extends TestCase
         Notification::assertSentTo($user, VerifyEmail::class);
     }
 
-    public function test_registration_does_not_require_terms_and_privacy_acceptance(): void
+    public function test_registration_requires_terms_and_privacy_acceptance(): void
     {
         Notification::fake();
         Role::create([
@@ -64,17 +65,14 @@ class EmailVerificationTest extends TestCase
             ->set('email', 'budi@example.test')
             ->set('password', 'password123')
             ->set('password_confirmation', 'password123')
+            ->set('accept_legal', false)
             ->call('submit')
-            ->assertRedirect(route('verification.notice'));
+            ->assertHasErrors(['accept_legal' => 'accepted']);
 
-        $user = User::where('email', 'budi@example.test')->first();
-
-        $this->assertNotNull($user);
-        $this->assertAuthenticatedAs($user);
-        $this->assertDatabaseHas('users', [
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', [
             'email' => 'budi@example.test',
         ]);
-        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     public function test_unverified_user_cannot_login_before_verifying_email(): void

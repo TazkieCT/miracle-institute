@@ -491,7 +491,7 @@ return [
         'social' => [
             'title' => 'Ikuti Kami',
         ],
-        'copyright' => '© :year @ S2 Magister Ilmu Komunikasi, BINUS University. All rights reserved.',
+        'copyright' => '© :year RIG Edutech - BINUS University. All rights reserved.',
     ],
 
     'shared' => [

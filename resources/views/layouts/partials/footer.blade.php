@@ -33,6 +33,8 @@
             <ul class="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-1">
                 <li><a href="{{ localized_route('explore.dashboard') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">{{ __('general.navigation.dashboard') }}</a></li>
                 <li><a href="{{ localized_route('courses.index') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">{{ __('general.navigation.courses') }}</a></li>
+                <li><a href="{{ localized_route('legal.terms') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">Terms &amp; Conditions</a></li>
+                <li><a href="{{ localized_route('legal.privacy') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">Privacy Policy</a></li>
 
                 @auth
                     <li><a href="{{ localized_route('learning.dashboard') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">{{ __('general.navigation.my_learning') }}</a></li>
@@ -94,6 +96,10 @@
     <div class="border-t border-white/10 px-4 sm:px-6">
         <div class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 py-5 text-center text-xs text-slate-400">
             <span>{{ __('general.footer.copyright', ['year' => date('Y')]) }}</span>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <a href="{{ localized_route('legal.terms') }}" class="underline underline-offset-4 hover:text-white">Terms &amp; Conditions</a>
+                <a href="{{ localized_route('legal.privacy') }}" class="underline underline-offset-4 hover:text-white">Privacy Policy</a>
+            </div>
         </div>
     </div>
 

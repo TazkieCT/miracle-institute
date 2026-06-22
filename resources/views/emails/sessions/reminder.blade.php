@@ -6,7 +6,7 @@
     </p>
 
     <p style="margin:0 0 16px 0;">
-        Sesi pertemuan berikut akan dimulai dalam 3 hari.
+        Sesi pertemuan berikut akan dimulai dalam 2 hari.
     </p>
 
     <p style="margin:0 0 6px 0;"><strong>Course:</strong> {{ $session->topic->course->title }}</p>
