@@ -63,6 +63,19 @@
         : null;
     $selectedStudentSessionEndLabel = $selectedStudentSession?->end_at?->format('d M Y H:i');
     $isStudentMaterialLocked = !$selectedStudentSession?->end_at || now()->lt($selectedStudentSession->end_at);
+    $selectedStudentAttendanceStatus = $selectedStudentAttendance?->status;
+    $videoMaterialInTopic = $selectedStudentMaterials->firstWhere('type', 'video');
+    $isVideoCompletedInTopic = !$videoMaterialInTopic
+        || ($this->materialProgressMap[$videoMaterialInTopic->id] ?? 'not_started') === 'completed';
+    $nonVideoAccessible = !$isStudentMaterialLocked && (
+        $selectedStudentAttendanceStatus === 'present'
+        || (in_array($selectedStudentAttendanceStatus, ['late', 'online'], true) && $isVideoCompletedInTopic)
+    );
+    $isSelectedMaterialLockedByAttendance = !$isStudentMaterialLocked
+        && $selectedStudentMaterial !== null
+        && $selectedStudentMaterial->type !== 'video'
+        && !$nonVideoAccessible;
+    $isSelectedStudentMaterialLocked = $isStudentMaterialLocked || $isSelectedMaterialLockedByAttendance;
     $showStudentZoomButton = filled($selectedStudentSession?->zoom_link)
         && (!$selectedStudentSession?->end_at || now()->lte($selectedStudentSession->end_at));
 
@@ -367,8 +380,8 @@
                                         x-data="courseShowVideoProgressTracker({
                                             materialId: @js((string) $selectedStudentMaterial->id),
                                             youtubeId: @js($selectedStudentYoutubeId),
-                                            requiredPercent: 70,
-                                            initiallyUnlocked: @js($selectedStudentVideoUnlocked),
+                                            requiredPercent: 80,
+                                            initiallyUnlocked: @js($selectedStudentVideoUnlocked || $selectedStudentAttendanceStatus === 'present'),
                                         })"
                                         x-init="init()"
                                     @endif
@@ -392,28 +405,26 @@
                                                     </div>
                                                 </div>
 
-                                                @if(!$isStudentMaterialLocked)
-                                                    @if($selectedStudentMaterialProgress === 'completed')
-                                                        <span class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
-                                                            <span>✓</span>
-                                                            Material selesai
-                                                        </span>
-                                                    @else
-                                                        <button
-                                                            type="button"
-                                                            wire:click="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
-                                                            wire:loading.attr="disabled"
-                                                            wire:target="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
-                                                            @if($isSelectedStudentTrackableVideo)
-                                                                x-bind:disabled="!isUnlocked"
-                                                                x-bind:class="!isUnlocked ? 'cursor-not-allowed opacity-50' : ''"
-                                                            @endif
-                                                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00395f] disabled:opacity-70"
-                                                        >
-                                                            <span>✓</span>
-                                                            Tandai selesai
-                                                        </button>
-                                                    @endif
+                                                @if($selectedStudentMaterialProgress === 'completed')
+                                                    <span class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+                                                        <span>✓</span>
+                                                        Material selesai
+                                                    </span>
+                                                @elseif(!$isSelectedStudentMaterialLocked)
+                                                    <button
+                                                        type="button"
+                                                        wire:click="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="markStudentMaterialComplete('{{ $selectedStudentMaterial->id }}')"
+                                                        @if($isSelectedStudentTrackableVideo)
+                                                            x-bind:disabled="!isUnlocked"
+                                                            x-bind:class="!isUnlocked ? 'cursor-not-allowed opacity-50' : ''"
+                                                        @endif
+                                                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#004777] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00395f] disabled:opacity-70"
+                                                    >
+                                                        <span>✓</span>
+                                                        Tandai selesai
+                                                    </button>
                                                 @endif
                                             </div>
 
@@ -424,12 +435,23 @@
                                                         Materi bisa dibuka setelah pertemuan selesai{{ $selectedStudentSessionEndLabel ? ' pada ' . $selectedStudentSessionEndLabel : '' }}.
                                                     </div>
                                                 </div>
+                                            @elseif($isSelectedMaterialLockedByAttendance)
+                                                <div class="rounded-2xl border border-dashed border-amber-200 bg-amber-50 px-4 py-10 text-center">
+                                                    <div class="text-sm font-semibold text-amber-700">Akses materi dibatasi</div>
+                                                    <div class="mt-2 text-sm text-amber-700/90">
+                                                        @if(!$selectedStudentAttendanceStatus || $selectedStudentAttendanceStatus === 'absent')
+                                                            Hadir dalam pertemuan untuk membuka materi ini.
+                                                        @else
+                                                            Selesaikan materi video terlebih dahulu untuk mengakses materi ini.
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             @elseif($selectedStudentMaterial->type === 'video' && $selectedStudentMaterialPreviewUrl)
                                                 @if($isSelectedStudentTrackableVideo && $selectedStudentMaterialProgress !== 'completed')
                                                     <div class="rounded-2xl border border-[#35A7FF]/20 bg-[#eef8ff] p-4 text-sm text-[#004777]">
                                                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                                             <div>
-                                                                <div class="font-semibold">Tonton minimal 70% video untuk mengaktifkan tombol selesai.</div>
+                                                                <div class="font-semibold">Tonton minimal 80% video untuk mengaktifkan tombol selesai.</div>
                                                                 <div class="mt-1 text-xs text-slate-600" x-show="!isUnlocked">
                                                                     Sisa waktu tonton:
                                                                     <span class="font-semibold text-[#004777]" x-text="formattedRemaining"></span>
@@ -497,16 +519,18 @@
                                         @forelse($selectedStudentMaterials as $material)
                                             @php
                                                 $materialProgressStatus = $this->materialProgressMap[$material->id] ?? 'not_started';
+                                                $materialLockedByAttendance = !$isStudentMaterialLocked && $material->type !== 'video' && !$nonVideoAccessible;
+                                                $thisMaterialLocked = $isStudentMaterialLocked || $materialLockedByAttendance;
                                             @endphp
                                             <button type="button"
                                                     wire:key="student-material-{{ $material->id }}"
-                                                    @if(!$isStudentMaterialLocked) wire:click="selectStudentMaterial('{{ $material->id }}')" @endif
-                                                    class="w-full rounded-xl border p-4 text-left transition {{ (string) ($selectedStudentMaterial?->id) === (string) $material->id ? 'border-[var(--mentor-primary)] bg-[var(--mentor-primary)] text-white shadow-md' : 'border-slate-200 bg-[var(--mentor-primary-soft-2)] text-[var(--mentor-primary)] hover:border-[var(--mentor-primary)]' }} {{ $isStudentMaterialLocked ? 'cursor-not-allowed opacity-75' : '' }}">
+                                                    @if(!$thisMaterialLocked) wire:click="selectStudentMaterial('{{ $material->id }}')" @endif
+                                                    class="w-full rounded-xl border p-4 text-left transition {{ (string) ($selectedStudentMaterial?->id) === (string) $material->id ? 'border-[var(--mentor-primary)] bg-[var(--mentor-primary)] text-white shadow-md' : 'border-slate-200 bg-[var(--mentor-primary-soft-2)] text-[var(--mentor-primary)] hover:border-[var(--mentor-primary)]' }} {{ $thisMaterialLocked ? 'cursor-not-allowed opacity-75' : '' }}">
                                                 <div class="truncate text-sm font-medium">
                                                     #{{ $material->sort_order }} · {{ $material->name }}
                                                 </div>
                                                 <div class="mt-1 text-xs {{ (string) ($selectedStudentMaterial?->id) === (string) $material->id ? 'text-white/75' : '' }}">
-                                                    {{ strtoupper($material->type) }} · {{ ucfirst($material->status) }}{{ $isStudentMaterialLocked ? ' · Terkunci' : '' }}
+                                                    {{ strtoupper($material->type) }} · {{ ucfirst($material->status) }}{{ $thisMaterialLocked ? ' · Terkunci' : '' }}
                                                 </div>
                                                 <div class="mt-2 text-[11px] font-semibold {{ (string) ($selectedStudentMaterial?->id) === (string) $material->id ? 'text-white' : 'text-emerald-700' }}">
                                                     {{ $materialProgressStatus === 'completed' ? '✓ Selesai' : ($materialProgressStatus === 'in_progress' ? 'Sedang dipelajari' : 'Belum selesai') }}
@@ -957,7 +981,7 @@
                     return {
                         materialId: config.materialId,
                         youtubeId: config.youtubeId,
-                        requiredPercent: config.requiredPercent ?? 70,
+                        requiredPercent: config.requiredPercent ?? 80,
                         isUnlocked: !!config.initiallyUnlocked,
                         player: null,
                         playerState: -1,
@@ -966,7 +990,7 @@
                         durationSeconds: 0,
                         watchedSeconds: 0,
                         progressPercent: config.initiallyUnlocked ? 100 : 0,
-                        progressLabel: config.initiallyUnlocked ? '70% terpenuhi' : '0% dari target',
+                        progressLabel: config.initiallyUnlocked ? '80% terpenuhi' : '0% dari target',
                         formattedRemaining: '--:--',
 
                         async init() {
@@ -1065,7 +1089,7 @@
 
                             this.progressPercent = percent;
                             this.progressLabel = this.isUnlocked
-                                ? '70% terpenuhi'
+                                ? '80% terpenuhi'
                                 : `${percent}% dari target`;
                             this.formattedRemaining = this.formatDuration(remaining);
                         },

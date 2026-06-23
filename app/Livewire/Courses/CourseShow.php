@@ -4,6 +4,7 @@ namespace App\Livewire\Courses;
 
 use App\Livewire\Concerns\InteractsWithMentorTopic;
 use App\Models\Assessment;
+use App\Models\Attendance;
 use App\Models\AssessmentAttempt;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -344,13 +345,45 @@ class CourseShow extends Component
             $this->extractYoutubeVideoId((string) $material->external_url) &&
             ! ($this->videoCompletionUnlocked[$materialId] ?? false)
         ) {
-            session()->flash('error', 'Video harus ditonton minimal 70% sebelum bisa diselesaikan.');
-            return;
+            $session = $this->studentRelevantSessions($topic)->sortByDesc('start_at')->first();
+            $attendanceStatus = $session
+                ? Attendance::query()
+                    ->where('video_session_id', $session->id)
+                    ->where('user_id', auth()->id())
+                    ->value('status')
+                : null;
+
+            if ($attendanceStatus !== 'present') {
+                session()->flash('error', 'Video harus ditonton minimal 80% sebelum bisa diselesaikan.');
+                return;
+            }
         }
 
         if (! $this->topicHasCompletedSessions($topic)) {
             session()->flash('error', 'Material baru bisa diselesaikan setelah sesi topic ini selesai.');
             return;
+        }
+
+        if ($material->type !== 'video') {
+            $session = $this->studentRelevantSessions($topic)->sortByDesc('start_at')->first();
+            if ($session) {
+                $attendance = Attendance::query()
+                    ->where('video_session_id', $session->id)
+                    ->where('user_id', auth()->id())
+                    ->first();
+                $attendanceStatus = $attendance?->status;
+                $canAccess = $attendanceStatus === 'present';
+                if (!$canAccess && in_array($attendanceStatus, ['late', 'online'], true)) {
+                    $videoMaterial = $topic->materials->firstWhere('type', 'video');
+                    $canAccess = $videoMaterial
+                        && ($this->materialProgressMap[$videoMaterial->id] ?? 'not_started') === 'completed';
+                }
+                if (!$canAccess) {
+                    session()->flash('error', 'Selesaikan materi video terlebih dahulu atau hadiri pertemuan untuk menyelesaikan materi ini.');
+                    $this->dispatch('toast', type: 'error', message: session('error'));
+                    return;
+                }
+            }
         }
 
         $result = $progressService->markMaterialCompleted((string) auth()->id(), $materialId);
@@ -550,6 +583,34 @@ class CourseShow extends Component
             ->whereNotNull('submitted_at')
             ->where('passed', true)
             ->exists();
+    }
+
+    public function getSelectedStudentAttendanceProperty(): ?Attendance
+    {
+        if (!auth()->check() || !$this->selectedStudentTopicId) {
+            return null;
+        }
+
+        $topic = $this->studentTopics()->firstWhere('id', $this->selectedStudentTopicId);
+        if (!$topic) {
+            return null;
+        }
+
+        $sessions = $topic->videoSessions
+            ->filter(fn ($s) => $s->status !== 'draft')
+            ->values();
+
+        $session = $sessions->firstWhere('id', $this->selectedStudentSessionId)
+            ?? $sessions->sortByDesc('start_at')->first();
+
+        if (!$session) {
+            return null;
+        }
+
+        return Attendance::query()
+            ->where('video_session_id', $session->id)
+            ->where('user_id', auth()->id())
+            ->first();
     }
 
     public function getCertificateEligibilityProperty(): array
@@ -801,6 +862,7 @@ class CourseShow extends Component
             'mentoredTopics' => $this->mentoredTopics,
             'hasMentoredTopics' => $this->hasMentoredTopics,
             'mentorStudents' => $this->mentorStudents,
+            'selectedStudentAttendance' => $this->selectedStudentAttendance,
             'activeTab' => $activeTab,
         ])->layout('layouts.learning');
     }

@@ -336,10 +336,9 @@
                                                     <div class="mt-1 text-xs text-slate-500">{{ $recap['progress_percent'] }}%</div>
                                                 </td>
                                                 <td class="px-4 py-3">
-                                                    <div class="text-slate-700">Present: {{ $recap['attendance_present'] }}</div>
-                                                    <div class="text-slate-700">Late: {{ $recap['attendance_late'] }}</div>
+                                                    <div class="text-slate-700">Hadir: {{ $recap['attendance_present'] }}</div>
+                                                    <div class="text-slate-700">Terlambat: {{ $recap['attendance_late'] }}</div>
                                                     <div class="text-slate-700">Online: {{ $recap['attendance_absent'] }}</div>
-                                                    <div class="mt-1 text-xs text-slate-500">Total pertemuan: {{ $recap['sessions_total'] }}</div>
                                                 </td>
                                                 <td class="px-4 py-3 text-slate-600">
                                                     <div>{{ $recap['enrolled_at'] }}</div>
