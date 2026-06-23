@@ -537,6 +537,10 @@ class CourseShow extends Component
             return false;
         }
 
+        if ($this->assessment->available_from && now()->lt($this->assessment->available_from)) {
+            return false;
+        }
+
         if ($this->upcomingTopicsCount > 0) {
             return false;
         }

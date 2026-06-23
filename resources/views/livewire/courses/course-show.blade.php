@@ -89,6 +89,10 @@
         ? (filled($selectedMentorTopic?->name) ? $selectedMentorTopic->name : 'Sesi ' . ($topicOffset + $selectedMentorTopicIndex + 1))
         : (filled($selectedMentorTopic?->name) ? $selectedMentorTopic->name : 'Sesi');
 
+    $assessmentLockedUntil = $assessment && $assessment->available_from && now()->lt($assessment->available_from)
+        ? $assessment->available_from
+        : null;
+
     $poster = $course->poster ?? $course->image ?? null;
     $posterSrc = null;
 
@@ -209,6 +213,8 @@
                                     <a href="{{ localized_route('assessments.take', $assessment->id) }}" class="admin-primary-button inline-flex rounded-lg px-3 py-1.5 text-xs">
                                         {{ $this->activeAttempt ? __('general.course_show.resume_test') : __('general.course_show.start_test') }}
                                     </a>
+                                @elseif($assessmentLockedUntil)
+                                    <span class="text-xs text-amber-700">Dapat diakses pada {{ $assessmentLockedUntil->translatedFormat('d M Y') }}</span>
                                 @else
                                     {{ __('general.course_show.locked') }}
                                 @endif
@@ -843,6 +849,11 @@
                                         {{ __('general.course_show.start_test') }}
                                     </a>
                                 @endif
+                            @elseif($assessmentLockedUntil)
+                                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                                    Soal baru dapat dikerjakan mulai
+                                    <span class="font-semibold">{{ $assessmentLockedUntil->translatedFormat('d F Y') }}</span>.
+                                </div>
                             @else
                                 <span class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500">
                                     {{ __('general.course_show.locked_until_complete') }}

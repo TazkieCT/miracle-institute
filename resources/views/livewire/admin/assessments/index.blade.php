@@ -64,6 +64,19 @@
                     </div>
                 </div>
 
+                @if($selectedAssessment->available_from)
+                    <div class="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        @if($selectedAssessment->isAvailable())
+                            Soal <strong>sudah dapat diakses</strong> sejak {{ $selectedAssessment->available_from->translatedFormat('d M Y H:i') }}.
+                        @else
+                            Soal baru dapat diakses mulai <strong>{{ $selectedAssessment->available_from->translatedFormat('d M Y H:i') }}</strong>. Peserta belum bisa mengerjakan soal atau mengklaim sertifikat.
+                        @endif
+                    </div>
+                @endif
+
                 <x-ui.table-shell class="table-auto">
                     <table class="w-full text-sm">
                         <thead class="admin-table-head text-left">
@@ -231,11 +244,6 @@
                         </div>
                     </div>
 
-                    <label class="flex items-center gap-2 text-sm">
-                        <input type="checkbox" wire:model="randomize_questions">
-                        {{ __('admin.assessments.form.randomize_questions') }}
-                    </label>
-
                     <div class="space-y-1">
                         <label class="mb-1 block text-xs font-semibold text-slate-600">
                             Status <span class="text-rose-500">*</span>
@@ -247,6 +255,20 @@
                             <option value="draft">{{ __('admin.assessments.status.draft') }}</option>
                         </select>
                         @error('status')
+                            <p class="text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="mb-1 block text-xs font-semibold text-slate-600">
+                            Tersedia mulai tanggal
+                        </label>
+                        <input wire:model="available_from" type="datetime-local"
+                            class="w-full rounded-xl border px-4 py-2">
+                        <p class="mt-1 text-[11px] text-slate-500">
+                            Kosongkan jika soal dapat diakses kapan saja. Jika diisi, peserta tidak bisa mengerjakan soal atau mengklaim sertifikat sebelum tanggal ini.
+                        </p>
+                        @error('available_from')
                             <p class="text-sm text-rose-600">{{ $message }}</p>
                         @enderror
                     </div>

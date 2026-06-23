@@ -29,6 +29,7 @@ class AssessmentIndex extends Component
         'question_options.1.option_text' => 'opsi jawaban 2',
         'question_options.2.option_text' => 'opsi jawaban 3',
         'question_options.3.option_text' => 'opsi jawaban 4',
+        'available_from' => 'tanggal mulai tersedia',
     ];
 
     protected function messages(): array
@@ -57,9 +58,9 @@ class AssessmentIndex extends Component
     public string $course_id = '';
     public string $title = '';
     public int $passing_grade = 70;
-    public bool $randomize_questions = false;
     public ?int $question_limit = null;
     public string $status = 'active';
+    public ?string $available_from = null;
 
     public string $courseFilter = '';
     public string $statusFilter = '';
@@ -101,9 +102,9 @@ class AssessmentIndex extends Component
             ],
             'title' => 'required|string|max:255',
             'passing_grade' => 'required|integer|min:0|max:100',
-            'randomize_questions' => 'boolean',
             'question_limit' => 'nullable|integer|min:1',
             'status' => 'required|in:active,inactive,draft',
+            'available_from' => 'nullable|date',
         ];
     }
 
@@ -279,9 +280,9 @@ class AssessmentIndex extends Component
         $this->course_id = $row->course_id;
         $this->title = $row->title;
         $this->passing_grade = (int) $row->passing_grade;
-        $this->randomize_questions = (bool) $row->randomize_questions;
         $this->question_limit = $row->question_limit;
         $this->status = $row->status;
+        $this->available_from = $row->available_from?->format('Y-m-d\TH:i');
 
         $this->showModal = true;
     }
@@ -309,9 +310,10 @@ class AssessmentIndex extends Component
                 'course_id' => $this->course_id,
                 'title' => $this->title,
                 'passing_grade' => $this->passing_grade,
-                'randomize_questions' => $this->randomize_questions,
+                'randomize_questions' => true,
                 'question_limit' => $this->question_limit,
                 'status' => $this->status,
+                'available_from' => $this->available_from ?: null,
             ]
         );
 
@@ -369,9 +371,9 @@ class AssessmentIndex extends Component
             'course_id',
             'title',
             'passing_grade',
-            'randomize_questions',
             'question_limit',
             'status',
+            'available_from',
         ]);
 
         $this->passing_grade = 70;
