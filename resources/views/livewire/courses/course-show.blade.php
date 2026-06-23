@@ -376,7 +376,7 @@
                                     <div>
                                         <h3 class="text-lg font-semibold text-[var(--mentor-primary)]">{{ $selectedStudentTopicLabel }}</h3>
                                         <p class="mt-1 text-sm leading-6 text-[color:color-mix(in_oklab,#004777_70%,white)]">
-                                            {{ $selectedStudentTopic->description ?: __('general.course_show.topic_description_fallback') }}
+                                            {{ $selectedStudentTopic->description }}
                                         </p>
                                     </div>
 
@@ -594,7 +594,7 @@
                                     <div>
                                         <h3 class="text-lg font-semibold text-[var(--mentor-primary)]">{{ $selectedMentorTopicLabel }}</h3>
                                         <p class="mt-1 text-sm leading-6 text-[color:color-mix(in_oklab,#004777_70%,white)]">
-                                            {{ $selectedMentorTopic->description ?: __('general.course_show.topic_description_fallback') }}
+                                            {{ $selectedMentorTopic->description }}
                                         </p>
                                     </div>
 

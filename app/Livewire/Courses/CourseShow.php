@@ -129,7 +129,7 @@ class CourseShow extends Component
             }
         }
 
-        $this->hydrateMentoredTopics();
+        $this->loadMentoredTopics();
         $this->hydrateMentorStudents();
 
         if ($this->mentoredTopics->isNotEmpty()) {
@@ -193,7 +193,7 @@ class CourseShow extends Component
         $this->resetPage('topicsPage');
     }
 
-    public function hydrateMentoredTopics(): void
+    public function loadMentoredTopics(): void
     {
         $this->mentoredTopics = collect();
         $this->hasMentoredTopics = false;
@@ -231,19 +231,23 @@ class CourseShow extends Component
 
     public function selectMentorTopic(string $topicId): void
     {
-        if ($this->mentoredTopics->contains(fn (Topic $topic) => (string) $topic->id === (string) $topicId)) {
-            $this->selectedMentorTopicId = $topicId;
-            $topic = $this->mentoredTopics->firstWhere('id', $topicId);
-            $this->selectedMentorMaterialId = $topic?->materials->sortBy('sort_order')->first()?->id;
-            $this->selectedMentorSessionId = $this->resolveLatestSessionId($topic);
+        $topic = $this->course->topics
+            ->first(fn (Topic $t) => (string) $t->id === (string) $topicId && (string) $t->teacher_id === (string) auth()->id());
+
+        if (! $topic) {
+            return;
         }
+
+        $this->selectedMentorTopicId = $topicId;
+        $this->selectedMentorMaterialId = $topic->materials->sortBy('sort_order')->first()?->id;
+        $this->selectedMentorSessionId = $this->resolveLatestSessionId($topic);
     }
 
     public function selectMentorSession(string $sessionId): void
     {
-        $topic = $this->mentoredTopics->first(function (Topic $topic) use ($sessionId) {
-            return $topic->videoSessions->contains(fn ($session) => (string) $session->id === (string) $sessionId);
-        });
+        $topic = $this->course->topics
+            ->filter(fn (Topic $t) => (string) $t->teacher_id === (string) auth()->id())
+            ->first(fn (Topic $t) => $t->videoSessions->contains(fn ($s) => (string) $s->id === (string) $sessionId));
 
         if (! $topic) {
             return;
@@ -256,9 +260,10 @@ class CourseShow extends Component
 
     public function selectMentorMaterial(string $materialId): void
     {
-        $topic = $this->mentoredTopics->firstWhere('id', $this->selectedMentorTopicId);
+        $topic = $this->course->topics
+            ->first(fn (Topic $t) => (string) $t->id === (string) $this->selectedMentorTopicId && (string) $t->teacher_id === (string) auth()->id());
 
-        if ($topic && $topic->materials->contains(fn ($material) => (string) $material->id === (string) $materialId)) {
+        if ($topic && $topic->materials->contains(fn ($m) => (string) $m->id === (string) $materialId)) {
             $this->selectedMentorMaterialId = $materialId;
         }
     }
