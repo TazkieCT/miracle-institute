@@ -50,10 +50,10 @@ class VideoSession extends Model
             return null;
         }
 
-        $fortyFiveMinutesAfterStart = $this->start_at->copy()->addMinutes(45);
+        $oneHourAfterStart = $this->start_at->copy()->addHour();
 
-        return $fortyFiveMinutesAfterStart->lt($this->end_at)
-            ? $fortyFiveMinutesAfterStart
+        return $oneHourAfterStart->lt($this->end_at)
+            ? $oneHourAfterStart
             : $this->end_at->copy();
     }
 
@@ -72,7 +72,7 @@ class VideoSession extends Model
         return $this->start_at
             && $this->end_at
             && in_array($this->status, ['scheduled', 'ongoing'], true)
-            && $moment->betweenIncluded($this->start_at, $this->end_at);
+            && $moment->betweenIncluded($this->start_at, $this->start_at->copy()->addHour());
     }
 
     public function canClockInAt(CarbonInterface $moment): bool

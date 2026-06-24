@@ -46,7 +46,7 @@ class JoinSessionButton extends Component
         $now = now();
         $start = Carbon::parse($this->session->start_at);
         $end = Carbon::parse($this->session->end_at);
-        $clockInDeadline = $this->session->clockInClosesAt() ?? $start->copy()->addMinutes(45);
+        $clockInDeadline = $this->session->clockInClosesAt() ?? $start->copy()->addHour();
 
         if ($now->lt($start)) {
             $this->stateLabel = 'Terjadwal';
