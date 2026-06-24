@@ -93,6 +93,14 @@
         ? $assessment->available_from
         : null;
 
+    $selectedStudentMaterialDownloadUrl = (
+        $selectedStudentMaterial
+        && in_array($selectedStudentMaterial->type, ['pdf', 'ppt'], true)
+        && $selectedStudentMaterial->path
+    )
+        ? app(\App\Services\Materials\GoogleDriveService::class)->toDownloadUrl($selectedStudentMaterial->path)
+        : null;
+
     $poster = $course->poster ?? $course->image ?? null;
     $posterSrc = null;
 
@@ -491,6 +499,21 @@
                                                     src="{{ $selectedStudentMaterialPreviewUrl }}"
                                                     class="min-h-[24rem] w-full rounded-2xl border border-slate-200 bg-white"
                                                 ></iframe>
+                                                @if($selectedStudentMaterialDownloadUrl)
+                                                    <div class="flex justify-end">
+                                                        <a
+                                                            href="{{ $selectedStudentMaterialDownloadUrl }}"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            class="inline-flex items-center gap-2 rounded-xl border border-[#004777]/20 bg-[#eef8ff] px-4 py-2 text-sm font-medium text-[#004777] transition hover:bg-[#004777] hover:text-white"
+                                                        >
+                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                            </svg>
+                                                            Download
+                                                        </a>
+                                                    </div>
+                                                @endif
                                             @else
                                                 <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-[color:color-mix(in_oklab,#004777_70%,white)]">
                                                     Preview materi belum tersedia.

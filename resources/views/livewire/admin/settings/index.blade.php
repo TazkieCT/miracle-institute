@@ -12,19 +12,11 @@
             <span class="font-semibold text-rose-500">*</span> menandakan field wajib diisi.
         </div>
 
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div>
-                <label class="mb-1 block text-xs font-semibold text-slate-600">
-                    {{ __('admin.settings.form.company_name') }} <span class="text-rose-500">*</span>
-                </label>
-                <input wire:model="name" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.company_name') }}">
-            </div>
-            <div>
-                <label class="mb-1 block text-xs font-semibold text-slate-600">
-                    {{ __('admin.settings.form.logo') }}
-                </label>
-                <input wire:model="logo" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.logo') }}">
-            </div>
+        <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600">
+                {{ __('admin.settings.form.company_name') }} <span class="text-rose-500">*</span>
+            </label>
+            <input wire:model="name" class="w-full rounded-xl border px-4 py-2" placeholder="{{ __('admin.settings.form.company_name') }}">
         </div>
 
         <div>
