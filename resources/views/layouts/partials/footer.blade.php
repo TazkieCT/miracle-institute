@@ -37,7 +37,11 @@
                 <li><a href="{{ localized_route('legal.privacy') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">Privacy Policy</a></li>
 
                 @auth
-                    <li><a href="{{ localized_route('learning.dashboard') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">{{ __('general.navigation.my_learning') }}</a></li>
+                    @if(session('active_role') === 'disciples')
+                        <li><a href="{{ localized_route('mentor.dashboard') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">{{ __('general.shared.profile_dropdown.mentor_dashboard') }}</a></li>
+                    @else
+                        <li><a href="{{ localized_route('learning.dashboard') }}" class="block rounded-xl px-3 py-2.5 transition hover:bg-white/10 hover:text-white">{{ __('general.navigation.my_learning') }}</a></li>
+                    @endif
                 @endauth
             </ul>
         </div>
