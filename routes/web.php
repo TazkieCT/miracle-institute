@@ -14,6 +14,7 @@ use App\Models\User;
 
 use App\Livewire\Admin\Assessments\AssessmentIndex as AdminAssessmentIndex;
 use App\Livewire\Admin\Certificates\CertificateIndex;
+use App\Livewire\Admin\Certificates\SignatoryIndex;
 use App\Livewire\Admin\Courses\CourseIndex;
 use App\Livewire\Admin\Courses\ThumbnailIndex as AdminCourseThumbnailIndex;
 use App\Livewire\Admin\Dashboard\DashboardIndex;
@@ -528,6 +529,18 @@ $registerLocalizedRoutes = function (bool $named): void {
                             ->whereUuid('courseFilter')
                             ->middleware('permission:manage_certificates'),
                         'certificates.index'
+                    );
+
+                    $nameRoute(
+                        Route::get('/certificate-signatories', SignatoryIndex::class)
+                            ->middleware('permission:manage_certificates'),
+                        'signatories.index'
+                    );
+
+                    $nameRoute(
+                        Route::get('/certificate-signatories/preview', [CertificateController::class, 'previewSignatories'])
+                            ->middleware('permission:manage_certificates'),
+                        'signatories.preview'
                     );
 
                     $nameRoute(
