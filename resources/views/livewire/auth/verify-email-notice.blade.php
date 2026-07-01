@@ -21,4 +21,11 @@
     <button wire:click="resend" class="w-full rounded-xl bg-[#004777] py-2.5 text-white transition hover:bg-[#004777]/90">
         {{ __('auth.verify_email.submit') }}
     </button>
+
+    <form method="POST" action="{{ localized_route('logout') }}">
+        @csrf
+        <button type="submit" class="w-full rounded-xl border border-[#004777]/15 py-2.5 text-sm font-medium text-[#004777] transition hover:bg-[#f4faff]">
+            {{ __('auth.verify_email.logout') }}
+        </button>
+    </form>
 </div>

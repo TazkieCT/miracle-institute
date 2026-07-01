@@ -48,6 +48,7 @@ return [
         'title' => 'Verifikasi email Anda',
         'subtitle' => 'Cek inbox email kamu. Jika belum menerima, kirim ulang link verifikasi.',
         'submit' => 'Kirim ulang email verifikasi',
+        'logout' => 'Keluar dan gunakan akun lain',
     ],
 
     'verification_email_sent' => 'Kami sudah mengirim email verifikasi. Silakan cek inbox Anda.',
